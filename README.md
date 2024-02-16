@@ -1,38 +1,24 @@
-# create-svelte
+# new-sismika
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+An interactive Earthquake event visualizer utilizing modern web apps.
 
-## Creating a project
+## Pre-requisites
 
-If you're seeing this, you've probably already done this step. Congrats!
+Latest nodejs.
+[pnpm](https://pnpm.io/installation)
+[MongoDB](https://www.mongodb.com/try/download/community)
+[MongoAtlas](https://www.mongodb.com/atlas/database)
+[Mongosh](https://www.mongodb.com/docs/mongodb-shell/install/)
+[Docker](https://www.docker.com/products/docker-desktop/)
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## Development environment
 
 ```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+pnpm install #install deps
+pnpm run dev --open #run build
+pnpm run build #build
 ```
 
-## Building
+## Environment Keys
 
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+None as of the moment. This table will be populated for these.
