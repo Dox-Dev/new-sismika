@@ -7,3 +7,10 @@ export const CoordinatesSchema = z.object({
 });
 
 export type Coordinates = z.infer<typeof CoordinatesSchema>;
+
+export enum Collection {
+    EARTHQUAKE = "earthquake",
+    STATION = "station",
+    EVAC =  "evac",
+    INFO = "info"
+}
