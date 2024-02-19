@@ -36,6 +36,9 @@
 		drawerStore.open({});
 	}
 
+	// Leaflet API CSS for the map
+	import 'leaflet/dist/leaflet.css';
+
 </script>
 
 <Drawer>
