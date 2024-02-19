@@ -44,6 +44,8 @@
     "@floating-ui/dom": "1.6.3",
     "dotenv": "^16.4.4",
     "highlight.js": "11.9.0",
+    "http-status-codes": "^2.3.0",
+    "mongodb": "^6.3.0",
     "zod": "^3.22.4"
   }
 }
