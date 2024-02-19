@@ -21,7 +21,6 @@
             // https://github.com/CartoDB/basemap-styles
             source: new OSM({
               url: 'https://{a-c}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-              //url: 'https://api.maptiler.com/maps/streets-v2-dark/style.json?key=ZIyBeG4y7bIf0ChIOoG4',
             }),
           }),
         ],
