@@ -27,7 +27,7 @@
 
 	// Responsive app drawer
 	// https://www.skeleton.dev/blog/how-to-implement-a-responsive-sidebar-drawer
-	import Navigation from '$lib/Navigation/Navigation.svelte';
+	import Navigation from '$lib/components/Navigation.svelte';
 	import { initializeStores, Drawer, getDrawerStore } from '@skeletonlabs/skeleton';
 	initializeStores();
 	const drawerStore = getDrawerStore();
@@ -36,8 +36,8 @@
 		drawerStore.open({});
 	}
 
-	// Leaflet API CSS for the map
-	import 'leaflet/dist/leaflet.css';
+	// OpenLayersMap API
+	import OpenLayersMap from '$lib/components/OpenLayersMap.svelte';
 
 </script>
 
@@ -75,6 +75,8 @@
 		<!---<div id="sidebar-left" class="hidden lg:block">Sidebar Working</div>-->
 		<Navigation />
 	</svelte:fragment>
+
+	<!-- <OpenLayersMap /> -->
 	<!-- (sidebarRight) -->
 	<!-- (pageHeader) -->
 	<!-- Router Slot -->
