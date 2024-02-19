@@ -6,6 +6,11 @@
     import TileLayer from 'ol/layer/Tile';
     import OSM from 'ol/source/OSM';
   
+    // Used to convert from [longitude, latitude] to 
+    // a coordinate system OpenLayers can read
+    // https://stackoverflow.com/questions/27820784/openlayers-3-center-map
+    import { fromLonLat } from 'ol/proj';
+
     let mapElement;
   
     onMount(() => {
@@ -13,12 +18,16 @@
         target: mapElement,
         layers: [
           new TileLayer({
-            source: new OSM(),
+            // https://github.com/CartoDB/basemap-styles
+            source: new OSM({
+              url: 'https://{a-c}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+              //url: 'https://api.maptiler.com/maps/streets-v2-dark/style.json?key=ZIyBeG4y7bIf0ChIOoG4',
+            }),
           }),
         ],
         view: new View({
-          center: [0, 0], // Center of the map [longitude, latitude]
-          zoom: 2, // Initial zoom level
+          center: fromLonLat([121.0685, 14.6539]), // Center of the map [longitude, latitude]
+          zoom: 5, // Initial zoom level
         }),
       });
     });
