@@ -35,6 +35,7 @@
 	function drawerOpen(): void {
 		drawerStore.open({});
 	}
+
 </script>
 
 <Drawer>
