@@ -39,6 +39,8 @@
 	// OpenLayersMap API
 	import OpenLayersMap from '$lib/components/OpenLayersMap.svelte';
 
+	// Light/Dark mode toggle button
+	import { LightSwitch } from '@skeletonlabs/skeleton';
 </script>
 
 <Drawer>
@@ -67,6 +69,10 @@
     			    </button>
     			    <strong class="text-xl uppercase">Skeleton</strong>
     			</div>
+			</svelte:fragment>
+
+			<svelte:fragment slot="trail">
+				<LightSwitch />
 			</svelte:fragment>
 		</AppBar>
 	</svelte:fragment>
