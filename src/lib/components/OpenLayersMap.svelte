@@ -6,27 +6,27 @@
     import TileLayer from 'ol/layer/Tile';
     import OSM from 'ol/source/OSM';
   
-    // Used to convert from [longitude, latitude] to 
-    // a coordinate system OpenLayers can read
+    // This is used to convert from [longitude, latitude]
+    // to a coordinate system OpenLayers can read.
     // https://stackoverflow.com/questions/27820784/openlayers-3-center-map
     import { fromLonLat } from 'ol/proj';
 
-    // Used to check the current theme mode of the webpage
+    // This is used to check the current theme mode of the webpage.
     import { modeCurrent } from '@skeletonlabs/skeleton';
 
-    const sourceOSM = new OSM();
+    // Initialize the tilesets, map, and mount.
+    // Note that the tile_server will have change dynamically
+    // depending on the current theme/mode.
+    const tile_server = new OSM(); // tilemap
     let mapElement: HTMLElement;
-    // Initialize the mount as well as the map
     onMount(() => {
       new Map({
         target: mapElement,
         layers: [
           new TileLayer({
+            // tile_server is where the links to the themes will be placed
             // https://github.com/CartoDB/basemap-styles
-            //source: new OSM({
-            //  url: 'https://{a-c}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-            //}),
-            source: sourceOSM,
+            source: tile_server,
           }),
         ],
         view: new View({
@@ -36,12 +36,13 @@
       });
     });
 
+    // Dynamically change the themeURL and tile_server link.
     let themeURL: string;
     $: themeURL = ($modeCurrent)?
     'https://{a-c}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png':
     'https://{a-c}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
 
-    $: sourceOSM.setUrl(themeURL);
+    $: tile_server.setUrl(themeURL);
   </script>
   
   <style>
