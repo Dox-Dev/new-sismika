@@ -1,19 +1,21 @@
-<script>
+<script lang="ts">
     import { onMount } from 'svelte';
     import 'ol/ol.css';
     import Map from 'ol/Map';
     import View from 'ol/View';
     import TileLayer from 'ol/layer/Tile';
     import OSM from 'ol/source/OSM';
-    import XYZ from 'ol/source/XYZ';
   
     // Used to convert from [longitude, latitude] to 
     // a coordinate system OpenLayers can read
     // https://stackoverflow.com/questions/27820784/openlayers-3-center-map
     import { fromLonLat } from 'ol/proj';
 
-    const sourceOSM = new XYZ();
-    let mapElement;
+    // Used to check the current theme mode of the webpage
+    import { modeCurrent } from '@skeletonlabs/skeleton';
+
+    const sourceOSM = new OSM();
+    let mapElement: HTMLElement;
     // Initialize the mount as well as the map
     onMount(() => {
       new Map({
@@ -34,9 +36,7 @@
       });
     });
 
-    import { modeCurrent } from '@skeletonlabs/skeleton';;
-
-    let themeURL;
+    let themeURL: string;
     $: themeURL = ($modeCurrent)?
     'https://{a-c}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png':
     'https://{a-c}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
