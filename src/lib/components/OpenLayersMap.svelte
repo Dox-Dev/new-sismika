@@ -1,47 +1,47 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
-    import 'ol/ol.css';
-    import Map from 'ol/Map';
-    import View from 'ol/View';
-    import TileLayer from 'ol/layer/Tile';
-    import OSM from 'ol/source/OSM';
-  
-    // This is used to convert from [longitude, latitude]
-    // to a coordinate system OpenLayers can read.
-    // https://stackoverflow.com/questions/27820784/openlayers-3-center-map
-    import { fromLonLat } from 'ol/proj';
+  import { onMount } from 'svelte';
+  import 'ol/ol.css';
+  import Map from 'ol/Map';
+  import View from 'ol/View';
+  import TileLayer from 'ol/layer/Tile';
+  import OSM from 'ol/source/OSM';
 
-    // This is used to check the current theme mode of the webpage.
-    import { modeCurrent } from '@skeletonlabs/skeleton';
+  // This is used to convert from [longitude, latitude]
+  // to a coordinate system OpenLayers can read.
+  // https://stackoverflow.com/questions/27820784/openlayers-3-center-map
+  import { fromLonLat } from 'ol/proj';
 
-    // This is used for the markers in the OpenStreetMap.
-    import Feature from 'ol/Feature';
-    import Point from 'ol/geom/Point';
-    import VectorSource from 'ol/source/Vector';
-    import {Icon, Style} from 'ol/style';
-    import VectorLayer from 'ol/layer/Vector';
+  // This is used to check the current theme mode of the webpage.
+  import { modeCurrent } from '@skeletonlabs/skeleton';
 
-    // Initialize the tilesets, map, and mount.
-    // Note that the tile_server will have change dynamically
-    // depending on the current theme/mode.
-    const tile_server = new OSM(); // tilemap
-    let mapElement: HTMLElement;
-    let mountedMap: Map;
-    onMount(() => {
-      mountedMap = new Map({
-        target: mapElement,
-        layers: [
-          new TileLayer({
-            // tile_server is where the links to the themes will be placed
-            // https://github.com/CartoDB/basemap-styles
-            source: tile_server,
-          }),
-        ],
-        view: new View({
-          center: fromLonLat([121.0685, 14.6539]), // Center of the map [longitude, latitude]
-          zoom: 5, // Initial zoom level
+  // This is used for the markers in the OpenStreetMap.
+  import Feature from 'ol/Feature';
+  import Point from 'ol/geom/Point';
+  import VectorSource from 'ol/source/Vector';
+  import {Icon, Style} from 'ol/style';
+  import VectorLayer from 'ol/layer/Vector';
+
+  // Initialize the tilesets, map, and mount.
+  // Note that the tile_server will have change
+  // dynamically depending on the current theme/mode.
+  const tile_server = new OSM(); // tilemap
+  let mapElement: HTMLElement;
+  let mountedMap: Map;
+  onMount(() => {
+    mountedMap = new Map({
+      target: mapElement,
+      layers: [
+        new TileLayer({
+          // tile_server is where the links to the themes will be placed
+          // https://github.com/CartoDB/basemap-styles
+          source: tile_server,
         }),
-      });
+      ],
+      view: new View({
+        center: fromLonLat([121.0685, 14.6539]), // Center of the map [longitude, latitude]
+        zoom: 5, // Initial zoom level
+      }),
+    });
     
     // Your JSON data
     var data = [
@@ -60,51 +60,30 @@
           fromLonLat([item.longitude, item.latitude]) // Marker position
         )
       });
-    
-    // Create a style for the marker
-    var iconStyle = new Style({
-      image: new Icon({
-        //anchor: [0.5, 10],
-        //anchorXUnits: 'fraction',
-        //anchorYUnits: 'pixels',
-        width: 50,
-        height: 50,
-      
-        //src: 'images/marker-pin.png' // Base64 encoded image here
-        src: 'https://png.pngtree.com/png-vector/20210214/ourmid/pngtree-location-marker-png-image_2921053.jpg'
-      
-      })
+
+      // Create a style for the marker
+      var iconStyle = new Style({
+        image: new Icon({
+          width: 50,
+          height: 50,
+          src: 'https://png.pngtree.com/png-vector/20210214/ourmid/pngtree-location-marker-png-image_2921053.jpg'
+        })
+      });
+
+      // Apply the style to the marker
+      marker.setStyle(iconStyle);
+
+      // Add the marker to the vector source
+      vectorSource.addFeature(marker);
+
+      // Add the vector source to a layer and add it to the map
+      var markerLayer = new VectorLayer({
+        source: vectorSource
+      });
+
+      mountedMap.addLayer(markerLayer);
     });
-
-  // Apply the style to the marker
-  marker.setStyle(iconStyle);
-
-  // Add the marker to the vector source
-  vectorSource.addFeature(marker);
-
-
-  // Add the vector source to a layer and add it to the map
-  var markerLayer = new VectorLayer({
-    source: vectorSource
   });
-  mountedMap.addLayer(markerLayer);
-  });
-});
-  /*
-  var markers = new ol.layer.Vector({
-    source: new ol.source.Vector(),
-    style: new ol.style.Style({
-      image: new ol.style.Icon({
-        anchor: [0.5, 1],
-        src: 'marker.png'
-      })
-    })
-  });
-  mountedMap.addLayer(markers);
-  
-  var marker = new ol.Feature(new ol.geom.Point(fromLonLat([106.8478695, -6.1568562])));
-  markers.getSource().addFeature(marker);
-  */
 
   // Dynamically change the themeURL and tile_server link.
   let themeURL: string;
