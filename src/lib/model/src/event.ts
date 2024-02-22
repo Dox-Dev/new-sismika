@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CoordinatesSchema } from './util.ts';
+import { CoordinatesSchema } from './util';
 
 export const EarthquakeEventSchema = z.object({
 	id: z.string(),
