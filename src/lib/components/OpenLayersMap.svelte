@@ -14,13 +14,21 @@
     // This is used to check the current theme mode of the webpage.
     import { modeCurrent } from '@skeletonlabs/skeleton';
 
+    // This is used for the markers in the OpenStreetMap.
+    import Feature from 'ol/Feature';
+    import Point from 'ol/geom/Point';
+    import VectorSource from 'ol/source/Vector';
+    import {Icon, Style} from 'ol/style';
+    import VectorLayer from 'ol/layer/Vector';
+
     // Initialize the tilesets, map, and mount.
     // Note that the tile_server will have change dynamically
     // depending on the current theme/mode.
     const tile_server = new OSM(); // tilemap
     let mapElement: HTMLElement;
+    let mountedMap: Map;
     onMount(() => {
-      new Map({
+      mountedMap = new Map({
         target: mapElement,
         layers: [
           new TileLayer({
@@ -34,23 +42,85 @@
           zoom: 5, // Initial zoom level
         }),
       });
+    
+    // Your JSON data
+    var data = [
+      {longitude: 0, latitude:0},
+      {longitude: 121.0685, latitude: 14.6539},
+    ];
+    
+    var vectorSource = new VectorSource();
+    
+    // Iterate over the data to create and add each marker
+    data.forEach(function(item) {
+      console.log(item.longitude, item.latitude)
+      // Create a feature for the marker
+      var marker = new Feature({
+        geometry: new Point(
+          fromLonLat([item.longitude, item.latitude]) // Marker position
+        )
+      });
+    
+    // Create a style for the marker
+    var iconStyle = new Style({
+      image: new Icon({
+        //anchor: [0.5, 10],
+        //anchorXUnits: 'fraction',
+        //anchorYUnits: 'pixels',
+        width: 50,
+        height: 50,
+      
+        //src: 'images/marker-pin.png' // Base64 encoded image here
+        src: 'https://png.pngtree.com/png-vector/20210214/ourmid/pngtree-location-marker-png-image_2921053.jpg'
+      
+      })
     });
 
-    // Dynamically change the themeURL and tile_server link.
-    let themeURL: string;
-    $: themeURL = ($modeCurrent)?
-    'https://{a-c}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png':
-    'https://{a-c}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+  // Apply the style to the marker
+  marker.setStyle(iconStyle);
 
-    $: tile_server.setUrl(themeURL);
-  </script>
+  // Add the marker to the vector source
+  vectorSource.addFeature(marker);
+
+
+  // Add the vector source to a layer and add it to the map
+  var markerLayer = new VectorLayer({
+    source: vectorSource
+  });
+  mountedMap.addLayer(markerLayer);
+  });
+});
+  /*
+  var markers = new ol.layer.Vector({
+    source: new ol.source.Vector(),
+    style: new ol.style.Style({
+      image: new ol.style.Icon({
+        anchor: [0.5, 1],
+        src: 'marker.png'
+      })
+    })
+  });
+  mountedMap.addLayer(markers);
   
-  <style>
-    .map {
-      height: 400px; /* Specify a height for the map */
-      width: 100%; /* Full width */
-    }
-  </style>
+  var marker = new ol.Feature(new ol.geom.Point(fromLonLat([106.8478695, -6.1568562])));
+  markers.getSource().addFeature(marker);
+  */
+
+  // Dynamically change the themeURL and tile_server link.
+  let themeURL: string;
+  $: themeURL = ($modeCurrent)?
+  'https://{a-c}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png':
+  'https://{a-c}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+
+  $: tile_server.setUrl(themeURL);
+</script>
   
-  <div bind:this={mapElement} class="map"></div>
+<style>
+  .map {
+    height: 400px; /* Specify a height for the map */
+    width: 100%; /* Full width */
+  }
+</style>
+
+<div bind:this={mapElement} class="map"></div>
   
