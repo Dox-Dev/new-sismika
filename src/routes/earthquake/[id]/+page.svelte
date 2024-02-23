@@ -1,5 +1,5 @@
 <script>
     export let data;
-    $: ({ coord, depth, id, li, time } = data);
+    $: ({ coord:{long, lat}, depth, _id, li, time } = data);
 </script>
-<h1>{time}</h1>
+<h1>{long} {lat}, {depth}, {_id}, {li}, {time}</h1>
