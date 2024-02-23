@@ -64,7 +64,6 @@
       let icon = new Icon({
           width: 20,
           height: 20,
-          //src: 'https://static-00.iconduck.com/assets.00/map-pin-marker-icon-1490x2048-dim0ohl8.png',
           src: '/map-pin.png',
       });
       
@@ -72,10 +71,6 @@
       var iconStyle = new Style({
         image: icon,
       });
-
-      //var styles = [new Style({
-      //  image: icon,
-      //})];
 
       // Apply the style to the marker
       marker.setStyle(iconStyle);
@@ -86,22 +81,6 @@
       // Add the vector source to a layer and add it to the map
       var markerLayer = new VectorLayer({
         source: vectorSource,
-        style: function(feature, resolution) {
-          var zoom = mountedMap.getView().getZoomForResolution(resolution);
-          var iconSize = zoom; // Aajust this calc as needed
-          return new Style({
-            image: new Icon({
-              //src: 'https://static-00.iconduck.com/assets.00/map-pin-marker-icon-1490x2048-dim0ohl8.png',
-              src: '/favicon.png',
-              scale: iconSize,//iconSize,
-            })
-          });
-        }
-        //style: function(feature, resolution) {
-        //  var scale = scaleFunction(resolution);
-        //  icon.setScale(scale);
-        //  return iconStyle;
-        //},
       });
 
       mountedMap.addLayer(markerLayer);
