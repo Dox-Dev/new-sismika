@@ -43,6 +43,7 @@
 	"type": "module",
 	"dependencies": {
 		"@floating-ui/dom": "1.6.3",
+		"csv-parser": "^3.0.0",
 		"dotenv": "^16.4.4",
 		"highlight.js": "11.9.0",
 		"http-status-codes": "^2.3.0",
