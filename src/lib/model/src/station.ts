@@ -1,7 +1,9 @@
 import { z } from 'zod';
-import { CoordinatesSchema } from './util';
+import { CoordinatesSchema, ObjectIDSchema } from './util';
+import { ObjectId } from 'mongodb';
 
 export const StationSchema = z.object({
+	_id: ObjectIDSchema,
 	code: z.string(),
 	name: z.string(),
 	type: z.string(),
