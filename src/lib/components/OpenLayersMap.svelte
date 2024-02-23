@@ -21,6 +21,9 @@
   import {Icon, Style} from 'ol/style';
   import VectorLayer from 'ol/layer/Vector';
 
+  // Take JSON data of points from /src/routes/map/+page.svelte
+  export let data;
+
   // Initialize the tilesets, map, and mount.
   // Note that the tile_server will have change
   // dynamically depending on the current theme/mode.
@@ -42,12 +45,6 @@
         zoom: 5, // Initial zoom level
       }),
     });
-
-    // Your JSON data
-    var data = [
-      {longitude: 0, latitude:0},
-      {longitude: 121.0685, latitude: 14.6539},
-    ];
     
     var vectorSource = new VectorSource();
     
