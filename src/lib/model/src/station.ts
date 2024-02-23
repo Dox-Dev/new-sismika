@@ -2,7 +2,6 @@ import { z } from 'zod';
 import { CoordinatesSchema } from './util';
 
 export const StationSchema = z.object({
-	id: z.string(),
 	code: z.string(),
 	name: z.string(),
 	type: z.string(),
