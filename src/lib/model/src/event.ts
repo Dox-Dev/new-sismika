@@ -1,8 +1,9 @@
 import { z } from 'zod';
-import { CoordinatesSchema } from './util';
+import { CoordinatesSchema, ObjectIDSchema } from './util';
+import { ObjectId } from 'mongodb';
 
 export const EarthquakeEventSchema = z.object({
-	id: z.string().uuid(),
+	_id: ObjectIDSchema,
 	time: z.string().datetime(),
 	coord: CoordinatesSchema,
 	depth: z.number(),
