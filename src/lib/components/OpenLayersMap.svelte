@@ -42,7 +42,7 @@
         zoom: 5, // Initial zoom level
       }),
     });
-    
+
     // Your JSON data
     var data = [
       {longitude: 0, latitude:0},
@@ -61,14 +61,21 @@
         )
       });
 
+      let icon = new Icon({
+          width: 20,
+          height: 20,
+          //src: 'https://static-00.iconduck.com/assets.00/map-pin-marker-icon-1490x2048-dim0ohl8.png',
+          src: '/map-pin.png',
+      });
+      
       // Create a style for the marker
       var iconStyle = new Style({
-        image: new Icon({
-          width: 50,
-          height: 50,
-          src: 'https://png.pngtree.com/png-vector/20210214/ourmid/pngtree-location-marker-png-image_2921053.jpg'
-        })
+        image: icon,
       });
+
+      //var styles = [new Style({
+      //  image: icon,
+      //})];
 
       // Apply the style to the marker
       marker.setStyle(iconStyle);
@@ -76,14 +83,47 @@
       // Add the marker to the vector source
       vectorSource.addFeature(marker);
 
+      function scaleFunction(resolution: number) {
+        // This is just an example. You might need to adjust the numbers
+        // to get the desired effect for your specific use case.
+        var maxResolution = 156543.0339; // max resolution for EPSG:3857
+        var minScale = 0.1; // the minimum scale
+        var maxScale = 1.0; // the maximum scale
+        
+        var scale = minScale + (maxResolution - resolution) / maxResolution * (maxScale - minScale);
+        return scale;
+      }
+
       // Add the vector source to a layer and add it to the map
       var markerLayer = new VectorLayer({
-        source: vectorSource
+        source: vectorSource,
+        style: function(feature, resolution) {
+          var zoom = mountedMap.getView().getZoomForResolution(resolution);
+          var iconSize = zoom; // Aajust this calc as needed
+          return new Style({
+            image: new Icon({
+              //src: 'https://static-00.iconduck.com/assets.00/map-pin-marker-icon-1490x2048-dim0ohl8.png',
+              src: '/favicon.png',
+              scale: iconSize,//iconSize,
+            })
+          });
+        }
+        //style: function(feature, resolution) {
+        //  var scale = scaleFunction(resolution);
+        //  icon.setScale(scale);
+        //  return iconStyle;
+        //},
       });
 
       mountedMap.addLayer(markerLayer);
+
+      mountedMap.getView().on('change:resolution', function() {
+        markerLayer.changed();  // This will force a redraw of the layer
+      });
     });
-  });
+  }); 
+  
+  
 
   // Dynamically change the themeURL and tile_server link.
   let themeURL: string;
