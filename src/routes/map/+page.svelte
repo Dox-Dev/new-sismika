@@ -2,8 +2,33 @@
 <script>
     // Your JSON data
     var data = [
-      {long: 0, lat:0},
-      {long: 121.0685, lat: 14.6539},
+    {
+    id: 'owo',
+    time: '1708665054',
+    coord: {
+    long: 0,
+    lat: 0,
+    },
+    depth: 500,
+    mw: 1, //moment magnitude, mi
+    mb: 2, //body-wave magnitude
+    ms: 3, //surface wave magnitude.
+    li: 'local intensity :>', //string list of local intensities
+    },
+
+    {
+    id: 'uwu',
+    time: '1708665383',
+    coord: {
+    long: 121.0685,
+    lat: 14.6539,
+    },
+    depth: 123456789,
+    mw: 4, //moment magnitude, mi
+    mb: 5, //body-wave magnitude
+    ms: 6, //surface wave magnitude.
+    li: 'local intensity :<', //string list of local intensities
+    }
     ];
 
     //export let data;
