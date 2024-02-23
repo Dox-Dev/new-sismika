@@ -1,5 +1,7 @@
 
 <script>
+    import OpenLayersMap from '$lib/components/OpenLayersMap.svelte';
+
     // Your JSON data
     var data = [
     {
@@ -30,9 +32,6 @@
     li: 'local intensity :<', //string list of local intensities
     }
     ];
-
-    //export let data;
-    import OpenLayersMap from '$lib/components/OpenLayersMap.svelte';
 </script>
 
 <main>  
