@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 export const CoordinatesSchema = z.object({
-    id: z.string(),
     long: z.number(),
     lat: z.number()
 });
