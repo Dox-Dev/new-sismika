@@ -90,8 +90,6 @@
       });
     });
   }); 
-  
-  
 
   // Dynamically change the themeURL and tile_server link.
   let themeURL: string;
