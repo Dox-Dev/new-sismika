@@ -83,17 +83,6 @@
       // Add the marker to the vector source
       vectorSource.addFeature(marker);
 
-      function scaleFunction(resolution: number) {
-        // This is just an example. You might need to adjust the numbers
-        // to get the desired effect for your specific use case.
-        var maxResolution = 156543.0339; // max resolution for EPSG:3857
-        var minScale = 0.1; // the minimum scale
-        var maxScale = 1.0; // the maximum scale
-        
-        var scale = minScale + (maxResolution - resolution) / maxResolution * (maxScale - minScale);
-        return scale;
-      }
-
       // Add the vector source to a layer and add it to the map
       var markerLayer = new VectorLayer({
         source: vectorSource,
