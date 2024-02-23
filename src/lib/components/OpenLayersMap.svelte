@@ -50,11 +50,11 @@
     
     // Iterate over the data to create and add each marker
     data.forEach(function(item) {
-      console.log(item.longitude, item.latitude)
+      console.log(item.coord.long, item.coord.lat)
       // Create a feature for the marker
       var marker = new Feature({
         geometry: new Point(
-          fromLonLat([item.long, item.lat]) // Marker position
+          fromLonLat([item.coord.long, item.coord.lat]) // Marker position
         )
       });
 
