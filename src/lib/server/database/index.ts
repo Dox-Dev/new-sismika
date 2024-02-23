@@ -71,8 +71,8 @@ export async function getEarthquakeData(id: ObjectId) {
 	const db = await connect();
 
 	const collection = db.collection(Collection.EARTHQUAKE);
-	const equakeCursor = collection.findOne({ _id: id });
-
+	const equakeCursor = await collection.findOne({ _id: id });
+	console.log(equakeCursor)
 	if (equakeCursor === null) return null;
 
 	try {
@@ -170,8 +170,8 @@ export async function getStationData(id: ObjectId) {
 	const db = await connect();
 
 	const collection = db.collection(Collection.STATION);
-	const stationCursor = collection.findOne({ _id: id });
-
+	const stationCursor = await collection.findOne({ _id: id });
+	console.log(stationCursor)
 	if (stationCursor === null) return false;
 
 	try {
@@ -251,7 +251,7 @@ export async function getEvacData(id: ObjectId) {
 	const db = await connect();
 
 	const collection = db.collection(Collection.EVAC);
-	const evacCursor = collection.findOne({_id: id});
+	const evacCursor = await collection.findOne({_id: id});
 
 	if (evacCursor === null) return false;
 
