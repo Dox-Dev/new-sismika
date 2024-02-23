@@ -54,7 +54,7 @@
       // Create a feature for the marker
       var marker = new Feature({
         geometry: new Point(
-          fromLonLat([item.longitude, item.latitude]) // Marker position
+          fromLonLat([item.long, item.lat]) // Marker position
         )
       });
 
