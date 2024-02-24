@@ -6,7 +6,7 @@
     // Your JSON data
     var data = [
     {
-    id: 'owo',
+    id: 'Origin',
     time: '1708665054',
     coord: {
     long: 0,
@@ -16,11 +16,11 @@
     mw: 1, //moment magnitude, mi
     mb: 2, //body-wave magnitude
     ms: 3, //surface wave magnitude.
-    li: 'local intensity :>', //string list of local intensities
+    li: 'This place seems fine, with only a few cracks here and there.', //string list of local intensities
     },
 
     {
-    id: 'uwu',
+    id: 'Diliman',
     time: '1708665383',
     coord: {
     long: 121.0685,
@@ -30,11 +30,11 @@
     mw: 4, //moment magnitude, mi
     mb: 5, //body-wave magnitude
     ms: 6, //surface wave magnitude.
-    li: 'local intensity :<', //string list of local intensities
+    li: 'This place could use some renovations.', //string list of local intensities
     },
 
     {
-    id: 'ono',
+    id: 'Atlantic Ocean',
     time: '1708613123',
     coord: {
     long: 50.1234,
@@ -44,7 +44,7 @@
     mw: 4, //moment magnitude, mi
     mb: 5, //body-wave magnitude
     ms: 6, //surface wave magnitude.
-    li: 'hi hello', //string list of local intensities
+    li: 'This place is uninhabited.', //string list of local intensities
     }
     ];
 </script>
