@@ -31,6 +31,20 @@
     mb: 5, //body-wave magnitude
     ms: 6, //surface wave magnitude.
     li: 'local intensity :<', //string list of local intensities
+    },
+
+    {
+    id: 'ono',
+    time: '1708613123',
+    coord: {
+    long: 50.1234,
+    lat: 249.6932,
+    },
+    depth: 123456789,
+    mw: 4, //moment magnitude, mi
+    mb: 5, //body-wave magnitude
+    ms: 6, //surface wave magnitude.
+    li: 'hi hello', //string list of local intensities
     }
     ];
 </script>
