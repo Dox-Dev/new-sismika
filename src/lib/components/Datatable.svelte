@@ -30,8 +30,8 @@
 			<tr>
 				<ThSort {handler} orderBy="id">Event ID</ThSort>
 				<ThSort {handler} orderBy="time">Time</ThSort>
-				<ThSort {handler} orderBy="coord.long">Longitude</ThSort>
-				<ThSort {handler} orderBy="coord.lat">Latitude</ThSort>
+				<ThSort {handler} orderBy={(row) => row.coord.long}>Longitude</ThSort>
+				<ThSort {handler} orderBy={(row) => row.coord.lat}>Latitude</ThSort>
 				<ThSort {handler} orderBy="depth">Depth</ThSort>
 				<ThSort {handler} orderBy="mw">Moment Magnitude</ThSort>
 				<ThSort {handler} orderBy="mb">Body Wave Magnitude</ThSort>
@@ -41,8 +41,8 @@
 			<tr>
 				<ThFilter {handler} filterBy="id" />
 				<ThFilter {handler} filterBy="time" />
-				<ThFilter {handler} filterBy="coord.long" />
-				<ThFilter {handler} filterBy="coord.lat" />
+				<ThFilter {handler} filterBy={(row) => row.coord.long}  />
+				<ThFilter {handler} filterBy={(row) => row.coord.lat} />
 				<ThFilter {handler} filterBy="depth" />
 				<ThFilter {handler} filterBy="mw" />
 				<ThFilter {handler} filterBy="mb" />
