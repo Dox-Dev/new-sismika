@@ -28,22 +28,40 @@
 	<table class="table table-hover table-compact w-full table-auto">
 		<thead>
 			<tr>
-				<ThSort {handler} orderBy="first_name">First name</ThSort>
-				<ThSort {handler} orderBy="last_name">Last name</ThSort>
-				<ThSort {handler} orderBy="email">Email</ThSort>
+				<ThSort {handler} orderBy="id">Event ID</ThSort>
+				<ThSort {handler} orderBy="time">Time</ThSort>
+				<ThSort {handler} orderBy="coord.long">Longitude</ThSort>
+				<ThSort {handler} orderBy="coord.lat">Latitude</ThSort>
+				<ThSort {handler} orderBy="depth">Depth</ThSort>
+				<ThSort {handler} orderBy="mw">Moment Magnitude</ThSort>
+				<ThSort {handler} orderBy="mb">Body Wave Magnitude</ThSort>
+				<ThSort {handler} orderBy="ms">Surface Wave Magnitude</ThSort>
+				<ThSort {handler} orderBy="li">Local Intensity</ThSort>
 			</tr>
 			<tr>
-				<ThFilter {handler} filterBy="first_name" />
-				<ThFilter {handler} filterBy="last_name" />
-				<ThFilter {handler} filterBy="email" />
+				<ThFilter {handler} filterBy="id" />
+				<ThFilter {handler} filterBy="time" />
+				<ThFilter {handler} filterBy="coord.long" />
+				<ThFilter {handler} filterBy="coord.lat" />
+				<ThFilter {handler} filterBy="depth" />
+				<ThFilter {handler} filterBy="mw" />
+				<ThFilter {handler} filterBy="mb" />
+				<ThFilter {handler} filterBy="ms" />
+				<ThFilter {handler} filterBy="li" />
 			</tr>
 		</thead>
 		<tbody>
 			{#each $rows as row}
 				<tr>
-					<td>{row.first_name}</td>
-					<td>{row.last_name}</td>
-					<td>{row.email}</td>
+					<td>{row.id}</td>
+					<td>{row.time}</td>
+					<td>{row.coord.long}</td>
+					<td>{row.coord.lat}</td>
+					<td>{row.depth}</td>
+					<td>{row.mw}</td>
+					<td>{row.mb}</td>
+					<td>{row.ms}</td>
+					<td>{row.li}</td>
 				</tr>
 			{/each}
 		</tbody>
