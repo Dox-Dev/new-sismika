@@ -3,6 +3,10 @@
 @tailwind utilities;
 @tailwind variants;
 
+:root {
+	--MOBILE-VIEW-BREAKPOINT: 600px;
+}
+
 /* rocket theme */
 @font-face {
 	font-family: 'Space Grotesk';
@@ -14,4 +18,22 @@
 html,
 body {
 	@apply h-full overflow-hidden;
+}
+
+@media only screen and (max-width: --MOBILE-VIEW-BREAKPOINT) {
+/* For Chrome, Safari, and Opera */
+	::-webkit-scrollbar {
+		display: none;
+	}
+	  
+	/* For Internet Explorer and Edge */
+	body {
+		-ms-overflow-style: none; /* IE and Edge */
+		scrollbar-width: none; /* Firefox */
+	}
+	  
+	/* For Firefox */
+	html {
+		scrollbar-width: none;
+	}
 }
