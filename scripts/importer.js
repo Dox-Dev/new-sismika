@@ -4,10 +4,12 @@ import stripBom from 'strip-bom-stream'
 import z from 'zod';
 import { MongoClient } from 'mongodb';
 
+const GeoJSONTypes = z.union([z.literal('Point'), z.literal('LineString'), z.literal('Polygon'), z.literal('MultiPoint'), z.literal('MultiLineString'), z.literal('MultiPolygon')])
 const CoordinatesSchema = z.object({
-	long: z.number(),
-	lat: z.number()
+	type: GeoJSONTypes,
+	coordinates: z.number().array().length(2),
 });
+
 
 const EarthquakeEventSchema = z.object({
 	time: z.string().datetime(),
@@ -47,8 +49,8 @@ const equakeDump = fs.createReadStream('.\\scripts\\equakedump.csv')
 		const dataIn = {
 			time: new Date(parseInt(data['year']), parseInt(data['month'])-1, parseInt(data['day']), parseInt(data['hour']), parseInt(data['minute']), parseInt(data['second'])).toISOString(),
 			coord: {
-				long: parseFloat(data['longitude']),
-				lat: parseFloat(data['latitude'])
+				type: "Point",
+				coordinates: [parseFloat(data['longitude'], parseFloat(data['latitude']))]
 			},
 			depth: parseInt(data['depth']),
 			mi: isNaN(parseFloat(data['mi']))? 0: parseFloat(data['mi']),
@@ -80,8 +82,8 @@ const stationDump = fs.createReadStream('.\\scripts\\stationdump.csv')
 		const dataIn = {
 			code: data['code'],
 			coord: {
-				long: parseFloat(data['long']),
-				lat: parseFloat(data['lat'])
+				type: "Point",
+				coordinates: [parseFloat(data['long']), parseFloat(data['lat'])]
 			},
 			name: data['long_name'],
 			type: data['type']
