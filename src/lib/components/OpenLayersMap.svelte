@@ -49,7 +49,7 @@
     var vectorSource = new VectorSource();
     
     // Iterate over the data to create and add each marker
-    data.forEach(function(item) {
+    data.equake.forEach(function(item) {
       console.log(item.coord.long, item.coord.lat)
       // Create a feature for the marker
       var marker = new Feature({
