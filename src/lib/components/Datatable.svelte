@@ -9,12 +9,14 @@
 
 	//Import handler from SSD
 	import { DataHandler } from '@vincjo/datatables';
+	import { goto } from '$app/navigation';
+	import { StatusCodes } from 'http-status-codes';
 
     //Load local data
 	export let data;
 
 	//Init data handler - CLIENT
-	const handler = new DataHandler(data, { rowsPerPage: 5 });
+	const handler = new DataHandler(data.equake, { rowsPerPage: 5 });
 	const rows = handler.getRows();
 </script>
 
@@ -28,7 +30,7 @@
 	<table class="table table-hover table-compact w-full table-auto">
 		<thead>
 			<tr>
-				<ThSort {handler} orderBy="id">Event ID</ThSort>
+				<ThSort {handler} orderBy="_id">Event ID</ThSort>
 				<ThSort {handler} orderBy="time">Time</ThSort>
 				<ThSort {handler} orderBy={(row) => row.coord.long}>Longitude</ThSort>
 				<ThSort {handler} orderBy={(row) => row.coord.lat}>Latitude</ThSort>
@@ -39,7 +41,7 @@
 				<ThSort {handler} orderBy="li">Local Intensity</ThSort>
 			</tr>
 			<tr>
-				<ThFilter {handler} filterBy="id" />
+				<ThFilter {handler} filterBy="_id" />
 				<ThFilter {handler} filterBy="time" />
 				<ThFilter {handler} filterBy={(row) => row.coord.long}  />
 				<ThFilter {handler} filterBy={(row) => row.coord.lat} />
@@ -52,8 +54,8 @@
 		</thead>
 		<tbody>
 			{#each $rows as row}
-				<tr>
-					<td>{row.id}</td>
+				<tr on:click={() => {goto(`/earthquake/${row._id}`)}}>
+					<td>{row._id}</td>
 					<td>{row.time}</td>
 					<td>{row.coord.long}</td>
 					<td>{row.coord.lat}</td>

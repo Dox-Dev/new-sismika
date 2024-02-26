@@ -1,8 +1,9 @@
 import { z } from 'zod';
-import { CoordinatesSchema } from './util';
+import { CoordinatesSchema, ObjectIDSchema } from './util';
+import { ObjectId } from 'mongodb';
 
 export const EvacCenterSchema = z.object({
-	id: z.string(),
+	_id: ObjectIDSchema,
 	name: z.string(),
 	coord: CoordinatesSchema
 });

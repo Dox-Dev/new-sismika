@@ -4,49 +4,7 @@
     import Datatable from '$lib/components/Datatable.svelte';
 
     // Your JSON data
-    var data = [
-    {
-    id: 'Origin',
-    time: '1708665054',
-    coord: {
-    long: 0,
-    lat: 0,
-    },
-    depth: 500,
-    mw: 1, //moment magnitude, mi
-    mb: 2, //body-wave magnitude
-    ms: 3, //surface wave magnitude.
-    li: 'This place seems fine, with only a few cracks here and there.', //string list of local intensities
-    },
-
-    {
-    id: 'Diliman',
-    time: '1708665383',
-    coord: {
-    long: 121.0685,
-    lat: 14.6539,
-    },
-    depth: 123456789,
-    mw: 4, //moment magnitude, mi
-    mb: 5, //body-wave magnitude
-    ms: 6, //surface wave magnitude.
-    li: 'This place could use some renovations.', //string list of local intensities
-    },
-
-    {
-    id: 'Atlantic Ocean',
-    time: '1708613123',
-    coord: {
-    long: 50.1234,
-    lat: 249.6932,
-    },
-    depth: 123456789,
-    mw: 4, //moment magnitude, mi
-    mb: 5, //body-wave magnitude
-    ms: 6, //surface wave magnitude.
-    li: 'This place is uninhabited.', //string list of local intensities
-    }
-    ];
+    export let data;
 </script>
 
 <main>  

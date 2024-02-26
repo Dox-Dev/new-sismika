@@ -67,7 +67,7 @@
     			            </svg>
     			        </span>
     			    </button>
-    			    <strong class="text-xl uppercase">Skeleton</strong>
+    			    <strong class="text-xl uppercase">Sismika</strong>
     			</div>
 			</svelte:fragment>
 
