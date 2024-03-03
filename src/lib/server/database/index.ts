@@ -4,6 +4,7 @@ import { EarthquakeEventSchema, type EarthquakeEvent } from '$lib/model/src/even
 import { Collection } from '$lib/model/src/util';
 import { EvacCenterSchema, type EvacCenter } from '$lib/model/src/evac';
 import { StationSchema } from '$lib/model/src/station';
+import type { User } from '$lib/model/src/auth';
 
 const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017';
 const client = new MongoClient(uri);
@@ -262,3 +263,5 @@ export async function getEvacData(id: ObjectId) {
 		throw ParseValidationError;
 	}
 }
+
+export async function upsertUser(userInfo: User)

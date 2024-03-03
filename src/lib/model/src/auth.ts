@@ -20,5 +20,5 @@ export const SessionSchema = z.object({
     expiresAt: z.string().datetime()
 })
 
-export type Session = z.infer<typeof SessionSchema>
+export type Session = z.infer<typeof SessionSchema> 
 
