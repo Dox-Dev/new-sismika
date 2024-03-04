@@ -21,7 +21,6 @@ export default {
 				preset: [
 					{
 						name: 'skeleton',
-						enhancements: true
 					}
 				]
 			}
