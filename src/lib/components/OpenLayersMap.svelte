@@ -61,7 +61,7 @@
       let icon = new Icon({
           width: 20,
           height: 20,
-          src: '/map-pin.png',
+          src: '/map-pin.svg',
       });
       
       // Create a style for the marker
