@@ -16,6 +16,12 @@
 		<li><a href="/earthquake" on:click={drawerClose}>Earthquakes</a></li>
 		<li><a href="/seismic" on:click={drawerClose}>Seismic Stations</a></li>
 		<li><a href="/evaccenter" on:click={drawerClose}>Evacuation Centers</a></li>
-		<li><a href="/login" on:click={drawerClose}>Login</a></li>
+		<li>
+			<button type="button" class="btn" on:click={drawerClose}>
+				<span><i class="fa fa-google"></i></span>
+				<span>Login</span>
+			</button>
+		</li>
+		<!--<li><a href="/login" on:click={drawerClose}>Login</a></li> -->
 	</ul>
 </nav>
