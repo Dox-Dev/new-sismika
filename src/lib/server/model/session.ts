@@ -1,7 +1,9 @@
 import { UserSchema } from "$lib/model/src/auth";
+import { ObjectIDSchema } from "$lib/model/src/util";
 import { z } from 'zod';
 
 const SessionBase = z.object({
+    _id: ObjectIDSchema,
     session_id: z.string().uuid(),
     expiration: z.coerce.date(),
 });

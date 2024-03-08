@@ -17,5 +17,6 @@ export enum Collection {
 	EVAC = 'evac',
 	INFO = 'info',
 	SESSIONS = 'sessions',
+	PENDINGS = 'pendings',
 	USERS = 'users'
 }
