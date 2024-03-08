@@ -42,7 +42,7 @@ async function connect() {
 }
 
 
-const equakeDump = fs.createReadStream('.\\scripts\\equakedump.csv')
+const equakeDump = fs.createReadStream('./scripts/equakedump.csv')
 	.pipe(stripBom())
     .pipe(csvParser())
     .on('data', (data) => {
@@ -50,7 +50,7 @@ const equakeDump = fs.createReadStream('.\\scripts\\equakedump.csv')
 			time: new Date(parseInt(data['year']), parseInt(data['month'])-1, parseInt(data['day']), parseInt(data['hour']), parseInt(data['minute']), parseInt(data['second'])).toISOString(),
 			coord: {
 				type: "Point",
-				coordinates: [parseFloat(data['longitude'], parseFloat(data['latitude']))]
+				coordinates: [parseFloat(data['longitude']), parseFloat(data['latitude'])],
 			},
 			depth: parseInt(data['depth']),
 			mi: isNaN(parseFloat(data['mi']))? 0: parseFloat(data['mi']),
@@ -74,7 +74,7 @@ const equakeDump = fs.createReadStream('.\\scripts\\equakedump.csv')
 		equakeDump.destroy()
 	})
 
-const stationDump = fs.createReadStream('.\\scripts\\stationdump.csv')
+const stationDump = fs.createReadStream('./scripts/stationdump.csv')
 	.pipe(stripBom())
     .pipe(csvParser())
     .on('data', (data) => {
