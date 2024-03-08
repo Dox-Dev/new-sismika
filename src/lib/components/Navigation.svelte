@@ -13,7 +13,9 @@
 		<li><a href="/" on:click={drawerClose}>Homepage</a></li>
 		<li><a href="/about" on:click={drawerClose}>About</a></li>
 		<li><a href="/map" on:click={drawerClose}>Map</a></li>
-		<li><a href="/blog" on:click={drawerClose}>Blog</a></li>
-		<li><a href="/contact" on:click={drawerClose}>Contact</a></li>
+		<li><a href="/earthquake" on:click={drawerClose}>Earthquakes</a></li>
+		<li><a href="/seismic" on:click={drawerClose}>Seismic Stations</a></li>
+		<li><a href="/evaccenter" on:click={drawerClose}>Evacuation Centers</a></li>
+		<li><a href="/login" on:click={drawerClose}>Login</a></li>
 	</ul>
 </nav>
