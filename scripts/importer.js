@@ -61,8 +61,8 @@ const equakeDump = fs
 				parseInt(data['second'])
 			).toISOString(),
 			coord: {
-				type: 'Point',
-				coordinates: [parseFloat(data['longitude']), parseFloat(data['latitude'])]
+				type: "Point",
+				coordinates: [parseFloat(data['longitude']), parseFloat(data['latitude'])],
 			},
 			depth: parseInt(data['depth']),
 			mi: isNaN(parseFloat(data['mi'])) ? 0 : parseFloat(data['mi']),
