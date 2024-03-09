@@ -1,4 +1,4 @@
-import { MongoClient, ObjectId } from 'mongodb';
+import { MongoClient, ObjectId, Binary} from 'mongodb';
 import { DatabaseConnectionError, ParseValidationError } from '$lib/model/src/errors';
 import { EarthquakeEventSchema, type EarthquakeEvent } from '$lib/model/src/event';
 import { Collection } from '$lib/model/src/util';
@@ -275,16 +275,14 @@ export async function getEvacData(id: ObjectId) {
 export async function createPending() {
 	const db = await connect();
 
-	const randContainer = new Uint8Array(8);
-	const randUint8 = randomFillSync(randContainer);
-
+	const randomnonce = new Uint8Array(8)
+	randomFillSync(randomnonce);
 	const genPending =  {
 		session_id: uuidv4(),
 		expiration: Date.now() + (15 * 60 * 1000),
-		nonce: randUint8,
+		nonce: randomnonce,
 	}
 	const parsedPending = PendingSchema.parse(genPending);
-
 	try {
 		const collection = db.collection(Collection.PENDINGS);
 		const {_id, ...entry} = parsedPending;
@@ -302,9 +300,11 @@ export async function deletePending(sid: string) {
 	
 	try {
 		const collection = db.collection(Collection.PENDINGS);
-		const session = await collection.findOneAndDelete({sid: sid});
+		const session = await collection.findOneAndDelete({session_id: sid});
 
 		if (session === null) return false;
+		if (!(session.nonce instanceof Binary)) return false;
+		session.nonce = session.nonce.read(0,64)
 		return PendingSchema.parse(session);
 	} catch (err) {
 	throw (err)
