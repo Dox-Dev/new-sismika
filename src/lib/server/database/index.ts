@@ -4,7 +4,12 @@ import { EarthquakeEventSchema, type EarthquakeEvent } from '$lib/model/src/even
 import { Collection } from '$lib/model/src/util';
 import { EvacCenterSchema, type EvacCenter } from '$lib/model/src/evac';
 import { StationSchema } from '$lib/model/src/station';
-import type { User } from '$lib/model/src/auth';
+import { PendingSchema } from '../model/session';
+import { v4 as uuidv4 } from 'uuid';
+import { randomFillSync } from 'crypto';
+import { ok } from 'assert';
+import type { User } from '$lib/model/src/user';
+import type { Session } from '$lib/server/model/session'
 
 const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017';
 const client = new MongoClient(uri);
@@ -33,7 +38,8 @@ export async function addEarthquakeData(data: EarthquakeEvent) {
 	try {
 		const collection = db.collection(Collection.EARTHQUAKE);
 
-		const { insertedId } = await collection.insertOne(data);
+		const {_id, ...entry} =  data;
+		const { insertedId } = await collection.insertOne(entry);
 		return insertedId;
 	} catch (err) {
 		throw err;
@@ -135,7 +141,8 @@ export async function addStationData(data: StationSchema) {
 
 	try {
 		const collection = db.collection(Collection.STATION);
-		const { insertedId } = await collection.insertOne(data);
+		const {_id, ...entry} =  data;
+		const { insertedId } = await collection.insertOne(entry);
 
 		return insertedId;
 	} catch (err) {
@@ -216,7 +223,8 @@ export async function addEvacData(data: EvacCenter) {
 
 	try {
 		const collection = db.collection(Collection.EVAC);
-		const { insertedId } = await collection.insertOne(data)
+		const {_id, ...entry} =  data;
+		const { insertedId } = await collection.insertOne(entry);
 
 		return insertedId;
 	} catch (err) {
@@ -264,4 +272,82 @@ export async function getEvacData(id: ObjectId) {
 	}
 }
 
-export async function upsertUser(userInfo: User)
+export async function createPending() {
+	const db = await connect();
+
+	const randContainer = new Uint8Array(8);
+	const randUint8 = randomFillSync(randContainer);
+
+	const genPending =  {
+		session_id: uuidv4(),
+		expiration: Date.now() + (15 * 60 * 1000),
+		nonce: randUint8,
+	}
+	const parsedPending = PendingSchema.parse(genPending);
+
+	try {
+		const collection = db.collection(Collection.PENDINGS);
+		const {_id, ...entry} = parsedPending;
+		const { insertedId } = await collection.insertOne(entry);
+
+		ok(insertedId)
+		return entry;
+	} catch (err) {
+		throw err
+	}
+}
+
+export async function deletePending(sid: string) {
+	const db = await connect();
+	
+	try {
+		const collection = db.collection(Collection.PENDINGS);
+		const session = await collection.findOneAndDelete({sid: sid});
+
+		if (session === null) return false;
+		return PendingSchema.parse(session);
+	} catch (err) {
+	throw (err)
+}}
+
+export async function upsertUser(data: User) {
+	const db = await connect();
+
+	try {
+		const collection = db.collection(Collection.USERS);
+		const { matchedCount, upsertedId } = await collection.replaceOne({user_id: data.user_id}, data, {upsert: true})
+
+		if (matchedCount || upsertedId) return true;
+		return false
+	}  catch (err) {
+		throw (err)
+	}
+}
+
+export async function upgradeSession(data: Session) {
+	const db = await connect()
+
+	try {
+		const collection = db.collection(Collection.SESSIONS);
+		const { matchedCount, upsertedId } = await collection.replaceOne({user_id: data.user_id}, data, {upsert: true}) 
+
+		if ( matchedCount || upsertedId ) return true;
+		return false;
+	} catch (err) {
+		throw (err)
+	}
+}
+
+export async function deleteSession(sid: string) {
+	const db = await connect()
+
+	try {
+		const collection = db.collection(Collection.SESSIONS);
+		const { deletedCount } = await collection.deleteOne({session_id: sid})
+
+		if ( deletedCount ) return true;
+		return false;
+	} catch (err) {
+		throw (err)
+	}
+}
