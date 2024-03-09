@@ -8,5 +8,5 @@ ok(GOOGLE_SECRET);
 export default {
     GOOGLE_ID,
     GOOGLE_SECRET,
-    OAUTH_REDIRECT: OAUTH_REDIRECT || 'http://127.0.0.1/auth/callback',
+    OAUTH_REDIRECT: OAUTH_REDIRECT || 'http://localhost:5173/auth/callback',
 };
