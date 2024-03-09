@@ -4,11 +4,11 @@ import { EarthquakeEventSchema, type EarthquakeEvent } from '$lib/model/src/even
 import { Collection } from '$lib/model/src/util';
 import { EvacCenterSchema, type EvacCenter } from '$lib/model/src/evac';
 import { StationSchema } from '$lib/model/src/station';
-import { PendingSchema } from '../model/session';
+import { PendingSchema, SessionSchema } from '../model/session';
 import { v4 as uuidv4 } from 'uuid';
 import { randomFillSync } from 'crypto';
 import { ok } from 'assert';
-import type { User } from '$lib/model/src/user';
+import { UserSchema, type User } from '$lib/model/src/user';
 import type { Session } from '$lib/server/model/session'
 
 const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017';
@@ -349,5 +349,26 @@ export async function deleteSession(sid: string) {
 		return false;
 	} catch (err) {
 		throw (err)
+	}
+}
+
+export async function getUserFromSession(sid: string) {
+	const db = await connect()
+
+	try {
+		const sessioncol = db.collection(Collection.SESSIONS);
+		const sessionPointer = await sessioncol.findOne({session_id: sid})
+
+		//find session
+		if (sessionPointer === null) return false;
+		const { user_id } = SessionSchema.parse(sessionPointer);
+		
+		const usercol = db.collection(Collection.USERS);
+		const userPointer = await usercol.findOne({user_id: user_id})
+
+		if (userPointer === null) return false;
+		return UserSchema.parse(userPointer);
+	} catch (err) {
+		throw(err)
 	}
 }
