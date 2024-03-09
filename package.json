@@ -44,6 +44,7 @@
 	"type": "module",
 	"dependencies": {
 		"@floating-ui/dom": "1.6.3",
+		"@types/uuid": "^9.0.8",
 		"blake3-wasm": "^3.0.0",
 		"csv-parser": "^3.0.0",
 		"dotenv": "^16.4.4",
