@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { z } from 'zod';
+import { ObjectIdTransformError } from './errors';
 
 export const ObjectIDSchema = z.union([z.string(), z.instanceof(ObjectId)]).optional()
 const GeoJSONTypes = z.union([z.literal('Point'), z.literal('LineString'), z.literal('Polygon'), z.literal('MultiPoint'), z.literal('MultiLineString'), z.literal('MultiPolygon')])
@@ -19,4 +20,13 @@ export enum Collection {
 	SESSIONS = 'sessions',
 	PENDINGS = 'pendings',
 	USERS = 'users'
+}
+
+export function transformObjectId(data: ObjectId | string) {
+	if (data instanceof ObjectId) return data;
+	try {
+		return ObjectId.createFromHexString(data);
+	} catch {
+		throw ObjectIdTransformError
+	}
 }

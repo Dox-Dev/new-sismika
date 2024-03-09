@@ -11,7 +11,9 @@ const SessionBase = z.object({
 export const PendingSchema = SessionBase.extend({
     nonce: z.instanceof(Uint8Array),
 })
+export type PendingSession = z.infer<typeof PendingSchema>
 
 export const SessionSchema = SessionBase.extend({
     user_id: UserSchema.shape.user_id,
 })
+export type Session = z.infer<typeof SessionSchema>

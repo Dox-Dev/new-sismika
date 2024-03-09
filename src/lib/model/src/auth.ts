@@ -12,15 +12,5 @@ export const UserSchema = z.object({
     picture: z.string().url(),
     local: z.string()
 })
-
 export type User = z.infer<typeof UserSchema>
-
-export const SessionSchema = z.object({
-    _id: ObjectIDSchema,
-    userId: ObjectIDSchema,
-    createdAt: z.string().datetime(),
-    expiresAt: z.string().datetime()
-})
-
-export type Session = z.infer<typeof SessionSchema> 
 
