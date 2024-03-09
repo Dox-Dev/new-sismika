@@ -17,6 +17,7 @@
 		<li><a href="/seismic" on:click={drawerClose}>Seismic Stations</a></li>
 		<li><a href="/evaccenter" on:click={drawerClose}>Evacuation Centers</a></li>
 		<li>
+			<!-- Place <a></a> here for OAuth redirection -->
 			<button type="button" class="btn" on:click={drawerClose}>
 				<span><i class="fa fa-google"></i></span>
 				<span>Login</span>
