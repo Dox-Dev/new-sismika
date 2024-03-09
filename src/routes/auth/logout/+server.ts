@@ -9,9 +9,7 @@ export const DELETE: RequestHandler = async ({cookies}) => {
         httpOnly: true,
         sameSite: 'lax',
     })
-
-    if (!sid) throw error(StatusCodes.UNAUTHORIZED);
-
+    if (sid === undefined) throw error(StatusCodes.BAD_REQUEST);
     const result = await deleteSession(sid);
     if (!result) throw error(StatusCodes.UNAUTHORIZED);
 
