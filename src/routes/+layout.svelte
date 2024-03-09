@@ -71,7 +71,7 @@
 <AppShell slotSidebarLeft="hidden bg-surface-500/5 w-0px">
 	<svelte:fragment slot="header">
 		<AppBar>
-		<!--Header-->
+			<!--Header-->
 			<svelte:fragment slot="lead">
     			<div class="flex items-center">
     			    <button class="btn btn-sm mr-4" on:click={drawerOpen}>

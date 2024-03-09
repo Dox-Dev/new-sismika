@@ -12,7 +12,7 @@
 	import { goto } from '$app/navigation';
 	import { StatusCodes } from 'http-status-codes';
 
-    //Load local data
+	//Load local data
 	export let data;
 
 	//Init data handler - CLIENT
@@ -43,7 +43,7 @@
 			<tr>
 				<ThFilter {handler} filterBy="_id" />
 				<ThFilter {handler} filterBy="time" />
-				<ThFilter {handler} filterBy={(row) => row.coord.long}  />
+				<ThFilter {handler} filterBy={(row) => row.coord.long} />
 				<ThFilter {handler} filterBy={(row) => row.coord.lat} />
 				<ThFilter {handler} filterBy="depth" />
 				<ThFilter {handler} filterBy="mw" />
@@ -54,7 +54,11 @@
 		</thead>
 		<tbody>
 			{#each $rows as row}
-				<tr on:click={() => {goto(`/earthquake/${row._id}`)}}>
+				<tr
+					on:click={() => {
+						goto(`/earthquake/${row._id}`);
+					}}
+				>
 					<td>{row._id}</td>
 					<td>{row.time}</td>
 					<td>{row.coord.long}</td>
