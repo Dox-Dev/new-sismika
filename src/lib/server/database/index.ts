@@ -1,4 +1,4 @@
-import { MongoClient, ObjectId, Binary} from 'mongodb';
+import { MongoClient, ObjectId, Binary } from 'mongodb';
 import { DatabaseConnectionError, ParseValidationError } from '$lib/model/src/errors';
 import { EarthquakeEventSchema, type EarthquakeEvent } from '$lib/model/src/event';
 import { Collection } from '$lib/model/src/util';
@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { randomFillSync } from 'crypto';
 import { ok } from 'assert';
 import { UserSchema, type User } from '$lib/model/src/user';
-import type { Session } from '$lib/server/model/session'
+import type { Session } from '$lib/server/model/session';
 
 const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017';
 const client = new MongoClient(uri);
@@ -30,7 +30,7 @@ async function connect() {
 /**
  * Adds EarthquakeEvent to the MongoDB database.
  * @param data : validated EarthquakeEvent
- * @returns insertedId: the ObjectId of the inserted entry 
+ * @returns insertedId: the ObjectId of the inserted entry
  */
 export async function addEarthquakeData(data: EarthquakeEvent) {
 	const db = await connect();
@@ -38,7 +38,7 @@ export async function addEarthquakeData(data: EarthquakeEvent) {
 	try {
 		const collection = db.collection(Collection.EARTHQUAKE);
 
-		const {_id, ...entry} =  data;
+		const { _id, ...entry } = data;
 		const { insertedId } = await collection.insertOne(entry);
 		return insertedId;
 	} catch (err) {
@@ -79,7 +79,7 @@ export async function getEarthquakeData(id: ObjectId) {
 
 	const collection = db.collection(Collection.EARTHQUAKE);
 	const equakeCursor = await collection.findOne({ _id: id });
-	console.log(equakeCursor)
+	console.log(equakeCursor);
 	if (equakeCursor === null) return null;
 
 	try {
@@ -102,7 +102,6 @@ export async function deleteEarthquakeData(id: ObjectId) {
 		const collection = db.collection(Collection.EARTHQUAKE);
 		const { deletedCount } = await collection.deleteOne({ _id: id });
 		return deletedCount;
-
 	} catch (err) {
 		throw err;
 	}
@@ -141,7 +140,7 @@ export async function addStationData(data: StationSchema) {
 
 	try {
 		const collection = db.collection(Collection.STATION);
-		const {_id, ...entry} =  data;
+		const { _id, ...entry } = data;
 		const { insertedId } = await collection.insertOne(entry);
 
 		return insertedId;
@@ -171,7 +170,7 @@ export async function deleteStationData(id: ObjectId) {
 /**
  * Retrieve a StationData given an ObjectId
  * @param id a MongoDB ObjectId of the station to be found
- * @returns validated a validated StationData 
+ * @returns validated a validated StationData
  * @returns false - if no ObjectId of the StationData was found
  */
 export async function getStationData(id: ObjectId) {
@@ -179,7 +178,7 @@ export async function getStationData(id: ObjectId) {
 
 	const collection = db.collection(Collection.STATION);
 	const stationCursor = await collection.findOne({ _id: id });
-	console.log(stationCursor)
+	console.log(stationCursor);
 	if (stationCursor === null) return false;
 
 	try {
@@ -206,7 +205,7 @@ export async function getAllEvacData() {
 	const evacs = await evacCursor.toArray();
 
 	try {
-		const validated = evacs.map(doc => EvacCenterSchema.parse(doc));
+		const validated = evacs.map((doc) => EvacCenterSchema.parse(doc));
 		return validated;
 	} catch (err) {
 		throw err;
@@ -223,17 +222,17 @@ export async function addEvacData(data: EvacCenter) {
 
 	try {
 		const collection = db.collection(Collection.EVAC);
-		const {_id, ...entry} =  data;
+		const { _id, ...entry } = data;
 		const { insertedId } = await collection.insertOne(entry);
 
 		return insertedId;
 	} catch (err) {
-		throw err
+		throw err;
 	}
 }
 
 /**
- * Deletes an EvacCenter entry given an ObjectId 
+ * Deletes an EvacCenter entry given an ObjectId
  * @param id a validated ObjectId of the entry to deleted
  * @returns deletedCount - the amount of entries deleted
  */
@@ -242,7 +241,7 @@ export async function deleteEvacData(id: ObjectId) {
 
 	try {
 		const collection = db.collection(Collection.EVAC);
-		const { deletedCount } = await collection.deleteOne({_id: id});
+		const { deletedCount } = await collection.deleteOne({ _id: id });
 
 		return deletedCount;
 	} catch (err) {
@@ -260,7 +259,7 @@ export async function getEvacData(id: ObjectId) {
 	const db = await connect();
 
 	const collection = db.collection(Collection.EVAC);
-	const evacCursor = await collection.findOne({_id: id});
+	const evacCursor = await collection.findOne({ _id: id });
 
 	if (evacCursor === null) return false;
 
@@ -275,100 +274,109 @@ export async function getEvacData(id: ObjectId) {
 export async function createPending() {
 	const db = await connect();
 
-	const randomnonce = new Uint8Array(8)
+	const randomnonce = new Uint8Array(8);
 	randomFillSync(randomnonce);
-	const genPending =  {
+	const genPending = {
 		session_id: uuidv4(),
-		expiration: Date.now() + (15 * 60 * 1000),
-		nonce: randomnonce,
-	}
+		expiration: Date.now() + 15 * 60 * 1000,
+		nonce: randomnonce
+	};
 	const parsedPending = PendingSchema.parse(genPending);
 	try {
 		const collection = db.collection(Collection.PENDINGS);
-		const {_id, ...entry} = parsedPending;
+		const { _id, ...entry } = parsedPending;
 		const { insertedId } = await collection.insertOne(entry);
 
-		ok(insertedId)
+		ok(insertedId);
 		return entry;
 	} catch (err) {
-		throw err
+		throw err;
 	}
 }
 
 export async function deletePending(sid: string) {
 	const db = await connect();
-	
+
 	try {
 		const collection = db.collection(Collection.PENDINGS);
-		const session = await collection.findOneAndDelete({session_id: sid});
+		const session = await collection.findOneAndDelete({ session_id: sid });
 
 		if (session === null) return false;
 		if (!(session.nonce instanceof Binary)) return false;
-		session.nonce = session.nonce.read(0,64)
+		session.nonce = session.nonce.read(0, 64);
 		return PendingSchema.parse(session);
 	} catch (err) {
-	throw (err)
-}}
+		throw err;
+	}
+}
 
 export async function upsertUser(data: User) {
 	const db = await connect();
 
 	try {
 		const collection = db.collection(Collection.USERS);
-		const { matchedCount, upsertedId } = await collection.replaceOne({user_id: data.user_id}, data, {upsert: true})
+		const { matchedCount, upsertedId } = await collection.replaceOne(
+			{ user_id: data.user_id },
+			data,
+			{ upsert: true }
+		);
 
 		if (matchedCount || upsertedId) return true;
-		return false
-	}  catch (err) {
-		throw (err)
+		return false;
+	} catch (err) {
+		throw err;
 	}
 }
 
 export async function upgradeSession(data: Session) {
-	const db = await connect()
+	const db = await connect();
 
 	try {
 		const collection = db.collection(Collection.SESSIONS);
-		const { matchedCount, upsertedId } = await collection.replaceOne({user_id: data.user_id}, data, {upsert: true}) 
+		const { matchedCount, upsertedId } = await collection.replaceOne(
+			{ user_id: data.user_id },
+			data,
+			{ upsert: true }
+		);
 
-		if ( matchedCount || upsertedId ) return true;
+		if (matchedCount || upsertedId) return true;
 		return false;
 	} catch (err) {
-		throw (err)
+		throw err;
 	}
 }
 
 export async function deleteSession(sid: string) {
-	const db = await connect()
+	const db = await connect();
 
 	try {
 		const collection = db.collection(Collection.SESSIONS);
-		const { deletedCount } = await collection.deleteOne({session_id: sid})
+		const { deletedCount } = await collection.deleteOne({ session_id: sid });
 
-		if ( deletedCount ) return true;
+		if (deletedCount) return true;
 		return false;
 	} catch (err) {
-		throw (err)
+		throw err;
 	}
 }
 
 export async function getUserFromSession(sid: string) {
-	const db = await connect()
+	const db = await connect();
 
 	try {
 		const sessioncol = db.collection(Collection.SESSIONS);
-		const sessionPointer = await sessioncol.findOne({session_id: sid})
+		const sessionPointer = await sessioncol.findOne({ session_id: sid });
 
 		//find session
 		if (sessionPointer === null) return false;
 		const { user_id } = SessionSchema.parse(sessionPointer);
-		
+
 		const usercol = db.collection(Collection.USERS);
-		const userPointer = await usercol.findOne({user_id: user_id})
+		const userPointer = await usercol.findOne({ user_id: user_id });
 
 		if (userPointer === null) return false;
 		return UserSchema.parse(userPointer);
 	} catch (err) {
-		throw(err)
+		throw err;
 	}
 }

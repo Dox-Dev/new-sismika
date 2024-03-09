@@ -2,12 +2,19 @@ import { ObjectId } from 'mongodb';
 import { z } from 'zod';
 import { ObjectIdTransformError } from './errors';
 
-export const ObjectIDSchema = z.union([z.string(), z.instanceof(ObjectId)]).optional()
-const GeoJSONTypes = z.union([z.literal('Point'), z.literal('LineString'), z.literal('Polygon'), z.literal('MultiPoint'), z.literal('MultiLineString'), z.literal('MultiPolygon')])
+export const ObjectIDSchema = z.union([z.string(), z.instanceof(ObjectId)]).optional();
+const GeoJSONTypes = z.union([
+	z.literal('Point'),
+	z.literal('LineString'),
+	z.literal('Polygon'),
+	z.literal('MultiPoint'),
+	z.literal('MultiLineString'),
+	z.literal('MultiPolygon')
+]);
 export const CoordinatesSchema = z.object({
 	_id: ObjectIDSchema,
 	type: GeoJSONTypes,
-	coordinates: z.number().array().length(2),
+	coordinates: z.number().array().length(2)
 });
 
 export type Coordinates = z.infer<typeof CoordinatesSchema>;
@@ -27,6 +34,6 @@ export function transformObjectId(data: ObjectId | string) {
 	try {
 		return ObjectId.createFromHexString(data);
 	} catch {
-		throw ObjectIdTransformError
+		throw ObjectIdTransformError;
 	}
 }

@@ -22,7 +22,7 @@ pnpm run build #build
 ## Environment Keys
 
 ```bash
-GOOGLE_ID #google id from oauth 
+GOOGLE_ID #google id from oauth
 GOOGLE_SECRET #google secret from oauth
 OAUTH_REDIRECT #oauth redirect from google
 MONGODB_URI #uri for mongodb
