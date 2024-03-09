@@ -17,3 +17,10 @@ export class TransactionError extends Error {
         this.name="TransactionError"
     }
 }
+
+export class ObjectIdTransformError extends Error {
+    constructor(message:string) {
+        super(message);
+        this.name =  "ObjectIdTransformError";
+    }
+}
