@@ -24,7 +24,7 @@
 			<!-- {#each tableArr as row, i} -->
 				<tr>
 					<td>{_id}</td>
-					<td>{name}</td>
+					<td>{time}</td>
 					<td>{coords.long}</td>
 					<td>{coords.lat}</td>
                     <td>{depth}</td>
