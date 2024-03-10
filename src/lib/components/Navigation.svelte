@@ -11,7 +11,6 @@
 <nav class="list-nav p-4">
 	<ul>
 		<li><a href="/" on:click={drawerClose}>Homepage</a></li>
-		<li><a href="/about" on:click={drawerClose}>About</a></li>
 		<li><a href="/map" on:click={drawerClose}>Map</a></li>
 		<li><a href="/earthquake" on:click={drawerClose}>Earthquakes</a></li>
 		<li><a href="/seismic" on:click={drawerClose}>Seismic Stations</a></li>
