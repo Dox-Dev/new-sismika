@@ -8,13 +8,39 @@
 	}
 </script>
 
+
 <nav class="list-nav p-4">
 	<ul>
-		<li><a href="/" on:click={drawerClose}>Homepage</a></li>
-		<li><a href="/map" on:click={drawerClose}>Map</a></li>
-		<li><a href="/earthquake" on:click={drawerClose}>Earthquakes</a></li>
-		<li><a href="/seismic" on:click={drawerClose}>Seismic Stations</a></li>
-		<li><a href="/evaccenter" on:click={drawerClose}>Evacuation Centers</a></li>
+		<!-- <li><a href="/" on:click={drawerClose}>Homepage</a></li> -->
+		<li>
+			<a href="/" on:click={drawerClose}>
+				<span><i class="fa fa-home" aria-hidden="true"></i></span>
+				<span>Home</span>
+			</a>
+		</li>
+		<li>
+			<a href="/map" on:click={drawerClose}>
+				<i class="fa-solid fa-map"/>
+				<span>Map</span>
+			</a>
+		</li>
+		<li><a href="/earthquake" on:click={drawerClose}>
+				<i class="fa-solid fa-house-crack"/>
+				<span>Earthquakes</span>
+			</a>
+		</li>
+		<li>
+			<a href="/seismic" on:click={drawerClose}>
+				<i class="fa-solid fa-radio"/>
+				<span>Seismic Stations</span>
+			</a>
+		</li>
+		<li>
+			<a href="/evaccenter" on:click={drawerClose}>
+				<i class="fa-solid fa-building-circle-arrow-right"/>
+				<span>Evacuation Centers</span>
+			</a>
+		</li>
 		<li>
 			<!-- Place <a></a> here for OAuth redirection -->
 			<button type="button" class="btn" on:click={drawerClose}>

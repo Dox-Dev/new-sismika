@@ -25,6 +25,10 @@
 	// https://www.skeleton.dev/components/app-shell
 	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
 
+	//https://www.skeleton.dev/components/app-rail
+	import { AppRail, AppRailTile, AppRailAnchor } from '@skeletonlabs/skeleton';
+	let currentTile: number = 0;
+
 	// Responsive app drawer
 	// https://www.skeleton.dev/blog/how-to-implement-a-responsive-sidebar-drawer
 	import Navigation from '$lib/components/Navigation.svelte';
@@ -52,13 +56,13 @@
 	</Drawer>
 </Drawer>
 <!--- <AppShell slotSidebarLeft="bg-surface-500/5 w-56 p-4"> -->
-<AppShell slotSidebarLeft="bg-surface-500/5 w-0 lg:w-64">
+<AppShell slotSidebarLeft="bg-surface-500/5 w-0">
 	<svelte:fragment slot="header">
 		<AppBar>
 		<!--Header-->
 			<svelte:fragment slot="lead">
     			<div class="flex items-center">
-    			    <button class="lg:hidden btn btn-sm mr-4" on:click={drawerOpen}>
+    			    <button class="btn btn-sm mr-4" on:click={drawerOpen}>
     			        <span>
     			            <svg viewBox="0 0 100 80" class="fill-token w-4 h-4">
     			                <rect width="100" height="20" />
@@ -67,7 +71,7 @@
     			            </svg>
     			        </span>
     			    </button>
-    			    <strong class="text-xl uppercase">Sismika</strong>
+					<strong class="text-xl uppercase">Sismika</strong>
     			</div>
 			</svelte:fragment>
 
@@ -89,6 +93,6 @@
 	<!-- Router Slot -->
 	<slot />
 	<!-- ---- / ---- -->
-	<svelte:fragment slot="pageFooter">Page Footer</svelte:fragment>
+	<!--  <svelte:fragment slot="pageFooter">Page Footer</svelte:fragment> -->
 	<!-- (footer) -->
 </AppShell>
