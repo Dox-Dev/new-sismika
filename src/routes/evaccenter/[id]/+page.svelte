@@ -1,11 +1,15 @@
 <script>
-    //export let data;
+	//export let data;
 
 	// remove dummy data later when exporting data from endpoints
 	// $: ({ coord:{long, lat}, depth, _id, li, time } = data);
-	//     
+	//
 	export let data;
-    $: ({ _id, name, coord: {long,lat}} = data);
+	$: ({
+		_id,
+		name,
+		coord: { long, lat }
+	} = data);
 	//const row = {
 	//	_id: "1",
 	//	name: "evaccenter",
@@ -30,12 +34,12 @@
 		</thead>
 		<tbody>
 			<!-- {#each tableArr as row, i} -->
-				<tr>
-					<td>{_id}</td>
-					<td>{name}</td>
-					<td>{coord.long}</td>
-					<td>{coord.lat}</td>
-				</tr>
+			<tr>
+				<td>{_id}</td>
+				<td>{name}</td>
+				<td>{coord.long}</td>
+				<td>{coord.lat}</td>
+			</tr>
 			<!-- {/each} -->
 		</tbody>
 	</table>

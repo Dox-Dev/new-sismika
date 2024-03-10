@@ -43,7 +43,7 @@
 		//width: 'w-[280px] md:w-[480px]',
 		width: 'w-[280px]',
 		//padding: 'p-4',
-		rounded: 'rounded-xl',
+		rounded: 'rounded-xl'
 	};
 
 	const drawerStore = getDrawerStore();
@@ -54,7 +54,7 @@
 
 	// OpenLayersMap API
 	import OpenLayersMap from '$lib/components/OpenLayersMap.svelte';
-  
+
 	// Light/Dark mode toggle button
 	import { LightSwitch } from '@skeletonlabs/skeleton';
 </script>
@@ -73,18 +73,18 @@
 		<AppBar>
 			<!--Header-->
 			<svelte:fragment slot="lead">
-    			<div class="flex items-center">
-    			    <button class="btn btn-sm mr-4" on:click={drawerOpen}>
-    			        <span>
-    			            <svg viewBox="0 0 100 80" class="fill-token w-4 h-4">
-    			                <rect width="100" height="20" />
-    			                <rect y="30" width="100" height="20" />
-    			                <rect y="60" width="100" height="20" />
-    			            </svg>
-    			        </span>
-    			    </button>
+				<div class="flex items-center">
+					<button class="btn btn-sm mr-4" on:click={drawerOpen}>
+						<span>
+							<svg viewBox="0 0 100 80" class="fill-token w-4 h-4">
+								<rect width="100" height="20" />
+								<rect y="30" width="100" height="20" />
+								<rect y="60" width="100" height="20" />
+							</svg>
+						</span>
+					</button>
 					<strong class="text-xl uppercase">Sismika</strong>
-    			</div>
+				</div>
 			</svelte:fragment>
 
 			<svelte:fragment slot="trail">

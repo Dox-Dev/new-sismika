@@ -1,6 +1,15 @@
 <script>
-    export let data;
-    $: ({ _id, time, coord:{long, lat}, depth, mi, mb, ms, li} = data);
+	export let data;
+	$: ({
+		_id,
+		time,
+		coord: { long, lat },
+		depth,
+		mi,
+		mb,
+		ms,
+		li
+	} = data);
 </script>
 
 <!-- Responsive Container (recommended) -->
@@ -13,26 +22,26 @@
 				<th>Time</th>
 				<th>Longitude</th>
 				<th>Latitude</th>
-                <th>Depth</th>
+				<th>Depth</th>
 				<th>Moment Magnitude</th>
-                <th>Body Wave Magnitude</th>
+				<th>Body Wave Magnitude</th>
 				<th>Surface Wave Magnitude</th>
-                <th>Local Intensity</th>
+				<th>Local Intensity</th>
 			</tr>
 		</thead>
 		<tbody>
 			<!-- {#each tableArr as row, i} -->
-				<tr>
-					<td>{_id}</td>
-					<td>{time}</td>
-					<td>{coords.long}</td>
-					<td>{coords.lat}</td>
-                    <td>{depth}</td>
-                    <td>{mi}</td>
-                    <td>{mb}</td>
-                    <td>{ms}</td>
-                    <td>{li}</td>
-				</tr>
+			<tr>
+				<td>{_id}</td>
+				<td>{time}</td>
+				<td>{coords.long}</td>
+				<td>{coords.lat}</td>
+				<td>{depth}</td>
+				<td>{mi}</td>
+				<td>{mb}</td>
+				<td>{ms}</td>
+				<td>{li}</td>
+			</tr>
 			<!-- {/each} -->
 		</tbody>
 	</table>

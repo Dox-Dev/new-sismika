@@ -41,15 +41,15 @@
 				})
 			],
 			view: new View({
-				center: fromLonLat([122.06414190, 6.81687500]), // Center of the map [longitude, latitude]
-				zoom: 5.5, // Initial zoom level
+				center: fromLonLat([122.0641419, 6.816875]), // Center of the map [longitude, latitude]
+				zoom: 5.5 // Initial zoom level
 			})
 		});
 
 		var vectorSource = new VectorSource();
 
 		// Iterate over the data to create and add each marker
-		data.equake.forEach(function(item) {
+		data.equake.forEach(function (item) {
 			console.log(item.coord.long, item.coord.lat);
 			// Create a feature for the marker
 			var marker = new Feature({
@@ -58,16 +58,16 @@
 				)
 			});
 
-      let icon = new Icon({
-          width: 20,
-          height: 20,
-          src: '/map-pin.svg',
-      });
-      
-      // Create a style for the marker
-      var iconStyle = new Style({
-        image: icon,
-      });
+			let icon = new Icon({
+				width: 20,
+				height: 20,
+				src: '/map-pin.svg'
+			});
+
+			// Create a style for the marker
+			var iconStyle = new Style({
+				image: icon
+			});
 
 			// Apply the style to the marker
 			marker.setStyle(iconStyle);
@@ -94,15 +94,14 @@
 		? 'https://{a-c}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
 		: 'https://{a-c}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
 
-  $: tile_server.setUrl(themeURL);
+	$: tile_server.setUrl(themeURL);
 </script>
-  
-<style>
-  .map {
-    height: 1080px; /* Specify a height for the map */
-    width: 100%; /* Full width */
-  }
-</style>
 
 <div bind:this={mapElement} class="map"></div>
-  
+
+<style>
+	.map {
+		height: 1080px; /* Specify a height for the map */
+		width: 100%; /* Full width */
+	}
+</style>
