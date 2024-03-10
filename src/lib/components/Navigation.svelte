@@ -42,9 +42,15 @@
 			</a>
 		</li>
 		<li>
-			<a href="/login" on:click={drawerClose}>
+			<a href="/auth/login" on:click={drawerClose}>
 				<span><i class="fa fa-google"></i></span>
 				<span>Login</span>
+			</a>
+		</li>
+		<li>
+			<a href="/auth/logout" on:click={drawerClose}>
+				<span><i class="fa-solid fa-right-from-bracket"></i></span>
+				<span>Logout</span>
 			</a>
 		</li>
 		<!--<li><a href="/login" on:click={drawerClose}>Login</a></li> -->
