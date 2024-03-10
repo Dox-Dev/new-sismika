@@ -90,10 +90,6 @@
 			<svelte:fragment slot="trail">
 				<LightSwitch />
 			</svelte:fragment>
-
-			<svelte:fragment slot="trail">
-				<LightSwitch />
-			</svelte:fragment>
 		</AppBar>
 	</svelte:fragment>
 
