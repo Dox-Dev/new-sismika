@@ -41,15 +41,15 @@
 				})
 			],
 			view: new View({
-				center: fromLonLat([121.0685, 14.6539]), // Center of the map [longitude, latitude]
-				zoom: 5 // Initial zoom level
+				center: fromLonLat([122.06414190, 6.81687500]), // Center of the map [longitude, latitude]
+				zoom: 5.5, // Initial zoom level
 			})
 		});
 
 		var vectorSource = new VectorSource();
 
 		// Iterate over the data to create and add each marker
-		data.equake.forEach(function (item) {
+		data.equake.forEach(function(item) {
 			console.log(item.coord.long, item.coord.lat);
 			// Create a feature for the marker
 			var marker = new Feature({
@@ -99,44 +99,10 @@
   
 <style>
   .map {
-    height: 400px; /* Specify a height for the map */
+    height: 1080px; /* Specify a height for the map */
     width: 100%; /* Full width */
   }
 </style>
 
 <div bind:this={mapElement} class="map"></div>
-  <script>
-    import { onMount } from 'svelte';
-    import 'ol/ol.css';
-    import Map from 'ol/Map';
-    import View from 'ol/View';
-    import TileLayer from 'ol/layer/Tile';
-    import OSM from 'ol/source/OSM';
-  
-    let mapElement;
-  
-    onMount(() => {
-      new Map({
-        target: mapElement,
-        layers: [
-          new TileLayer({
-            source: new OSM(),
-          }),
-        ],
-        view: new View({
-          center: [0, 0], // Center of the map [longitude, latitude]
-          zoom: 2, // Initial zoom level
-        }),
-      });
-    });
-  </script>
-  
-  <style>
-    .map {
-      height: 400px; /* Specify a height for the map */
-      width: 100%; /* Full width */
-    }
-  </style>
-  
-  <div bind:this={mapElement} class="map"></div>
   

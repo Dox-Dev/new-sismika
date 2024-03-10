@@ -4,7 +4,7 @@ import forms from '@tailwindcss/forms';
 import typography from '@tailwindcss/typography';
 import { skeleton } from '@skeletonlabs/tw-plugin';
 
-import { myCustomTheme } from './my-custom-theme'
+import { myCustomTheme } from './my-custom-theme';
 
 export default {
 	darkMode: 'class',
@@ -20,14 +20,13 @@ export default {
 		typography,
 		skeleton({
 			themes: {
-				custom: [
-					myCustomTheme
-				],
 				//preset: [
 				//	{
 				//		name: 'skeleton',
-				//	}
-				//]
+				//	}],
+				custom: [
+					myCustomTheme,
+				],
 			}
 		})
 	]
