@@ -34,10 +34,22 @@
 	import Navigation from '$lib/components/Navigation.svelte';
 	import { initializeStores, Drawer, getDrawerStore } from '@skeletonlabs/skeleton';
 	initializeStores();
+
+	const drawerSettings: DrawerSettings = {
+		id: 'example-3',
+		// Provide your property overrides:
+		//bgDrawer: 'bg-purple-900 text-white',
+		//bgBackdrop: 'bg-gradient-to-tr from-indigo-500/50 via-purple-500/50 to-pink-500/50',
+		//width: 'w-[280px] md:w-[480px]',
+		width: 'w-[280px]',
+		//padding: 'p-4',
+		rounded: 'rounded-xl',
+	};
+
 	const drawerStore = getDrawerStore();
 
 	function drawerOpen(): void {
-		drawerStore.open({});
+		drawerStore.open(drawerSettings);
 	}
 
 	// OpenLayersMap API
@@ -56,7 +68,7 @@
 	</Drawer>
 </Drawer>
 <!--- <AppShell slotSidebarLeft="bg-surface-500/5 w-56 p-4"> -->
-<AppShell slotSidebarLeft="bg-surface-500/5 w-0">
+<AppShell slotSidebarLeft="hidden bg-surface-500/5 w-0px">
 	<svelte:fragment slot="header">
 		<AppBar>
 		<!--Header-->
