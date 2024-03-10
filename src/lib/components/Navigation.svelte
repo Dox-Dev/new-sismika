@@ -42,11 +42,10 @@
 			</a>
 		</li>
 		<li>
-			<!-- Place <a></a> here for OAuth redirection -->
-			<button type="button" class="btn" on:click={drawerClose}>
+			<a href="/login" on:click={drawerClose}>
 				<span><i class="fa fa-google"></i></span>
 				<span>Login</span>
-			</button>
+			</a>
 		</li>
 		<!--<li><a href="/login" on:click={drawerClose}>Login</a></li> -->
 	</ul>
