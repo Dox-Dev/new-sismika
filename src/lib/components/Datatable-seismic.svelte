@@ -48,7 +48,7 @@
 		</thead>
 		<tbody>
 			{#each $rows as row}
-				<tr on:click={() => {goto(`/earthquake/${row._id}`)}}>
+				<tr on:click={() => {goto(`/seismic/${row._id}`)}}>
 					<td>{row._id}</td>
 					<td>{row.code}</td>
 					<td>{row.name}</td>

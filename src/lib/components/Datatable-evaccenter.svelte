@@ -44,7 +44,7 @@
 		</thead>
 		<tbody>
 			{#each $rows as row}
-				<tr on:click={() => {goto(`/earthquake/${row._id}`)}}>
+				<tr on:click={() => {goto(`/evaccenter/${row._id}`)}}>
 					<td>{row._id}</td>
 					<td>{row.name}</td>
 					<td>{row.coord.long}</td>
