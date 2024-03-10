@@ -21,4 +21,11 @@ pnpm run build #build
 
 ## Environment Keys
 
-None as of the moment. This table will be populated for these.
+```bash
+GOOGLE_ID #google id from oauth
+GOOGLE_SECRET #google secret from oauth
+OAUTH_REDIRECT #oauth redirect from google
+MONGODB_URI #uri for mongodb
+MONGODB_USER #username for mongodb database
+MONGODB_PASS #password for monogdb database
+```
