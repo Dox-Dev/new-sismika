@@ -61,8 +61,8 @@ const equakeDump = fs
 				parseInt(data['second'])
 			).toISOString(),
 			coord: {
-				type: "Point",
-				coordinates: [parseFloat(data['longitude']), parseFloat(data['latitude'])],
+				type: 'Point',
+				coordinates: [parseFloat(data['longitude']), parseFloat(data['latitude'])]
 			},
 			depth: parseInt(data['depth']),
 			mi: isNaN(parseFloat(data['mi'])) ? 0 : parseFloat(data['mi']),
@@ -86,7 +86,8 @@ const equakeDump = fs
 		equakeDump.destroy();
 	});
 
-const stationDump = fs.createReadStream('./scripts/stationdump.csv')
+const stationDump = fs
+	.createReadStream('./scripts/stationdump.csv')
 	.pipe(stripBom())
 	.pipe(csvParser())
 	.on('data', (data) => {

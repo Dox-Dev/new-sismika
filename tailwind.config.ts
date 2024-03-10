@@ -24,9 +24,7 @@ export default {
 				//	{
 				//		name: 'skeleton',
 				//	}],
-				custom: [
-					myCustomTheme,
-				],
+				custom: [myCustomTheme]
 			}
 		})
 	]

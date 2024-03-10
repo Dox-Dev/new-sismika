@@ -8,7 +8,6 @@
 	}
 </script>
 
-
 <nav class="list-nav p-4">
 	<ul>
 		<!-- <li><a href="/" on:click={drawerClose}>Homepage</a></li> -->
@@ -20,24 +19,25 @@
 		</li>
 		<li>
 			<a href="/map" on:click={drawerClose}>
-				<i class="fa-solid fa-map"/>
+				<i class="fa-solid fa-map" />
 				<span>Map</span>
 			</a>
 		</li>
-		<li><a href="/earthquake" on:click={drawerClose}>
-				<i class="fa-solid fa-house-crack"/>
+		<li>
+			<a href="/earthquake" on:click={drawerClose}>
+				<i class="fa-solid fa-house-crack" />
 				<span>Earthquakes</span>
 			</a>
 		</li>
 		<li>
 			<a href="/seismic" on:click={drawerClose}>
-				<i class="fa-solid fa-radio"/>
+				<i class="fa-solid fa-radio" />
 				<span>Seismic Stations</span>
 			</a>
 		</li>
 		<li>
 			<a href="/evaccenter" on:click={drawerClose}>
-				<i class="fa-solid fa-building-circle-arrow-right"/>
+				<i class="fa-solid fa-building-circle-arrow-right" />
 				<span>Evacuation Centers</span>
 			</a>
 		</li>
