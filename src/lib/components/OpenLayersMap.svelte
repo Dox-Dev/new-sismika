@@ -50,11 +50,11 @@
 
 		// Iterate over the data to create and add each marker
 		data.equake.forEach(function (item) {
-			console.log(item.coord.long, item.coord.lat);
+			console.log(item.coord.coordinates[0], item.coord.coordinates[1]);
 			// Create a feature for the marker
 			var marker = new Feature({
 				geometry: new Point(
-					fromLonLat([item.coord.long, item.coord.lat]) // Marker position
+					fromLonLat([item.coord.coordinates[0], item.coord.coordinates[1]]) // Marker position
 				)
 			});
 

@@ -55,7 +55,7 @@ export async function getAllEarthquakeData() {
 	const db = await connect();
 
 	const collection = db.collection(Collection.EARTHQUAKE);
-	const equakeCursor = collection.find({});
+	const equakeCursor = collection.find({}).limit(50);
 	const equakes = await equakeCursor.toArray();
 
 	if (equakes === null) return false;

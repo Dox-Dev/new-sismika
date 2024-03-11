@@ -3,7 +3,7 @@
 	$: ({
 		_id,
 		time,
-		coord: { long, lat },
+		coord,
 		depth,
 		mi,
 		mb,
@@ -34,8 +34,8 @@
 			<tr>
 				<td>{_id}</td>
 				<td>{time}</td>
-				<td>{coords.long}</td>
-				<td>{coords.lat}</td>
+				<td>{coord.coordinates[0]}</td>
+				<td>{coord.coordinates[1]}</td>
 				<td>{depth}</td>
 				<td>{mi}</td>
 				<td>{mb}</td>

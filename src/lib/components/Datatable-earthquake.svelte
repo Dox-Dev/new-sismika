@@ -10,7 +10,6 @@
 	//Import handler from SSD
 	import { DataHandler } from '@vincjo/datatables';
 	import { goto } from '$app/navigation';
-	import { StatusCodes } from 'http-status-codes';
 
 	//Load local data
 	export let data;
@@ -32,8 +31,8 @@
 			<tr>
 				<ThSort {handler} orderBy="_id">Event ID</ThSort>
 				<ThSort {handler} orderBy="time">Time</ThSort>
-				<ThSort {handler} orderBy={(row) => row.coord.long}>Longitude</ThSort>
-				<ThSort {handler} orderBy={(row) => row.coord.lat}>Latitude</ThSort>
+				<ThSort {handler} orderBy={(row) => row.coord.coordinates[0]}>Longitude</ThSort>
+				<ThSort {handler} orderBy={(row) => row.coord.coordinates[1]}>Latitude</ThSort>
 				<ThSort {handler} orderBy="depth">Depth</ThSort>
 				<ThSort {handler} orderBy="mw">Moment Magnitude</ThSort>
 				<ThSort {handler} orderBy="mb">Body Wave Magnitude</ThSort>
@@ -43,8 +42,8 @@
 			<tr>
 				<ThFilter {handler} filterBy="_id" />
 				<ThFilter {handler} filterBy="time" />
-				<ThFilter {handler} filterBy={(row) => row.coord.long} />
-				<ThFilter {handler} filterBy={(row) => row.coord.lat} />
+				<ThFilter {handler} filterBy={(row) => row.coord.coordinates[0]} />
+				<ThFilter {handler} filterBy={(row) => row.coord.coordinates[1]} />
 				<ThFilter {handler} filterBy="depth" />
 				<ThFilter {handler} filterBy="mw" />
 				<ThFilter {handler} filterBy="mb" />
@@ -61,8 +60,8 @@
 				>
 					<td>{row._id}</td>
 					<td>{row.time}</td>
-					<td>{row.coord.long}</td>
-					<td>{row.coord.lat}</td>
+					<td>{row.coord.coordinates[0]}</td>
+					<td>{row.coord.coordinates[1]}</td>
 					<td>{row.depth}</td>
 					<td>{row.mw}</td>
 					<td>{row.mb}</td>
