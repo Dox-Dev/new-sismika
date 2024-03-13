@@ -53,9 +53,10 @@ export const actions = {
         }
 
         const insertValidated = EarthquakeEventSchema.parse(insert);
-        const result = addEarthquakeData(insertValidated)
+        const result = await addEarthquakeData(insertValidated)
+        const resId = result.toString()
         if (typeof result === 'object') {
-            throw redirect(StatusCodes.MOVED_TEMPORARILY, `/earthquake/${result}`)
+            throw redirect(StatusCodes.MOVED_TEMPORARILY, `/earthquake/${resId}`)
         }
         throw error(StatusCodes.NOT_FOUND);
     }
