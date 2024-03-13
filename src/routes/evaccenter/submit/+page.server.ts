@@ -8,7 +8,7 @@ export const actions = {
     async default({cookies, request}) {
         const form = await request.formData();
 
-        const name = form.get('name')?.toString;
+        const name = form.get('name')?.toString();
         if (name === undefined) return fail(StatusCodes.BAD_REQUEST);
 
         const long = form.get('long')?.toString();
