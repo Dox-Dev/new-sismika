@@ -51,8 +51,8 @@
 				}),
 			],
 			view: new View({
-				center: fromLonLat([122.0641419, 6.816875]), // Center of the map [longitude, latitude]
-				zoom: 5.5 // Initial zoom level
+				center: fromLonLat([122.0641419, 9.16875]), // Center of the map [longitude, latitude]
+				zoom: 6 // Initial zoom level
 			})
 		});
 
