@@ -16,7 +16,7 @@
 	export let data;
 
 	//Init data handler - CLIENT
-	const handler = new DataHandler(data.equake, { rowsPerPage: 5 });
+	const handler = new DataHandler(data.stationData, { rowsPerPage: 5 });
 	const rows = handler.getRows();
 </script>
 
