@@ -34,5 +34,5 @@ class="card space-y-4 p-4"
 	</div>
 
 	<br />
-	<button type="button" class="btn btn-sm variant-filled">Submit</button>
+	<a href="/evaccenter"><button type="button" class="btn btn-sm variant-filled">Submit</button></a>
 </form>
