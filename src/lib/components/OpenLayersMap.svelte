@@ -20,42 +20,11 @@
 	import VectorSource from 'ol/source/Vector';
 	import { Icon, Style } from 'ol/style';
 	import VectorLayer from 'ol/layer/Vector';
+	import GeoJSON from 'ol/format/GeoJSON.js';
 
 
 	// Take JSON data of points from /src/routes/map/+page.svelte
 	export let data;
-
-	// style function for pins
-	const styleFunction = function(feature) {
-  		let iconSrc;
-	 	const featureType = feature.get('type'); // Assuming you have a 'type' property
-		
-		switch (featureType) {
-	    	case 'earthquake':
-	    	  iconSrc = '/earthquake.svg'; // Replace with your actual path
-	    	  break;
-	    	case 'seismic':
-	    	  iconSrc = '/station.svg';
-	    	  break;
-	    	case 'evaccenter':
-	    	  iconSrc = '/evacuation.svg';
-	    	  break;
-	    	default:
-	    	  iconSrc = '/favicon.png'; // Use a default icon for unknown types
-	  	}
-  
-	  	const iconStyle = new Style({
-	  	  image: new Icon({
-	  	    src: iconSrc,
-			width: 20,
-			height: 20,
-	  	    //anchor: [0.5, 1], // Adjust the anchor point if needed
-	  	    //scale: 0.5, // Adjust the icon size
-	  	  }),
-	  	});
-		
-		return iconStyle;
-	};
 
 	// Initialize the tilesets, map, and mount.
 	// Note that the tile_server will have change
@@ -72,7 +41,14 @@
 					// tile_server is where the links to the themes will be placed
 					// https://github.com/CartoDB/basemap-styles
 					source: tile_server
-				})
+				}),
+				new VectorLayer({
+            		title: 'GeoJSON Layer',
+            		source: new VectorSource({
+                		format: new GeoJSON(),
+                		url: './src/lib/assets/philippines-geojson.json', // Replace with your GeoJSON file path
+					})
+				}),
 			],
 			view: new View({
 				center: fromLonLat([122.0641419, 6.816875]), // Center of the map [longitude, latitude]
@@ -88,6 +64,7 @@
 			console.log("earthquake", item.coord.coordinates[0], item.coord.coordinates[1]);
 			// Create a feature for the marker
 			var marker = new Feature({
+				name: item.id,
 				geometry: new Point(
 					fromLonLat([item.coord.coordinates[0], item.coord.coordinates[1]]) // Marker position
 				)
