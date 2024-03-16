@@ -35,6 +35,9 @@
 	import { initializeStores, Drawer, getDrawerStore } from '@skeletonlabs/skeleton';
 	initializeStores();
 
+	export let data: LayoutServerData;
+	$: ({ user } = data);
+	
 	const drawerSettings: DrawerSettings = {
 		id: 'example-3',
 		// Provide your property overrides:
@@ -57,6 +60,7 @@
 
 	// Light/Dark mode toggle button
 	import { LightSwitch } from '@skeletonlabs/skeleton';
+	import type { LayoutServerData } from './$types';
 </script>
 
 <Drawer>
@@ -64,7 +68,7 @@
 	<Drawer>
 		<h2 class="p-4">Navigation</h2>
 		<hr />
-		<Navigation />
+		<Navigation {user}/>
 	</Drawer>
 </Drawer>
 <!--- <AppShell slotSidebarLeft="bg-surface-500/5 w-56 p-4"> -->
@@ -96,7 +100,7 @@
 	<!-- Sidebar Left -->
 	<svelte:fragment slot="sidebarLeft">
 		<!---<div id="sidebar-left" class="hidden lg:block">Sidebar Working</div>-->
-		<Navigation />
+		<Navigation {user}/>
 	</svelte:fragment>
 
 	<!-- <OpenLayersMap /> -->
