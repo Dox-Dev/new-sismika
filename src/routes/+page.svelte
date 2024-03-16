@@ -108,6 +108,14 @@
 				</p>
 			{/if}
 		</div>
+
+		<center>
+			<a href="https://github.com/Dox-Dev/new-sismika" target="_blank">
+				<button type="button" class="btn-icon btn-icon-lg variant-filled">
+				<i class="fa-brands fa-github fa-xl"/>
+				</button>
+			</a>
+		</center>
 	</div>
 </div>
 <!--
