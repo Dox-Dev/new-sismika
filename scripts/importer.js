@@ -3,6 +3,7 @@ import csvParser from 'csv-parser';
 import stripBom from 'strip-bom-stream';
 import z from 'zod';
 import { MongoClient } from 'mongodb';
+import path from 'path';
 
 const GeoJSONTypes = z.union([
 	z.literal('Point'),
@@ -40,6 +41,9 @@ const resStn = new Array();
 
 const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017';
 const client = new MongoClient(uri);
+const equakeDumpFile = path.join('.', 'scripts', 'equakedump.csv');
+const stationDumpFile = path.join('.', 'scripts', 'stationdump.csv');
+const evacDumpFile = path.join('.', 'scripts', 'evacdump.csv');
 
 async function connect() {
 	await client.connect();
@@ -47,7 +51,7 @@ async function connect() {
 }
 
 const equakeDump = fs
-	.createReadStream('.\\scripts\\equakedump.csv')
+	.createReadStream(equakeDumpFile)
 	.pipe(stripBom())
 	.pipe(csvParser())
 	.on('data', (data) => {
@@ -87,7 +91,7 @@ const equakeDump = fs
 	});
 
 const stationDump = fs
-	.createReadStream('./scripts/stationdump.csv')
+	.createReadStream(stationDumpFile)
 	.pipe(stripBom())
 	.pipe(csvParser())
 	.on('data', (data) => {

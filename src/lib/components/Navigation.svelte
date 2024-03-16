@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { getDrawerStore } from '@skeletonlabs/skeleton';
+	import avatarImage from '$lib/assets/dummy-avatar.jpeg';
+	import type { User } from '$lib/model/src/user';
 
 	const drawerStore = getDrawerStore();
 
@@ -7,22 +9,8 @@
 		drawerStore.close();
 	}
 
-	import avatarImage from '$lib/assets/dummy-avatar.jpeg';
+	export let user: User | undefined;
 </script>
-
-<style>
-	.bottom-content {
-	  position: absolute;
-	  bottom: 0;
-	}
-
-	.m10 img {
-    width: 100%;
-    height: 28px;
-    object-fit: cover; /* Maintain aspect ratio */
-	border-radius: 50%;
-  	}
-</style>
 
 <nav class="list-nav p-4">
 	<ul>
@@ -76,11 +64,33 @@
 <nav class="list-nav p-4 bottom-content">
 	<ul>
 		<li>
-			<a href="/auth/logout" on:click={drawerClose}>
-				<!-- <span><i class="fa-solid fa-right-from-bracket"></i></span> -->
-				<span class="m10"><img src={avatarImage} alt=""/></span>
-				<span>Account</span>
-			</a>
+			{#if user}
+				<a href="/auth/logout" on:click={drawerClose}>
+					<!-- <span><i class="fa-solid fa-right-from-bracket"></i></span> -->
+					<span class="m10"><img src={user.picture} alt="" /></span>
+					<span>{user.name}</span>
+				</a>
+			{:else}
+				<a href="/auth/login" on:click={drawerClose}>
+					<!-- <span><i class="fa-solid fa-right-from-bracket"></i></span> -->
+					<span class="m10"><img src={avatarImage} alt="" /></span>
+					<span>"Not logged in."</span>
+				</a>
+			{/if}
 		</li>
 	</ul>
 </nav>
+
+<style>
+	.bottom-content {
+		position: absolute;
+		bottom: 0;
+	}
+
+	.m10 img {
+		width: 100%;
+		height: 28px;
+		object-fit: cover; /* Maintain aspect ratio */
+		border-radius: 50%;
+	}
+</style>

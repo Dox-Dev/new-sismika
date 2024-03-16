@@ -1,15 +1,6 @@
-<script>
-	export let data;
-	$: ({
-		_id,
-		time,
-		coord: { long, lat },
-		depth,
-		mi,
-		mb,
-		ms,
-		li
-	} = data);
+<script lang="ts">
+	export let data: import('./$types').PageServerData;
+	$: ({ _id, time, coord, depth, mi, mb, ms, li } = data.selectedEarthquake);
 </script>
 
 <!-- Responsive Container (recommended) -->
@@ -34,8 +25,8 @@
 			<tr>
 				<td>{_id}</td>
 				<td>{time}</td>
-				<td>{coords.long}</td>
-				<td>{coords.lat}</td>
+				<td>{coord.coordinates[0]}</td>
+				<td>{coord.coordinates[1]}</td>
 				<td>{depth}</td>
 				<td>{mi}</td>
 				<td>{mb}</td>

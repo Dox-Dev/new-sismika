@@ -55,7 +55,7 @@ export async function getAllEarthquakeData() {
 	const db = await connect();
 
 	const collection = db.collection(Collection.EARTHQUAKE);
-	const equakeCursor = collection.find({});
+	const equakeCursor = collection.find({}).limit(50);
 	const equakes = await equakeCursor.toArray();
 
 	if (equakes === null) return false;
@@ -80,7 +80,7 @@ export async function getEarthquakeData(id: ObjectId) {
 	const collection = db.collection(Collection.EARTHQUAKE);
 	const equakeCursor = await collection.findOne({ _id: id });
 	console.log(equakeCursor);
-	if (equakeCursor === null) return null;
+	if (equakeCursor === null) return false;
 
 	try {
 		const validated = EarthquakeEventSchema.parse(equakeCursor);

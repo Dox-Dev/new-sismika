@@ -43,8 +43,8 @@
 			<tr>
 				<ThFilter {handler} filterBy="_id" />
 				<ThFilter {handler} filterBy="time" />
-				<ThFilter {handler} filterBy={(row) => row.coord.long} />
-				<ThFilter {handler} filterBy={(row) => row.coord.lat} />
+				<ThFilter {handler} filterBy={(row) => row.coord.coordinates[0]} />
+				<ThFilter {handler} filterBy={(row) => row.coord.coordinates[1]} />
 				<ThFilter {handler} filterBy="depth" />
 				<ThFilter {handler} filterBy="mw" />
 				<ThFilter {handler} filterBy="mb" />
@@ -61,8 +61,8 @@
 				>
 					<td>{row._id}</td>
 					<td>{row.time}</td>
-					<td>{row.coord.long}</td>
-					<td>{row.coord.lat}</td>
+					<td>{row.coord.coordinates[0]}</td>
+					<td>{row.coord.coordinates[1]}</td>
 					<td>{row.depth}</td>
 					<td>{row.mw}</td>
 					<td>{row.mb}</td>

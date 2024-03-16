@@ -12,4 +12,4 @@ export const UserSchema = z.object({
 	picture: z.string().url(),
 	local: z.string()
 });
-export type User = z.infer<typeof UserSchema>;
+export type GoogleUser = z.infer<typeof UserSchema>;

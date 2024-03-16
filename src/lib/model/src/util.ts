@@ -37,3 +37,8 @@ export function transformObjectId(data: ObjectId | string) {
 		throw ObjectIdTransformError;
 	}
 }
+
+export function parseOrZero(value: string | undefined) {
+	if (value === undefined || isNaN(parseFloat(value))) return 0;
+	return parseFloat(value);
+}

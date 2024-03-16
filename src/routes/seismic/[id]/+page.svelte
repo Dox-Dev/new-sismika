@@ -3,16 +3,8 @@
 
 	// remove dummy data later when exporting data from endpoints
 	// $: ({ coord:{long, lat}, depth, _id, li, time } = data);
-	const row = {
-		_id: '1',
-		code: '123',
-		name: 'evaccenter',
-		type: 'abc',
-		coord: {
-			long: 111,
-			lat: 22
-		}
-	};
+	export let data;
+	const { selectedStation } = data;
 </script>
 
 <!-- Responsive Container (recommended) -->
@@ -32,12 +24,12 @@
 		<tbody>
 			<!-- {#each tableArr as row, i} -->
 			<tr>
-				<td>{row._id}</td>
-				<td>{row.code}</td>
-				<td>{row.name}</td>
-				<td>{row.type}</td>
-				<td>{row.coord.long}</td>
-				<td>{row.coord.lat}</td>
+				<td>{selectedStation._id}</td>
+				<td>{selectedStation.code}</td>
+				<td>{selectedStation.name}</td>
+				<td>{selectedStation.type}</td>
+				<td>{selectedStation.coord.coordinates[0]}</td>
+				<td>{selectedStation.coord.coordinates[0]}</td>
 			</tr>
 			<!-- {/each} -->
 		</tbody>

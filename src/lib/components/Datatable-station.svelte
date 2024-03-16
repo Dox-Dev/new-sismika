@@ -16,7 +16,7 @@
 	export let data;
 
 	//Init data handler - CLIENT
-	const handler = new DataHandler(data.equake, { rowsPerPage: 5 });
+	const handler = new DataHandler(data.stationData, { rowsPerPage: 5 });
 	const rows = handler.getRows();
 </script>
 
@@ -34,16 +34,16 @@
 				<ThSort {handler} orderBy="code">Code</ThSort>
 				<ThSort {handler} orderBy="name">Name</ThSort>
 				<ThSort {handler} orderBy="type">Type</ThSort>
-				<ThSort {handler} orderBy={(row) => row.coord.long}>Longitude</ThSort>
-				<ThSort {handler} orderBy={(row) => row.coord.lat}>Latitude</ThSort>
+				<ThSort {handler} orderBy={(row) => row.coord.coordinates[0]}>Longitude</ThSort>
+				<ThSort {handler} orderBy={(row) => row.coord.coordinates[1]}>Latitude</ThSort>
 			</tr>
 			<tr>
 				<ThFilter {handler} filterBy="_id" />
 				<ThFilter {handler} filterBy="code" />
 				<ThFilter {handler} filterBy="name" />
 				<ThFilter {handler} filterBy="type" />
-				<ThFilter {handler} filterBy={(row) => row.coord.long} />
-				<ThFilter {handler} filterBy={(row) => row.coord.lat} />
+				<ThFilter {handler} filterBy={(row) => row.coord.coordinates[0]} />
+				<ThFilter {handler} filterBy={(row) => row.coord.coordinates[1]} />
 			</tr>
 		</thead>
 		<tbody>
