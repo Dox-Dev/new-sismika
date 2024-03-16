@@ -8,16 +8,8 @@
 	$: ({
 		_id,
 		name,
-		coord: { long, lat }
+		coord: { coordinates: [long, lat]}
 	} = data);
-	//const row = {
-	//	_id: "1",
-	//	name: "evaccenter",
-	//	coord: {
-	//		long: 111,
-	//		lat: 22,
-	//	}
-	//}
 </script>
 
 <!-- Responsive Container (recommended) -->
@@ -37,8 +29,8 @@
 			<tr>
 				<td>{_id}</td>
 				<td>{name}</td>
-				<td>{coord.long}</td>
-				<td>{coord.lat}</td>
+				<td>{long}</td>
+				<td>{lat}</td>
 			</tr>
 			<!-- {/each} -->
 		</tbody>

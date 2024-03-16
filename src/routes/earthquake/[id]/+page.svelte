@@ -1,5 +1,5 @@
-<script>
-	export let data;
+<script lang="ts">
+	export let data: import("./$types").PageServerData;
 	$: ({
 		_id,
 		time,
@@ -14,6 +14,7 @@
 
 <!-- Responsive Container (recommended) -->
 <div class="table-container">
+	{}
 	<!-- Native Table Element -->
 	<table class="table table-hover">
 		<thead>
