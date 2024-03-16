@@ -21,8 +21,41 @@
 	import { Icon, Style } from 'ol/style';
 	import VectorLayer from 'ol/layer/Vector';
 
+
 	// Take JSON data of points from /src/routes/map/+page.svelte
 	export let data;
+
+	// style function for pins
+	const styleFunction = function(feature) {
+  		let iconSrc;
+	 	const featureType = feature.get('type'); // Assuming you have a 'type' property
+		
+		switch (featureType) {
+	    	case 'earthquake':
+	    	  iconSrc = '/earthquake.svg'; // Replace with your actual path
+	    	  break;
+	    	case 'seismic':
+	    	  iconSrc = '/station.svg';
+	    	  break;
+	    	case 'evaccenter':
+	    	  iconSrc = '/evacuation.svg';
+	    	  break;
+	    	default:
+	    	  iconSrc = '/favicon.png'; // Use a default icon for unknown types
+	  	}
+  
+	  	const iconStyle = new Style({
+	  	  image: new Icon({
+	  	    src: iconSrc,
+			width: 20,
+			height: 20,
+	  	    //anchor: [0.5, 1], // Adjust the anchor point if needed
+	  	    //scale: 0.5, // Adjust the icon size
+	  	  }),
+	  	});
+		
+		return iconStyle;
+	};
 
 	// Initialize the tilesets, map, and mount.
 	// Note that the tile_server will have change
@@ -49,8 +82,9 @@
 		var vectorSource = new VectorSource();
 
 		// Iterate over the data to create and add each marker
+		console.log("earthquake", data.equake);
 		data.equake.forEach(function (item) {
-			console.log(item.coord.coordinates[0], item.coord.coordinates[1]);
+			console.log("earthquake", item.coord.coordinates[0], item.coord.coordinates[1]);
 			// Create a feature for the marker
 			var marker = new Feature({
 				geometry: new Point(
@@ -61,7 +95,7 @@
 			let icon = new Icon({
 				width: 20,
 				height: 20,
-				src: '/map-pin.svg'
+				src: "/earthquake.png",
 			});
 
 			// Create a style for the marker
@@ -74,18 +108,75 @@
 
 			// Add the marker to the vector source
 			vectorSource.addFeature(marker);
-
-			// Add the vector source to a layer and add it to the map
-			var markerLayer = new VectorLayer({
-				source: vectorSource
-			});
-
-			mountedMap.addLayer(markerLayer);
-
-			mountedMap.getView().on('change:resolution', function () {
-				markerLayer.changed(); // This will force a redraw of the layer
-			});
 		});
+
+		console.log("stations", data.station);
+		data.station.forEach(function (item) { 
+			//console.log("station", item.coord.coordinates[0], item.coord.coordinates[1]);
+			// Create a feature for the marker
+			var marker = new Feature({
+				geometry: new Point(
+					fromLonLat([item.coord.coordinates[1], item.coord.coordinates[0]]) // Marker position
+				)
+			});
+
+			let icon = new Icon({
+				width: 20,
+				height: 20,
+				src: '/station.png'
+			});
+
+			// Create a style for the marker
+			var iconStyle = new Style({
+				image: icon
+			});
+
+			// Apply the style to the marker
+			marker.setStyle(iconStyle);
+			//console.log(marker);
+
+			// Add the marker to the vector source
+			vectorSource.addFeature(marker);
+		});
+
+		// Iterate over the data to create and add each marker
+		console.log("evacuation centers", data.evac);
+		data.equake.forEach(function (item) {
+			console.log("evacuation", item.coord.coordinates[0], item.coord.coordinates[1]);
+			// Create a feature for the marker
+			var marker = new Feature({
+				geometry: new Point(
+					fromLonLat([item.coord.coordinates[0], item.coord.coordinates[1]]) // Marker position
+				)
+			});
+
+			let icon = new Icon({
+				width: 20,
+				height: 20,
+				src: "/evacuation.png",
+			});
+
+			// Create a style for the marker
+			var iconStyle = new Style({
+				image: icon
+			});
+
+			// Apply the style to the marker
+			marker.setStyle(iconStyle);
+
+			// Add the marker to the vector source
+			vectorSource.addFeature(marker);
+		});
+
+
+		console.log(vectorSource);
+
+		// Add the vector source to a layer and add it to the map
+		var markerLayer = new VectorLayer({
+			source: vectorSource
+		});
+		mountedMap.addLayer(markerLayer);
+
 	});
 
 	// Dynamically change the themeURL and tile_server link.
