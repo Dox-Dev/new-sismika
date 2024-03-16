@@ -63,6 +63,7 @@
 	const tile_server = new OSM(); // tilemap
 	let mapElement: HTMLElement;
 	let mountedMap: Map;
+
 	onMount(() => {
 		mountedMap = new Map({
 			target: mapElement,
@@ -141,7 +142,7 @@
 
 		// Iterate over the data to create and add each marker
 		console.log("evacuation centers", data.evac);
-		data.equake.forEach(function (item) {
+		data.evac.forEach(function (item) {
 			console.log("evacuation", item.coord.coordinates[0], item.coord.coordinates[1]);
 			// Create a feature for the marker
 			var marker = new Feature({
@@ -176,7 +177,7 @@
 			source: vectorSource
 		});
 		mountedMap.addLayer(markerLayer);
-
+	
 	});
 
 	// Dynamically change the themeURL and tile_server link.
