@@ -5,11 +5,7 @@
 	// $: ({ coord:{long, lat}, depth, _id, li, time } = data);
 	//
 	export let data;
-	$: ({
-		_id,
-		name,
-		coord: { coordinates: [long, lat]}
-	} = data);
+	const { selectedEvac } = data;
 </script>
 
 <!-- Responsive Container (recommended) -->
@@ -27,10 +23,10 @@
 		<tbody>
 			<!-- {#each tableArr as row, i} -->
 			<tr>
-				<td>{_id}</td>
-				<td>{name}</td>
-				<td>{long}</td>
-				<td>{lat}</td>
+				<td>{selectedEvac._id}</td>
+				<td>{selectedEvac.name}</td>
+				<td>{selectedEvac.coord.coordinates[0]}</td>
+				<td>{selectedEvac.coord.coordinates[1]}</td>
 			</tr>
 			<!-- {/each} -->
 		</tbody>

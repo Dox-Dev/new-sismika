@@ -4,8 +4,7 @@
 	// remove dummy data later when exporting data from endpoints
 	// $: ({ coord:{long, lat}, depth, _id, li, time } = data);
 	export let data;
-	const { stationData } = data;
-	const selectedStation = stationData[0];
+	const { selectedStation } = data;
 </script>
 
 <!-- Responsive Container (recommended) -->
