@@ -37,7 +37,7 @@
 
 	export let data: LayoutServerData;
 	$: ({ user } = data);
-	
+
 	const drawerSettings: DrawerSettings = {
 		id: 'example-3',
 		// Provide your property overrides:
@@ -68,7 +68,7 @@
 	<Drawer>
 		<h2 class="p-4">Navigation</h2>
 		<hr />
-		<Navigation {user}/>
+		<Navigation {user} />
 	</Drawer>
 </Drawer>
 <!--- <AppShell slotSidebarLeft="bg-surface-500/5 w-56 p-4"> -->
@@ -100,7 +100,7 @@
 	<!-- Sidebar Left -->
 	<svelte:fragment slot="sidebarLeft">
 		<!---<div id="sidebar-left" class="hidden lg:block">Sidebar Working</div>-->
-		<Navigation {user}/>
+		<Navigation {user} />
 	</svelte:fragment>
 
 	<!-- <OpenLayersMap /> -->

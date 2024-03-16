@@ -1,15 +1,6 @@
 <script lang="ts">
-	export let data: import("./$types").PageServerData;
-	$: ({
-		_id,
-		time,
-		coord,
-		depth,
-		mi,
-		mb,
-		ms,
-		li
-	} = data.selectedEarthquake);
+	export let data: import('./$types').PageServerData;
+	$: ({ _id, time, coord, depth, mi, mb, ms, li } = data.selectedEarthquake);
 </script>
 
 <!-- Responsive Container (recommended) -->

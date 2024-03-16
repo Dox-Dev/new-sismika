@@ -41,15 +41,14 @@ const resStn = new Array();
 
 const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017';
 const client = new MongoClient(uri);
-const equakeDumpFile = path.join('.','scripts','equakedump.csv');
-const stationDumpFile =  path.join('.', 'scripts', 'stationdump.csv');
+const equakeDumpFile = path.join('.', 'scripts', 'equakedump.csv');
+const stationDumpFile = path.join('.', 'scripts', 'stationdump.csv');
 const evacDumpFile = path.join('.', 'scripts', 'evacdump.csv');
 
 async function connect() {
 	await client.connect();
 	return client.db('sismika');
 }
-
 
 const equakeDump = fs
 	.createReadStream(equakeDumpFile)
