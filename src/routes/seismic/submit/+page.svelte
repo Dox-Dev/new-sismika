@@ -11,7 +11,6 @@
 <br />
 <!-- To connect with certain values, use bind:value={variableName} in the input header-->
 <form
-use:enhance
 method="POST"
 enctype="application/x-www-form-urlencoded"
 class="card space-y-4 p-4"

@@ -12,7 +12,6 @@
 <!-- To connect with certain values, use bind:value={variableName} in the input header-->
 
 <form
-use:enhance
 method="POST"
 enctype="application/x-www-form-urlencoded"
 class="card space-y-4 p-4"
@@ -27,13 +26,13 @@ class="card space-y-4 p-4"
 		<input class="input" type="text" placeholder="Input the evacuation center name here" />
 	</label>
 	<br />
-	
+
 	<span class="h3">Coordinates</span>
 	<div class="input-group input-group-divider grid-cols-[1fr_1fr]">
 		<input type="text" placeholder="Longitude" />
 		<input type="text" placeholder="Latitude" />
 	</div>
-	
+
 	<br />
 	<button type="button" class="btn btn-sm variant-filled">Submit</button>
 </form>
