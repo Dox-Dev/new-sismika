@@ -26,7 +26,8 @@ export enum Collection {
 	INFO = 'info',
 	SESSIONS = 'sessions',
 	PENDINGS = 'pendings',
-	USERS = 'users'
+	USERS = 'users',
+	POSTS = 'posts'
 }
 
 export function transformObjectId(data: ObjectId | string) {

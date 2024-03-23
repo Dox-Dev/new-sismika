@@ -9,7 +9,7 @@ export enum MEDIATYPE {
 }
 
 export const PostBase = z.object({
-    _id: ObjectIDSchema,
+    id: z.string().uuid(),
     type: z.number(),
     time: z.string().datetime()
 })
@@ -32,14 +32,14 @@ export const PostSchema = z.object({
     date: z.string().datetime(),
     authorId: GoogleUserId,
     earthquakeId: ObjectIDSchema,
-    mediaContent: z.union([ArticleSchema, MediaSchema]),
+    mediaContent: z.union([ArticleSchema, MediaSchema]).optional(),
     
 })
 
 export type Post = z.infer<typeof PostSchema>
 
 export const CommentSchema = z.object({
-    _id: ObjectIDSchema,
+    id: z.string().uuid(),
     authodId: GoogleUserId,
     content: z.string().min(1)
 })
