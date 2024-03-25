@@ -10,7 +10,7 @@ import { randomFillSync } from 'crypto';
 import { ok } from 'assert';
 import { UserSchema, type User } from '$lib/model/src/user';
 import type { Session } from '$lib/server/model/session';
-import { PostSchema, type Article, type Media } from '$lib/model/src/posts';
+import { Media, MediaArraySchema, MediaSchema, PostSchema, type Article, type Comment } from '$lib/model/src/posts';
 import { assert } from 'console';
 
 const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017';
@@ -383,82 +383,48 @@ export async function getUserFromSession(sid: string) {
 	}
 }
 
-export async function getPostForEarthquake(equakeId: ObjectId, sessionId: string) {
+export async function getMediaForEarthquake(equakeId: ObjectId) {
+	const db = await connect();
+
+	try {
+		
+		const collection = db.collection(Collection.MEDIA);
+		const postArray = await collection.find({ equakeId: equakeId }).sort({time: -1}).toArray();
+
+		if (postArray.length === 0) return false;
+
+		return MediaArraySchema.parse(postArray);
+	} catch (err) {
+		throw err
+	}
+}
+
+export async function deleteMedia(mediaId: ObjectId) {
 	const db = await connect();
 
 	try {
 
-		const collection = db.collection(Collection.EARTHQUAKE);
-		const earthquakeDocument = await collection.findOne(equakeId);
+		const collection = db.collection(Collection.MEDIA);
+		const { deletedCount }= await collection.deleteOne({_id: mediaId});
 
-		
-		//get earthquake object id
-		
-		//return false if empty
-		if (earthquakeDocument === null) return false;
-		const parsedDocument = EarthquakeEventSchema.parse(earthquakeDocument)
+		if (deletedCount) return true;
+		return false
+	} catch (err) {
+		throw err
+	}
+}
 
-		//create a post in the post document
-		const postCollection = db.collection(Collection.POSTS);
-		const postDocument = await postCollection.findOne({earthquakeId: equakeId});
+export async function postMedia(media: Media) {
+	const db = await connect();
 
-		if (postDocument !== null) {
-			assert(postDocument._id);
-			return postDocument._id;
-		}
+	try {
 
-		const authorId = await getUserFromSession(sessionId);
-		const payload = {
-			title: `Earthquake at ${parsedDocument.time}`,
-			date: Date.now().toString(),
-			authorId,
-			earthquakeId: equakeId
-		}
-
-		const parsedPayload = PostSchema.parse(payload);
-		const {_id, ...rest} =  parsedPayload;
-		const {insertedId} = await postCollection.insertOne(rest);
-		//return something
+		const collection = db.collection(Collection.MEDIA);
+		const {_id, ...payload} = media;
+		const { insertedId } = await collection.insertOne(payload);
 
 		return insertedId;
 	} catch (err) {
-		throw err;
+		throw err
 	}
 }
-
-export async function submitPostForEarthquake(equakeId: ObjectId, post: Media | Article) {
-	const db = await connect();
-
-	try {
-		// retrieve the post document for the equakeId 
-		const collection = db.collection(Collection.POSTS);
-
-		const update = { $push: { mediaContent: post}}
-		const {modifiedCount} = await collection.updateOne({earthquakeId: equakeId} , update)
-
-		return modifiedCount;
-	} catch (err) {
-		throw err;
-	}
-}
-
-export async function deletePostForEarthquake(equakeId: ObjectId, postId: string) {
-	const db = await connect();
-
-	try {
-		try {
-			// retrieve the post document for the equakeId 
-			const collection = db.collection(Collection.POSTS);
-	
-			const update = { $pull: { mediaContent: {id: postId}}}
-			const {modifiedCount} = await collection.updateOne({earthquakeId: equakeId} , update)
-	
-			return modifiedCount;
-		} catch (err) {
-			throw err;
-		}
-	}
-}
-
-export async function 
-
