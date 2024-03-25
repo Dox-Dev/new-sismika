@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { ObjectIDSchema } from './util';
 import { GoogleUserId } from './user';
+import { ObjectId } from 'mongodb';
 
 export enum MEDIATYPE {
     Image,
@@ -9,7 +10,8 @@ export enum MEDIATYPE {
 }
 
 export const PostBase = z.object({
-    id: z.string().uuid(),
+    _id: ObjectIDSchema,
+    equakeId: z.instanceof(ObjectId),
     type: z.number(),
     time: z.string().datetime()
 })
@@ -26,20 +28,9 @@ export const ArticleSchema = PostBase.extend({
 
 export type Article = z.infer<typeof ArticleSchema>
 
-export const PostSchema = z.object({
-    _id: ObjectIDSchema,
-    title: z.string().min(1),
-    date: z.string().datetime(),
-    authorId: GoogleUserId,
-    earthquakeId: ObjectIDSchema,
-    mediaContent: z.union([ArticleSchema, MediaSchema]).optional(),
-    
-})
-
-export type Post = z.infer<typeof PostSchema>
-
 export const CommentSchema = z.object({
-    id: z.string().uuid(),
+    _id: ObjectIDSchema,
+    earthquakeId: z.instanceof(ObjectId),
     authodId: GoogleUserId,
     content: z.string().min(1)
 })

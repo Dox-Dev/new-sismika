@@ -27,16 +27,22 @@ export enum Collection {
 	SESSIONS = 'sessions',
 	PENDINGS = 'pendings',
 	USERS = 'users',
-	POSTS = 'posts'
+	MEDIA = 'posts',
+	COMMENTS = 'comments',
 }
 
-export function transformObjectId(data: ObjectId | string) {
+export function transformToObjectId(data: ObjectId | string) {
 	if (data instanceof ObjectId) return data;
 	try {
 		return ObjectId.createFromHexString(data);
 	} catch {
 		throw ObjectIdTransformError;
 	}
+}
+
+export function transformToObjectString(data: ObjectId | string) {
+	if (data instanceof ObjectId) return data.toHexString();
+	return data
 }
 
 export function parseOrZero(value: string | undefined) {
