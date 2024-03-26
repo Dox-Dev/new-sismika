@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { ObjectIdTransformError } from './errors';
 
 export const ObjectIDSchema = z.union([z.string(), z.instanceof(ObjectId)]).optional();
+
 const GeoJSONTypes = z.union([
 	z.literal('Point'),
 	z.literal('LineString'),
@@ -11,6 +12,7 @@ const GeoJSONTypes = z.union([
 	z.literal('MultiLineString'),
 	z.literal('MultiPolygon')
 ]);
+
 export const CoordinatesSchema = z.object({
 	_id: ObjectIDSchema,
 	type: GeoJSONTypes,
@@ -18,6 +20,13 @@ export const CoordinatesSchema = z.object({
 });
 
 export type Coordinates = z.infer<typeof CoordinatesSchema>;
+
+export const BoundingBoxSchema = z.object({
+    type: GeoJSONTypes,
+    coordinates: z.array(z.number().array().length(2)).length(4)
+})
+
+export type BoundingBox = z.infer<typeof BoundingBoxSchema>
 
 export enum Collection {
 	EARTHQUAKE = 'earthquake',
