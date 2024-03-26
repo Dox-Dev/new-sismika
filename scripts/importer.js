@@ -44,6 +44,7 @@ const client = new MongoClient(uri);
 const equakeDumpFile = path.join('.', 'scripts', 'equakedump.csv');
 const stationDumpFile = path.join('.', 'scripts', 'stationdump.csv');
 const evacDumpFile = path.join('.', 'scripts', 'evacdump.csv');
+const psgcDumpFile = path.join('.', 'scripts', 'psgc_coord.json')
 
 async function connect() {
 	await client.connect();
@@ -100,7 +101,7 @@ const stationDump = fs
 			code: data['code'],
 			coord: {
 				type: 'Point',
-				coordinates: [parseFloat(data['long']), parseFloat(data['lat'])]
+				coordinates: [parseFloat(data['lat']), parseFloat(data['long'])]
 			},
 			name: data['long_name'],
 			type: data['type']
@@ -119,3 +120,34 @@ const stationDump = fs
 		console.log('Inserted this many in stations document:', insertedIds);
 		stationDump.destroy();
 	});
+
+async function importPSGC() {
+	const db = await connect()
+	const collection = db.collection('locations');
+
+	const fileContent = fs.readFileSync(psgcDumpFile, 'utf8');
+	const data = JSON.parse(fileContent);
+
+	data.forEach(element => {
+		delete element._id;
+	});
+
+	const {insertedCount} = await collection.insertMany(data);
+	console.log(`${insertedCount} this much locations.`)
+	await client.close()
+}
+
+async function setupIndexes() {
+	const db = await connect()
+	const earthquakeCollection = db.collection('earthquake');
+	const stationsCollection = db.collection('station')
+	//const evacCollection = db.collection('evac')
+	const locationCollection = db.collection('location')
+
+	await earthquakeCollection.createIndex({"coord.coordinates": "2dsphere"}),
+	await stationsCollection.createIndex({"coord.coordinates": "2dsphere"}),
+	await locationCollection.createIndex({"coords.cooordinates": "2dsphere"})
+}
+
+await importPSGC()
+await setupIndexes()
