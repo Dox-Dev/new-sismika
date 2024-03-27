@@ -12,6 +12,8 @@ import { UserSchema, type User } from '$lib/model/src/user';
 import type { Session } from '$lib/server/model/session';
 import { Media, MediaArraySchema, MediaSchema, PostSchema, type Article, type Comment } from '$lib/model/src/posts';
 import { assert } from 'console';
+import { LocationData } from '$lib/model/src/locations';
+import { parse } from 'path';
 
 const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017';
 const client = new MongoClient(uri);
@@ -424,6 +426,80 @@ export async function postMedia(media: Media) {
 		const { insertedId } = await collection.insertOne(payload);
 
 		return insertedId;
+	} catch (err) {
+		throw err
+	}
+}
+
+export async function collateNearbyLocations(equakeId: ObjectId, distanceMeters: number) {
+	const db = await connect();
+
+	try {
+		const earthquakeTable = db.collection(Collection.EARTHQUAKE);
+		const event = await earthquakeTable.findOne({_id: equakeId});
+
+		const parsedEarthquake = EarthquakeEventSchema.parse(event);
+		const { coord } = parsedEarthquake;
+
+		const locationQuery = {
+			"coord": {
+				$near: {
+					$geometry: coord,
+					$maxDistance: distanceMeters,
+				}
+			}
+		}
+
+		const locationTable = db.collection(Collection.LOCATION)
+		const locationResults = await locationTable.find(locationQuery, {projection: {osmresult: 0, _id: 0}}).toArray();
+
+		if (locationResults.length === 0) return [];
+
+		return locationResults.map(loc => LocationData.parse(loc))
+	} catch (err) {
+		throw err;
+	}
+}
+
+export async function collateNearbyEarthquakes(code: string, distanceMeters: number) {
+	const db = await connect();
+
+	try {
+		const locationTable = db.collection(Collection.LOCATION);
+		const loc = await locationTable.findOne({psgc: code}, {projection: {osmresult: 0, _id: 0}});
+
+		const parsedLoc = LocationData.parse(loc);
+		const { coord } = parsedLoc;
+
+		const earthquakeQuery = {
+			"coord": {
+				$near: {
+					$geometry: coord,
+					$maxDistance: distanceMeters,
+				}
+			}
+		}
+
+		const earthquakeTable = db.collection(Collection.EARTHQUAKE);
+		const equakeResults = await earthquakeTable.find(earthquakeQuery).toArray();
+
+		if (equakeResults.length === 0) return [];
+
+		return equakeResults.map(loc => EarthquakeEventSchema.parse(loc));
+	} catch (err) {
+		throw err
+	}
+}
+
+export async function retrieveFurthestIntensityRadius(equakeId: ObjectId) {
+	const db = await connect();
+
+	try {
+		const earthquakeCollection = db.collection(Collection.EARTHQUAKE);
+		const earthquake = await earthquakeCollection.findOne({_id: equakeId});
+
+		const parsedEvent = EarthquakeEventSchema.parse(earthquake);
+		const { coord, mw, li} = parsedEvent;
 	} catch (err) {
 		throw err
 	}
