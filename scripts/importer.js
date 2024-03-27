@@ -142,7 +142,7 @@ async function setupIndexes() {
 	const earthquakeCollection = db.collection('earthquake');
 	const stationsCollection = db.collection('station')
 	//const evacCollection = db.collection('evac')
-	const locationCollection = db.collection('location')
+	const locationCollection = db.collection('locations')
 
 	await earthquakeCollection.createIndex({"coord.coordinates": "2dsphere"}),
 	await stationsCollection.createIndex({"coord.coordinates": "2dsphere"}),
