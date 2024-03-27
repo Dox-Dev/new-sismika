@@ -36,6 +36,29 @@ const StationSchema = z.object({
 	coord: CoordinatesSchema
 });
 
+function convertToMw(magnitude, type) {
+	let Mw;
+
+	switch(type) {
+		case 'ML':
+			if (magnitude < 6) {
+				Mw = magnitude + 0.01 * (6 - magnitude);
+			} else {
+				Mw = magnitude;
+			}
+			break;
+		case 'Mb':
+			Mw = 0.9 * magnitude + 1;
+			break;
+		case 'Ms':
+			Mw = magnitude + 0.65;
+			break;
+		default:
+			return null;
+	}
+	return Math.floor(Mw * 100) / 100;
+}
+
 const results = new Array();
 const resStn = new Array();
 
@@ -76,6 +99,16 @@ const equakeDump = fs
 			mw: isNaN(parseFloat(data['mw'])) ? 0 : parseFloat(data['mw']),
 			li: data['intensity'] ?? ''
 		};
+
+		if (dataIn.mw === 0) {
+			if (dataIn.mi > 0) dataIn.mw = convertToMw(dataIn.mi, 'ML');
+			else if (dataIn.mb > 0) dataIn.mw = convertToMw(dataIn.mb, 'Mb');
+			else if (dataIn.ms > 0) dataIn.mw = convertToMw(dataIn.ms, 'Ms')
+		}
+		if (dataIn.mw === 0) {
+			console.log(dataIn)
+			throw Error(`MW is not resolved! ${dataIn}`)
+		}
 		try {
 			results.push(EarthquakeEventSchema.parse(dataIn));
 		} catch (err) {
@@ -130,6 +163,8 @@ async function importPSGC() {
 
 	data.forEach(element => {
 		delete element._id;
+		element.coord = element.coords;
+		delete element.coords;
 	});
 
 	const {insertedCount} = await collection.insertMany(data);
@@ -144,9 +179,10 @@ async function setupIndexes() {
 	//const evacCollection = db.collection('evac')
 	const locationCollection = db.collection('locations')
 
-	await earthquakeCollection.createIndex({"coord.coordinates": "2dsphere"}),
-	await stationsCollection.createIndex({"coord.coordinates": "2dsphere"}),
-	await locationCollection.createIndex({"coords.cooordinates": "2dsphere"})
+	await earthquakeCollection.createIndex({"coord": "2dsphere"}),
+	await stationsCollection.createIndex({"coord": "2dsphere"}),
+	await locationCollection.createIndex({"coord": "2dsphere"})
+	await locationCollection.createIndex({"longname": "text"})
 }
 
 await importPSGC()

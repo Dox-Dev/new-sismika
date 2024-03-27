@@ -29,8 +29,9 @@ export const LocationData = z.object({
     isRural: z.boolean(),
     population: z.number(),
     status: z.number(),
-    coords: CoordinatesSchema.optional(),
+    coord: CoordinatesSchema.optional(),
     boundingBox: BoundingBoxSchema.optional(),
     osmresult: OSMSchema.optional(),
 })
+
 export type Location = z.infer<typeof LocationData>
