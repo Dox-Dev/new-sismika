@@ -1,4 +1,4 @@
-import { MongoClient, ObjectId, Binary } from 'mongodb';
+import { MongoClient, ObjectId, Binary, ServerApiVersion } from 'mongodb';
 import { DatabaseConnectionError, ParseValidationError } from '$lib/model/src/errors';
 import { EarthquakeEventSchema, type EarthquakeEvent } from '$lib/model/src/event';
 import { Collection } from '$lib/model/src/util';
@@ -13,10 +13,17 @@ import type { Session } from '$lib/server/model/session';
 import { Media, MediaArraySchema, MediaSchema, PostSchema, type Article, type Comment } from '$lib/model/src/posts';
 import { assert } from 'console';
 import { LocationData } from '$lib/model/src/locations';
-import { parse } from 'path';
+import  MongoEnv from '$lib/model/src/env/mongodb'
 
-const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017';
-const client = new MongoClient(uri);
+const { MONGODB_CONNECTION_STRING } = MongoEnv
+const uri = MONGODB_CONNECTION_STRING;
+const client = new MongoClient(uri, {
+	serverApi: {
+		version: ServerApiVersion.v1,
+		strict: true,
+		deprecationErrors: true
+	}
+});
 
 /**
  * Attempts to connect to the MongoDB client with the following information.
@@ -25,6 +32,7 @@ const client = new MongoClient(uri);
 async function connect() {
 	try {
 		await client.connect();
+		console.log(`Connected to ${uri}`)
 		return client.db('sismika');
 	} catch (err) {
 		console.error('MongoDB connection error:', err);
@@ -440,6 +448,7 @@ export async function collateNearbyLocations(equakeId: ObjectId, distanceMeters:
 
 		const parsedEarthquake = EarthquakeEventSchema.parse(event);
 		const { coord } = parsedEarthquake;
+		const distanceMeters = await retrieveFurthestIntensityRadius(equakeId);
 
 		const locationQuery = {
 			"coord": {
@@ -498,8 +507,34 @@ export async function retrieveFurthestIntensityRadius(equakeId: ObjectId) {
 		const earthquakeCollection = db.collection(Collection.EARTHQUAKE);
 		const earthquake = await earthquakeCollection.findOne({_id: equakeId});
 
+		
 		const parsedEvent = EarthquakeEventSchema.parse(earthquake);
-		const { coord, mw, li} = parsedEvent;
+		const { coord, mw, li, depth} = parsedEvent;
+
+		const baseRadius = Math.pow(10, 0.5 * mw - 1.8);
+		const depthFactor = 1 + depth / 100;
+		return Math.floor(baseRadius * depthFactor * 1000);
+		// let matchHit = false
+		// const regex = /INTENSITY [XIV]*\s?-\s?(.*?)(?=; INTENSITY|$)/gi
+		// const results = {};
+		// let match; 
+
+		// const locationTable = db.collection(Collection.LOCATION);
+		
+		// while ((match = regex.exec(li)) !== null) {
+		// 	matchHit = true;
+		// 	const intensity = match[1];
+		// 	const locations = match[2].split(/;|,|&/,).map(loc => loc.trim()).filter(loc => loc !== '')
+		
+		// 	for (const location of locations) {
+		// 		const searchResult = locationTable.findOne({
+		// 			$text: {$search: location},
+		// 		},{
+		// 			projection: {coord: 1}
+		// 		}
+		// 		).
+		// 	}
+		// 	//get the location string of every in
 	} catch (err) {
 		throw err
 	}
