@@ -22,7 +22,6 @@
 	import VectorLayer from 'ol/layer/Vector';
 	import GeoJSON from 'ol/format/GeoJSON.js';
 
-
 	// Take JSON data of points from /src/routes/map/+page.svelte
 	export let data;
 
@@ -43,12 +42,12 @@
 					source: tile_server
 				}),
 				new VectorLayer({
-            		title: 'GeoJSON Layer',
-            		source: new VectorSource({
-                		format: new GeoJSON(),
-                		url: './src/lib/assets/philippines-geojson.json', // Replace with your GeoJSON file path
+					title: 'GeoJSON Layer',
+					source: new VectorSource({
+						format: new GeoJSON(),
+						url: './src/lib/assets/philippines-geojson.json' // Replace with your GeoJSON file path
 					})
-				}),
+				})
 			],
 			view: new View({
 				center: fromLonLat([122.0641419, 9.16875]), // Center of the map [longitude, latitude]
@@ -59,9 +58,9 @@
 		var vectorSource = new VectorSource();
 
 		// Iterate over the data to create and add each marker
-		console.log("earthquake", data.equake);
+		console.log('earthquake', data.equake);
 		data.equake.forEach(function (item) {
-			console.log("earthquake", item.coord.coordinates[0], item.coord.coordinates[1]);
+			console.log('earthquake', item.coord.coordinates[0], item.coord.coordinates[1]);
 			// Create a feature for the marker
 			var marker = new Feature({
 				name: item.id,
@@ -73,7 +72,7 @@
 			let icon = new Icon({
 				width: 20,
 				height: 20,
-				src: "/earthquake.png",
+				src: '/earthquake.png'
 			});
 
 			// Create a style for the marker
@@ -88,8 +87,8 @@
 			vectorSource.addFeature(marker);
 		});
 
-		console.log("stations", data.station);
-		data.station.forEach(function (item) { 
+		console.log('stations', data.station);
+		data.station.forEach(function (item) {
 			//console.log("station", item.coord.coordinates[0], item.coord.coordinates[1]);
 			// Create a feature for the marker
 			var marker = new Feature({
@@ -118,9 +117,9 @@
 		});
 
 		// Iterate over the data to create and add each marker
-		console.log("evacuation centers", data.evac);
+		console.log('evacuation centers', data.evac);
 		data.evac.forEach(function (item) {
-			console.log("evacuation", item.coord.coordinates[0], item.coord.coordinates[1]);
+			console.log('evacuation', item.coord.coordinates[0], item.coord.coordinates[1]);
 			// Create a feature for the marker
 			var marker = new Feature({
 				geometry: new Point(
@@ -131,7 +130,7 @@
 			let icon = new Icon({
 				width: 20,
 				height: 20,
-				src: "/evacuation.png",
+				src: '/evacuation.png'
 			});
 
 			// Create a style for the marker
@@ -146,7 +145,6 @@
 			vectorSource.addFeature(marker);
 		});
 
-
 		console.log(vectorSource);
 
 		// Add the vector source to a layer and add it to the map
@@ -154,7 +152,6 @@
 			source: vectorSource
 		});
 		mountedMap.addLayer(markerLayer);
-	
 	});
 
 	// Dynamically change the themeURL and tile_server link.

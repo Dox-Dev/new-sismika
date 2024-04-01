@@ -1,6 +1,7 @@
 <script lang="ts">
 	export let data: import('./$types').PageServerData;
 	$: ({ _id, time, coord, depth, mi, mb, ms, li } = data.selectedEarthquake);
+	$: affectedLocations = data.affected;
 </script>
 
 <!-- Responsive Container (recommended) -->
@@ -36,4 +37,7 @@
 			<!-- {/each} -->
 		</tbody>
 	</table>
+	{#each affectedLocations as { psgc, longname, population }, i}
+		<p>{`${i}: ${psgc} - ${longname}: ${population}`}</p>
+	{/each}
 </div>

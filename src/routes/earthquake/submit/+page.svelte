@@ -18,11 +18,7 @@ export const EarthquakeEventSchema = z.object({
 <!-- <h1>Evacuation Center Submission</h1> -->
 <br />
 <!-- To connect with certain values, use bind:value={variableName} in the input header-->
-<form
-method="POST"
-enctype="application/x-www-form-urlencoded"
-class="card space-y-4 p-4"
->
+<form method="POST" enctype="application/x-www-form-urlencoded" class="card space-y-4 p-4">
 	<label class="label">
 		<span class="h3">ID</span>
 		<input class="input" type="text" placeholder="Input the earthquake ID here" />
