@@ -9,7 +9,7 @@ export default {
 	MONGODB_PASS: MONGODB_PASS || '',
 	MONGODB_PARAMS: MONGODB_PARAMS || '',
 	MONGODB_CONNECTION_STRING:
-		(MONGODB_SRC === 'prod' && (MONGODB_USER || MONGODB_PASS))
+		MONGODB_SRC === 'prod' && (MONGODB_USER || MONGODB_PASS)
 			? `mongodb+srv://${MONGODB_USER}:${MONGODB_PASS}@${MONGODB_URI}/?${MONGODB_PARAMS}`
 			: `mongodb://localhost:27017`
 };

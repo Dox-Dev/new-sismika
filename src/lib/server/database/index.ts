@@ -10,12 +10,19 @@ import { randomFillSync } from 'crypto';
 import { ok } from 'assert';
 import { UserSchema, type User } from '$lib/model/src/user';
 import type { Session } from '$lib/server/model/session';
-import { Media, MediaArraySchema, MediaSchema, PostSchema, type Article, type Comment } from '$lib/model/src/posts';
+import {
+	Media,
+	MediaArraySchema,
+	MediaSchema,
+	PostSchema,
+	type Article,
+	type Comment
+} from '$lib/model/src/posts';
 import { assert } from 'console';
 import { LocationData } from '$lib/model/src/locations';
-import  MongoEnv from '$lib/model/src/env/mongodb'
+import MongoEnv from '$lib/model/src/env/mongodb';
 
-const { MONGODB_CONNECTION_STRING } = MongoEnv
+const { MONGODB_CONNECTION_STRING } = MongoEnv;
 const uri = MONGODB_CONNECTION_STRING;
 const client = new MongoClient(uri, {
 	serverApi: {
@@ -32,7 +39,7 @@ const client = new MongoClient(uri, {
 async function connect() {
 	try {
 		await client.connect();
-		console.log(`Connected to ${uri}`)
+		console.log(`Connected to ${uri}`);
 		return client.db('sismika');
 	} catch (err) {
 		console.error('MongoDB connection error:', err);
@@ -397,15 +404,14 @@ export async function getMediaForEarthquake(equakeId: ObjectId) {
 	const db = await connect();
 
 	try {
-		
 		const collection = db.collection(Collection.MEDIA);
-		const postArray = await collection.find({ equakeId: equakeId }).sort({time: -1}).toArray();
+		const postArray = await collection.find({ equakeId: equakeId }).sort({ time: -1 }).toArray();
 
 		if (postArray.length === 0) return false;
 
 		return MediaArraySchema.parse(postArray);
 	} catch (err) {
-		throw err
+		throw err;
 	}
 }
 
@@ -413,14 +419,13 @@ export async function deleteMedia(mediaId: ObjectId) {
 	const db = await connect();
 
 	try {
-
 		const collection = db.collection(Collection.MEDIA);
-		const { deletedCount }= await collection.deleteOne({_id: mediaId});
+		const { deletedCount } = await collection.deleteOne({ _id: mediaId });
 
 		if (deletedCount) return true;
-		return false
+		return false;
 	} catch (err) {
-		throw err
+		throw err;
 	}
 }
 
@@ -428,14 +433,13 @@ export async function postMedia(media: Media) {
 	const db = await connect();
 
 	try {
-
 		const collection = db.collection(Collection.MEDIA);
-		const {_id, ...payload} = media;
+		const { _id, ...payload } = media;
 		const { insertedId } = await collection.insertOne(payload);
 
 		return insertedId;
 	} catch (err) {
-		throw err
+		throw err;
 	}
 }
 
@@ -444,27 +448,29 @@ export async function collateNearbyLocations(equakeId: ObjectId, distanceMeters:
 
 	try {
 		const earthquakeTable = db.collection(Collection.EARTHQUAKE);
-		const event = await earthquakeTable.findOne({_id: equakeId});
+		const event = await earthquakeTable.findOne({ _id: equakeId });
 
 		const parsedEarthquake = EarthquakeEventSchema.parse(event);
 		const { coord } = parsedEarthquake;
 		const distanceMeters = await retrieveFurthestIntensityRadius(equakeId);
 
 		const locationQuery = {
-			"coord": {
+			coord: {
 				$near: {
 					$geometry: coord,
-					$maxDistance: distanceMeters,
+					$maxDistance: distanceMeters
 				}
 			}
-		}
+		};
 
-		const locationTable = db.collection(Collection.LOCATION)
-		const locationResults = await locationTable.find(locationQuery, {projection: {osmresult: 0, _id: 0}}).toArray();
+		const locationTable = db.collection(Collection.LOCATION);
+		const locationResults = await locationTable
+			.find(locationQuery, { projection: { osmresult: 0, _id: 0 } })
+			.toArray();
 
 		if (locationResults.length === 0) return [];
 
-		return locationResults.map(loc => LocationData.parse(loc))
+		return locationResults.map((loc) => LocationData.parse(loc));
 	} catch (err) {
 		throw err;
 	}
@@ -475,28 +481,31 @@ export async function collateNearbyEarthquakes(code: string, distanceMeters: num
 
 	try {
 		const locationTable = db.collection(Collection.LOCATION);
-		const loc = await locationTable.findOne({psgc: code}, {projection: {osmresult: 0, _id: 0}});
+		const loc = await locationTable.findOne(
+			{ psgc: code },
+			{ projection: { osmresult: 0, _id: 0 } }
+		);
 
 		const parsedLoc = LocationData.parse(loc);
 		const { coord } = parsedLoc;
 
 		const earthquakeQuery = {
-			"coord": {
+			coord: {
 				$near: {
 					$geometry: coord,
-					$maxDistance: distanceMeters,
+					$maxDistance: distanceMeters
 				}
 			}
-		}
+		};
 
 		const earthquakeTable = db.collection(Collection.EARTHQUAKE);
 		const equakeResults = await earthquakeTable.find(earthquakeQuery).toArray();
 
 		if (equakeResults.length === 0) return [];
 
-		return equakeResults.map(loc => EarthquakeEventSchema.parse(loc));
+		return equakeResults.map((loc) => EarthquakeEventSchema.parse(loc));
 	} catch (err) {
-		throw err
+		throw err;
 	}
 }
 
@@ -505,11 +514,10 @@ export async function retrieveFurthestIntensityRadius(equakeId: ObjectId) {
 
 	try {
 		const earthquakeCollection = db.collection(Collection.EARTHQUAKE);
-		const earthquake = await earthquakeCollection.findOne({_id: equakeId});
+		const earthquake = await earthquakeCollection.findOne({ _id: equakeId });
 
-		
 		const parsedEvent = EarthquakeEventSchema.parse(earthquake);
-		const { coord, mw, li, depth} = parsedEvent;
+		const { coord, mw, li, depth } = parsedEvent;
 
 		const baseRadius = Math.pow(10, 0.5 * mw - 1.8);
 		const depthFactor = 1 + depth / 100;
@@ -517,15 +525,15 @@ export async function retrieveFurthestIntensityRadius(equakeId: ObjectId) {
 		// let matchHit = false
 		// const regex = /INTENSITY [XIV]*\s?-\s?(.*?)(?=; INTENSITY|$)/gi
 		// const results = {};
-		// let match; 
+		// let match;
 
 		// const locationTable = db.collection(Collection.LOCATION);
-		
+
 		// while ((match = regex.exec(li)) !== null) {
 		// 	matchHit = true;
 		// 	const intensity = match[1];
 		// 	const locations = match[2].split(/;|,|&/,).map(loc => loc.trim()).filter(loc => loc !== '')
-		
+
 		// 	for (const location of locations) {
 		// 		const searchResult = locationTable.findOne({
 		// 			$text: {$search: location},
@@ -536,6 +544,6 @@ export async function retrieveFurthestIntensityRadius(equakeId: ObjectId) {
 		// 	}
 		// 	//get the location string of every in
 	} catch (err) {
-		throw err
+		throw err;
 	}
 }

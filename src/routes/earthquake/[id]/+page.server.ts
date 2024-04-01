@@ -11,5 +11,5 @@ export async function load({ params: { id } }) {
 	if (res === false) error(StatusCodes.NOT_FOUND);
 	res._id = res._id?.toString();
 
-	return { selectedEarthquake: res, affected: effectId};
+	return { selectedEarthquake: res, affected: effectId };
 }
