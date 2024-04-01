@@ -38,6 +38,7 @@ export enum Collection {
 	USERS = 'users',
 	MEDIA = 'posts',
 	COMMENTS = 'comments',
+	LOCATION = 'locations'
 }
 
 export function transformToObjectId(data: ObjectId | string) {
