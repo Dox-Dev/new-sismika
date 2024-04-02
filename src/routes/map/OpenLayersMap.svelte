@@ -23,7 +23,12 @@
 	import GeoJSON from 'ol/format/GeoJSON.js';
 
 	// Take JSON data of points from /src/routes/map/+page.svelte
-	export let data;
+	// dirty way: PageData automatically gives the type of the data
+	import type { PageData } from './$types';
+	import type { Pixel } from 'ol/pixel';
+	import type { MapBrowserEvent } from 'ol';
+	import { goto } from '$app/navigation';
+	export let data:PageData;
 
 	// Initialize the tilesets, map, and mount.
 	// Note that the tile_server will have change
@@ -60,13 +65,13 @@
 		// Iterate over the data to create and add each marker
 		console.log('earthquake', data.equake);
 		data.equake.forEach(function (item) {
-			console.log('earthquake', item.coord.coordinates[0], item.coord.coordinates[1]);
+			console.log('earthquake', item._id, item.coord.coordinates[0], item.coord.coordinates[1]);
 			// Create a feature for the marker
 			var marker = new Feature({
-				name: item.id,
+				name: item._id,
 				geometry: new Point(
 					fromLonLat([item.coord.coordinates[0], item.coord.coordinates[1]]) // Marker position
-				)
+				),
 			});
 
 			let icon = new Icon({
@@ -151,7 +156,43 @@
 		var markerLayer = new VectorLayer({
 			source: vectorSource
 		});
-		mountedMap.addLayer(markerLayer);
+		mountedMap.addLayer(markerLayer);	
+
+		//mountedMap.on('pointermove', function (evt) {
+		//  if (evt.dragging) {
+		//    info.style.visibility = 'hidden';
+		//    currentFeature = undefined;
+		//    return;
+		//  }
+		//  const pixel = mountedMap.getEventPixel(evt.originalEvent);
+		//  displayFeatureInfo(pixel, evt.originalEvent.target);
+		//});
+
+		async function onMapClick({dragging, map, coordinate}: MapBrowserEvent<any>) {
+			console.log("started onMapClick function");
+
+			if(!dragging) {
+				const pixel = mountedMap.getPixelFromCoordinate(coordinate);
+				const [feat, ..._ ] = mountedMap.getFeaturesAtPixel(pixel);
+				
+				// feat = 0th elem of array of features
+				if (typeof feat !== 'undefined') {
+					console.log("is defined");
+					console.log(feat);
+					const obtained_id = feat.get('name');
+					if(typeof obtained_id !== 'undefined') await goto(`/earthquake/${obtained_id}`);
+					return;
+				}
+			}
+		}
+
+		mountedMap.on('click', onMapClick);
+
+		//mountedMap.getTargetElement().addEventListener('pointerleave', function () {
+		//  currentFeature = undefined;
+		//  info.style.visibility = 'hidden';
+		//});
+
 	});
 
 	// Dynamically change the themeURL and tile_server link.

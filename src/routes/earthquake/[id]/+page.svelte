@@ -37,7 +37,7 @@
 			<!-- {/each} -->
 		</tbody>
 	</table>
-	{#each affectedLocations as { psgc, longname, population }, i}
-		<p>{`${i}: ${psgc} - ${longname}: ${population}`}</p>
+	{#each affectedLocations as { psgc, longname, population, coord }, i}
+		<p>{`${i}: ${psgc} - ${longname}: ${population} - long: ${coord.coordinates[0]} lat: ${coord.coordinates[1]}`}</p>
 	{/each}
 </div>

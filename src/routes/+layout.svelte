@@ -55,9 +55,6 @@
 		drawerStore.open(drawerSettings);
 	}
 
-	// OpenLayersMap API
-	import OpenLayersMap from '$lib/components/OpenLayersMap.svelte';
-
 	// Light/Dark mode toggle button
 	import { LightSwitch } from '@skeletonlabs/skeleton';
 	import type { LayoutServerData } from './$types';
