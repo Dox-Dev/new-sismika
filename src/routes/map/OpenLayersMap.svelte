@@ -64,91 +64,97 @@
 
 		// Iterate over the data to create and add each marker
 		console.log('earthquake', data.equake);
-		data.equake.forEach(function (item) {
-			console.log('earthquake', item._id, item.coord.coordinates[0], item.coord.coordinates[1]);
-			// Create a feature for the marker
-			var marker = new Feature({
-				name: item._id,
-				geometry: new Point(
-					fromLonLat([item.coord.coordinates[0], item.coord.coordinates[1]]) // Marker position
-				),
+		if(typeof data.equake !== 'boolean') {
+			data.equake.forEach(function (item) {
+				console.log('earthquake', item._id, item.coord.coordinates[0], item.coord.coordinates[1]);
+				// Create a feature for the marker
+				var marker = new Feature({
+					name: item._id,
+					geometry: new Point(
+						fromLonLat([item.coord.coordinates[0], item.coord.coordinates[1]]) // Marker position
+					),
+				});
+
+				let icon = new Icon({
+					width: 20,
+					height: 20,
+					src: '/earthquake.png'
+				});
+
+				// Create a style for the marker
+				var iconStyle = new Style({
+					image: icon
+				});
+
+				// Apply the style to the marker
+				marker.setStyle(iconStyle);
+
+				// Add the marker to the vector source
+				vectorSource.addFeature(marker);
 			});
-
-			let icon = new Icon({
-				width: 20,
-				height: 20,
-				src: '/earthquake.png'
-			});
-
-			// Create a style for the marker
-			var iconStyle = new Style({
-				image: icon
-			});
-
-			// Apply the style to the marker
-			marker.setStyle(iconStyle);
-
-			// Add the marker to the vector source
-			vectorSource.addFeature(marker);
-		});
+		}
 
 		console.log('stations', data.station);
-		data.station.forEach(function (item) {
-			//console.log("station", item.coord.coordinates[0], item.coord.coordinates[1]);
-			// Create a feature for the marker
-			var marker = new Feature({
-				geometry: new Point(
-					fromLonLat([item.coord.coordinates[1], item.coord.coordinates[0]]) // Marker position
-				)
+		if(typeof data.station !== 'boolean') {
+			data.station.forEach(function (item) {
+				//console.log("station", item.coord.coordinates[0], item.coord.coordinates[1]);
+				// Create a feature for the marker
+				var marker = new Feature({
+					geometry: new Point(
+						fromLonLat([item.coord.coordinates[1], item.coord.coordinates[0]]) // Marker position
+					)
+				});
+
+				let icon = new Icon({
+					width: 20,
+					height: 20,
+					src: '/station.png'
+				});
+
+				// Create a style for the marker
+				var iconStyle = new Style({
+					image: icon
+				});
+
+				// Apply the style to the marker
+				marker.setStyle(iconStyle);
+				//console.log(marker);
+
+				// Add the marker to the vector source
+				vectorSource.addFeature(marker);
 			});
-
-			let icon = new Icon({
-				width: 20,
-				height: 20,
-				src: '/station.png'
-			});
-
-			// Create a style for the marker
-			var iconStyle = new Style({
-				image: icon
-			});
-
-			// Apply the style to the marker
-			marker.setStyle(iconStyle);
-			//console.log(marker);
-
-			// Add the marker to the vector source
-			vectorSource.addFeature(marker);
-		});
+		}
 
 		// Iterate over the data to create and add each marker
 		console.log('evacuation centers', data.evac);
-		data.evac.forEach(function (item) {
-			console.log('evacuation', item.coord.coordinates[0], item.coord.coordinates[1]);
-			// Create a feature for the marker
-			var marker = new Feature({
-				geometry: new Point(
-					fromLonLat([item.coord.coordinates[0], item.coord.coordinates[1]]) // Marker position
-				)
+		if(typeof data.evac !== 'boolean') {
+			data.evac.forEach(function (item) {
+				console.log('evacuation', item.coord.coordinates[0], item.coord.coordinates[1]);
+				// Create a feature for the marker
+				var marker = new Feature({
+					geometry: new Point(
+						fromLonLat([item.coord.coordinates[0], item.coord.coordinates[1]]) // Marker position
+					)
+				});
+
+				let icon = new Icon({
+					width: 20,
+					height: 20,
+					src: '/evacuation.png'
+				});
+
+				// Create a style for the marker
+				var iconStyle = new Style({
+					image: icon
+				});
+
+				// Apply the style to the marker
+				marker.setStyle(iconStyle);
+
+				// Add the marker to the vector source
+				vectorSource.addFeature(marker);
 			});
-
-			let icon = new Icon({
-				width: 20,
-				height: 20,
-				src: '/evacuation.png'
-			});
-
-			// Create a style for the marker
-			var iconStyle = new Style({
-				image: icon
-			});
-
-			// Apply the style to the marker
-			marker.setStyle(iconStyle);
-
-			// Add the marker to the vector source
-			vectorSource.addFeature(marker);
-		});
+		}
 
 		console.log(vectorSource);
 
