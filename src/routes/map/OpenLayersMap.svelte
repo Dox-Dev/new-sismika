@@ -22,6 +22,10 @@
 	import VectorLayer from 'ol/layer/Vector';
 	import GeoJSON from 'ol/format/GeoJSON.js';
 
+	import { getToastStore } from '@skeletonlabs/skeleton';
+	const toastStore = getToastStore();
+			
+
 	// Take JSON data of points from /src/routes/map/+page.svelte
 	// dirty way: PageData automatically gives the type of the data
 	import type { PageData } from './$types';
@@ -47,11 +51,10 @@
 					source: tile_server
 				}),
 				new VectorLayer({
-					title: 'GeoJSON Layer',
 					source: new VectorSource({
 						format: new GeoJSON(),
 						url: './src/lib/assets/philippines-geojson.json' // Replace with your GeoJSON file path
-					})
+					}),
 				})
 			],
 			view: new View({
@@ -59,6 +62,15 @@
 				zoom: 6 // Initial zoom level
 			})
 		});
+
+		const geojsonLayer = new VectorLayer({
+			//title: 'GeoJSON Layer',
+			source: new VectorSource({
+				format: new GeoJSON(),
+				url: './src/lib/assets/philippines-geojson.json' // Replace with your GeoJSON file path
+			}),
+		})
+		mountedMap.addLayer(geojsonLayer);
 
 		var vectorSource = new VectorSource();
 
@@ -73,6 +85,10 @@
 					geometry: new Point(
 						fromLonLat([item.coord.coordinates[0], item.coord.coordinates[1]]) // Marker position
 					),
+					attributes: {
+						"pinType": "earthquake",
+						"time": `${item.time}`,
+					},
 				});
 
 				let icon = new Icon({
@@ -102,7 +118,12 @@
 				var marker = new Feature({
 					geometry: new Point(
 						fromLonLat([item.coord.coordinates[1], item.coord.coordinates[0]]) // Marker position
-					)
+					),
+					attributes: {
+						"pinType": "seismic station",
+						"code": `${item.code}`,
+						"name": `${item.name}`,
+					},
 				});
 
 				let icon = new Icon({
@@ -132,9 +153,14 @@
 				console.log('evacuation', item.coord.coordinates[0], item.coord.coordinates[1]);
 				// Create a feature for the marker
 				var marker = new Feature({
+					name: item._id,
 					geometry: new Point(
 						fromLonLat([item.coord.coordinates[0], item.coord.coordinates[1]]) // Marker position
-					)
+					),
+					attributes: {
+						"pinType": "evacuation center",
+						"name": `${item.name}`,
+					},
 				});
 
 				let icon = new Icon({
@@ -160,7 +186,7 @@
 
 		// Add the vector source to a layer and add it to the map
 		var markerLayer = new VectorLayer({
-			source: vectorSource
+			source: vectorSource,
 		});
 		mountedMap.addLayer(markerLayer);	
 
@@ -178,8 +204,8 @@
 			console.log("started onMapClick function");
 
 			if(!dragging) {
-				const pixel = mountedMap.getPixelFromCoordinate(coordinate);
-				const [feat, ..._ ] = mountedMap.getFeaturesAtPixel(pixel);
+				const pixel = map.getPixelFromCoordinate(coordinate);
+				const [feat, ..._ ] = map.getFeaturesAtPixel(pixel);
 				
 				// feat = 0th elem of array of features
 				if (typeof feat !== 'undefined') {
@@ -194,10 +220,50 @@
 
 		mountedMap.on('click', onMapClick);
 
-		//mountedMap.getTargetElement().addEventListener('pointerleave', function () {
-		//  currentFeature = undefined;
-		//  info.style.visibility = 'hidden';
-		//});
+		let previousToast: string;
+
+		async function onMapHover({dragging, map, coordinate}: MapBrowserEvent<any>) {
+			console.log("started onMapHover function");
+
+			if(!dragging) {
+				const pixel = map.getPixelFromCoordinate(coordinate);
+				const [feat, ..._ ] = map.getFeaturesAtPixel(pixel);
+				toastStore.close(previousToast);
+
+				// feat = 0th elem of array of features
+				if (typeof feat !== 'undefined') {
+					console.log("is defined");
+					console.log(feat);
+					
+					const gotten_feature = feat.get('attributes');
+					
+					const pinType = gotten_feature.pinType;
+					if(typeof pinType !== 'undefined') {
+						if(pinType == "earthquake") {
+							previousToast = toastStore.trigger({
+								message: `${pinType} ${gotten_feature.time}`,
+							});
+						} else if (pinType == "seismic station") {
+							previousToast = toastStore.trigger({
+								message: `${pinType} ${gotten_feature.code} ${gotten_feature.name}`,
+							});
+						} else if (pinType == "evacuation center") { // evacuation center
+							previousToast = toastStore.trigger({
+								message: `${pinType} ${gotten_feature.name}`,
+							})
+						} else if (pinType == "geoJSON") {
+							previousToast = toastStore.trigger({
+								message: `${pinType} ${feat.get('adm1_en')}`,
+							});
+						}
+					}
+				}
+			}
+
+			return;
+		}
+
+		mountedMap.on('pointermove', onMapHover);
 
 	});
 

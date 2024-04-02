@@ -33,6 +33,8 @@
 	// https://www.skeleton.dev/blog/how-to-implement-a-responsive-sidebar-drawer
 	import Navigation from '$lib/components/Navigation.svelte';
 	import { initializeStores, Drawer, getDrawerStore } from '@skeletonlabs/skeleton';
+	import { Toast, getToastStore } from '@skeletonlabs/skeleton';
+	import type { ToastSettings, ToastStore } from '@skeletonlabs/skeleton';	
 	initializeStores();
 
 	export let data: LayoutServerData;
@@ -68,6 +70,9 @@
 		<Navigation {user} />
 	</Drawer>
 </Drawer>
+
+<Toast/>
+
 <!--- <AppShell slotSidebarLeft="bg-surface-500/5 w-56 p-4"> -->
 <AppShell slotSidebarLeft="hidden bg-surface-500/5 w-0px">
 	<svelte:fragment slot="header">
