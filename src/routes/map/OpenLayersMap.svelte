@@ -24,7 +24,7 @@
 
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	const toastStore = getToastStore();
-			
+	
 
 	// Take JSON data of points from /src/routes/map/+page.svelte
 	// dirty way: PageData automatically gives the type of the data
@@ -249,19 +249,19 @@
 							previousToast = toastStore.trigger({
 								message: `${pinType} ${gotten_feature.code} ${gotten_feature.name}`,
 								background: 'variant-filled-secondary',
-								timeout: 500,
+								autohide: true,
 							});
 						} else if (pinType == "evacuation center") { // evacuation center
 							previousToast = toastStore.trigger({
 								message: `${pinType} ${gotten_feature.name}`,
 								background: 'variant-filled-tertiary',
-								timeout: 500,
+								autohide: true,
 							})
 						} else if (pinType == "geoJSON") {
 							previousToast = toastStore.trigger({
 								message: `${pinType} ${feat.get('adm1_en')}`,
 								background: 'variant-filled-success',
-								timeout: 500,
+								autohide: true,
 							});
 						}
 					}
