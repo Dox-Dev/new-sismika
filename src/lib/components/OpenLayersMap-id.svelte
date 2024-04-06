@@ -42,6 +42,10 @@
 	let mapElement: HTMLElement;
 	let mountedMap: Map;
 
+	let earthquakeLayer = new VectorLayer(); 
+	let seismicLayer = new VectorLayer(); 
+	let evacLayer = new VectorLayer();
+
 	onMount(() => {
 		mountedMap = new Map({
 			target: mapElement,
@@ -113,9 +117,10 @@
 		}
 
 		// Add the vector source to a layer and add it to the map
-		const earthquakeLayer = new VectorLayer({
-			source: vectorSource,
-		});
+		//const earthquakeLayer = new VectorLayer({
+		//	source: vectorSource,
+		//});
+		earthquakeLayer.setSource(vectorSource);
 		mountedMap.addLayer(earthquakeLayer);	
 
 
@@ -159,9 +164,10 @@
 		}
 
 		// Add the vector source to a layer and add it to the map
-		const seismicLayer = new VectorLayer({
-			source: vectorSource,
-		});
+		//const seismicLayer = new VectorLayer({
+		//	source: vectorSource,
+		//});
+		seismicLayer.setSource(vectorSource);
 		mountedMap.addLayer(seismicLayer);
 
 		vectorSource = new VectorSource();
@@ -203,9 +209,10 @@
 		}
 
 		// Add the vector source to a layer and add it to the map
-		const evacLayer = new VectorLayer({
-			source: vectorSource,
-		});
+		//const evacLayer = new VectorLayer({
+		//	source: vectorSource,
+		//});
+		evacLayer.setSource(vectorSource);
 		mountedMap.addLayer(evacLayer);
 
 		console.log(vectorSource);
@@ -266,7 +273,7 @@
 
 		let previousToast: string;
 
-		async function onMapHover({dragging, map, coordinate}: MapBrowserEvent<any>) {
+		function onMapHover({dragging, map, coordinate}: MapBrowserEvent<any>) {
 			console.log("started onMapHover function");
 			console.log(curr_longitude, curr_latitude);
 
@@ -318,8 +325,28 @@
 		}
 
 		mountedMap.on('pointermove', onMapHover);
-
 	});
+
+	let isHidden: Array<boolean> = [false,false,false]; // earthquake, seismic center, evaccenter
+		export function showOrHideIcons(iconType: string) {
+			if(iconType == "earthquake") {
+				if(isHidden[0]) earthquakeLayer.setVisible(true); // show icon type
+				else earthquakeLayer.setVisible(false); // hide icon
+
+				isHidden[0] = !isHidden[0];
+			} else if (iconType == "seismic center") {
+				if(isHidden[1]) seismicLayer.setVisible(true); // show icon type
+				else seismicLayer.setVisible(false); // hide icon
+
+				isHidden[1] = !isHidden[1];
+			} else if (iconType == "evacuation center") {
+				if(isHidden[2]) evacLayer.setVisible(true); // show icon type
+				else evacLayer.setVisible(false); // hide icon
+
+				isHidden[2] = !isHidden[2];
+			}
+			return;
+		}
 
 	// Dynamically change the themeURL and tile_server link.
 	let themeURL: string;
@@ -330,7 +357,23 @@
 	$: tile_server.setUrl(themeURL);
 </script>
 
-<div bind:this={mapElement} class="map"></div>
+<div bind:this={mapElement} class="map">
+	<button type="button" class="btn btn-sm variant-filled" on:click={() => showOrHideIcons("earthquake")}>
+		{#if isHidden[0]} Show Earthquakes
+		{:else} Hide Earthquakes
+		{/if}
+	</button>
+	<button type="button" class="btn btn-sm variant-filled" on:click={() => showOrHideIcons("seismic center")}>
+		{#if isHidden[1]} Show Seismic Centers
+		{:else} Hide Seismic Centers
+		{/if}
+	</button>
+	<button type="button" class="btn btn-sm variant-filled" on:click={() => showOrHideIcons("evacuation center")}>
+		{#if isHidden[2]} Show Evacuation Centers
+		{:else} Hide Evacuation Centers
+		{/if}
+	</button>
+</div>
 
 <style>
 	.map {
