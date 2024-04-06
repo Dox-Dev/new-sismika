@@ -2,6 +2,7 @@
 	import { getDrawerStore } from '@skeletonlabs/skeleton';
 	import avatarImage from '$lib/assets/dummy-avatar.jpeg';
 	import type { User } from '$lib/model/src/user';
+	import { goto } from '$app/navigation';
 
 	const drawerStore = getDrawerStore();
 
@@ -9,6 +10,12 @@
 		drawerStore.close();
 	}
 
+	async function logout() {
+		const res = await fetch('/auth/logout', {
+			method: 'DELETE'
+		})
+		location.reload()
+	}
 	export let user: User | undefined;
 </script>
 
@@ -45,18 +52,21 @@
 				<span>Evacuation Centers</span>
 			</a>
 		</li>
-		<li>
-			<a href="/auth/login" on:click={drawerClose}>
-				<span><i class="fa fa-google"></i></span>
-				<span>Login</span>
-			</a>
-		</li>
-		<li>
-			<a href="/auth/logout" on:click={drawerClose}>
-				<span><i class="fa-solid fa-right-from-bracket"></i></span>
-				<span>Logout</span>
-			</a>
-		</li>
+		{#if user}
+			<li>
+				<a href="/" on:click={logout}>
+					<span><i class="fa-solid fa-right-from-bracket"></i></span>
+					<span>Logout</span>
+				</a>
+			</li>
+		{:else}
+			<li>
+				<a href="/auth/login" on:click={drawerClose}>
+					<span><i class="fa fa-google"></i></span>
+					<span>Login</span>
+				</a>
+			</li>
+		{/if}
 		<!--<li><a href="/login" on:click={drawerClose}>Login</a></li> -->
 	</ul>
 </nav>
@@ -74,7 +84,7 @@
 				<a href="/auth/login" on:click={drawerClose}>
 					<!-- <span><i class="fa-solid fa-right-from-bracket"></i></span> -->
 					<span class="m10"><img src={avatarImage} alt="" /></span>
-					<span>"Not logged in."</span>
+					<span>Not logged in.</span>
 				</a>
 			{/if}
 		</li>
