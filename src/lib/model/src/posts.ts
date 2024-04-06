@@ -12,11 +12,12 @@ export enum MEDIATYPE {
 
 export const MediaSchema = z.object({
 	_id: ObjectIDSchema,
-	equakeId: z.instanceof(ObjectId),
+	equakeId: ObjectIDSchema,
 	type: z.number(),
 	time: z.string().datetime(),
-	url: z.string().url().optional(),
-	content: z.string().min(1).optional()
+	url: z.string(),
+	content: z.string(),
+	submitter_id: GoogleUserId,
 });
 
 export type Media = z.infer<typeof MediaSchema>;

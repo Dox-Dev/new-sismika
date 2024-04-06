@@ -1,0 +1,28 @@
+:root {
+    --x-large: 2.5rem;
+    --large: 1.5rem;
+    --medium: 1.25rem;
+    --normal: 1rem;
+    --small: 0.875rem;
+    --x-small: 0.75rem;
+
+    --spacing-large: 1rem;
+    --spacing-medium: 0.75rem;
+    --spacing-normal: 0.5rem;
+    --spacing-small: 0.25rem;
+    --spacing-tiny: 0.0625rem;
+
+    --border-radius: 10px;
+    --animation-length: .3s;
+
+    --intensity-1: #525D5C;
+    --intensity-2: #2559B8;
+    --intensity-3: #309D5C;
+    --intensity-4: #F2D568;
+    --intensity-5: #F9AB22;
+    --intensity-6: #EC6F14;
+    --intensity-7: #D50402;
+    --intensity-8: #5B0289;
+    --intensity-9: #000000;
+    --intensity-max: #000000;
+}
