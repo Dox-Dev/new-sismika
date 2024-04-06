@@ -73,6 +73,7 @@
 		})
 		mountedMap.addLayer(geojsonLayer);
 
+
 		var vectorSource = new VectorSource();
 
 		// Iterate over the data to create and add each marker
@@ -111,6 +112,15 @@
 			});
 		}
 
+		// Add the vector source to a layer and add it to the map
+		const earthquakeLayer = new VectorLayer({
+			source: vectorSource,
+		});
+		mountedMap.addLayer(earthquakeLayer);	
+
+
+		vectorSource = new VectorSource();
+
 		console.log('stations', data.station);
 		if(typeof data.station !== 'boolean') {
 			data.station.forEach(function (item) {
@@ -148,6 +158,14 @@
 			});
 		}
 
+		// Add the vector source to a layer and add it to the map
+		const seismicLayer = new VectorLayer({
+			source: vectorSource,
+		});
+		mountedMap.addLayer(seismicLayer);
+
+		vectorSource = new VectorSource();
+
 		// Iterate over the data to create and add each marker
 		console.log('evacuation centers', data.evac);
 		if(typeof data.evac !== 'boolean') {
@@ -184,13 +202,19 @@
 			});
 		}
 
+		// Add the vector source to a layer and add it to the map
+		const evacLayer = new VectorLayer({
+			source: vectorSource,
+		});
+		mountedMap.addLayer(evacLayer);
+
 		console.log(vectorSource);
 
 		// Add the vector source to a layer and add it to the map
-		var markerLayer = new VectorLayer({
-			source: vectorSource,
-		});
-		mountedMap.addLayer(markerLayer);	
+		//var markerLayer = new VectorLayer({
+		//	source: vectorSource,
+		//});
+		//mountedMap.addLayer(markerLayer);	
 
 		//mountedMap.on('pointermove', function (evt) {
 		//  if (evt.dragging) {
