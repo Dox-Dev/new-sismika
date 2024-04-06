@@ -266,7 +266,7 @@
 
 		let previousToast: string;
 
-		async function onMapHover({dragging, map, coordinate}: MapBrowserEvent<any>) {
+		function onMapHover({dragging, map, coordinate}: MapBrowserEvent<any>) {
 			console.log("started onMapHover function");
 			console.log(curr_longitude, curr_latitude);
 
