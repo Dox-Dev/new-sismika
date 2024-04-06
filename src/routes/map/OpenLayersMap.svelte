@@ -250,6 +250,7 @@
 				const pixel = map.getPixelFromCoordinate(coordinate);
 				const [feat, ..._ ] = map.getFeaturesAtPixel(pixel);
 				toastStore.close(previousToast);
+				toastStore.clear();
 
 				// feat = 0th elem of array of features
 				if (typeof feat !== 'undefined') {
