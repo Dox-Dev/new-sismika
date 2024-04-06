@@ -117,7 +117,7 @@
 				// Create a feature for the marker
 				var marker = new Feature({
 					geometry: new Point(
-						fromLonLat([item.coord.coordinates[1], item.coord.coordinates[0]]) // Marker position
+						fromLonLat([item.coord.coordinates[0], item.coord.coordinates[1]]) // Marker position
 					),
 					attributes: {
 						"pinType": "seismic station",
