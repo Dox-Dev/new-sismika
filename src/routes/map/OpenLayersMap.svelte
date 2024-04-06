@@ -97,10 +97,11 @@
 					},
 				});
 
+				const intensity = Math.round(Number(item.mw))
 				let icon = new Icon({
 					width: 20,
 					height: 20,
-					src: '/earthquake.png'
+					src: `./src/lib/assets/seismic-${intensity}.png`
 				});
 
 				// Create a style for the marker
