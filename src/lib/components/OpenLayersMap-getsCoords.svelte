@@ -9,7 +9,7 @@
 	// This is used to convert from [longitude, latitude]
 	// to a coordinate system OpenLayers can read.
 	// https://stackoverflow.com/questions/27820784/openlayers-3-center-map
-	import { fromLonLat, toLonLat } from 'ol/proj';
+	import { fromLonLat, transform } from 'ol/proj';
 
 	// This is used to check the current theme mode of the webpage.
 	import { modeCurrent } from '@skeletonlabs/skeleton';
@@ -32,7 +32,6 @@
 	import type { Pixel } from 'ol/pixel';
 	import type { MapBrowserEvent } from 'ol';
 	import { goto } from '$app/navigation';
-	import type { Coordinate } from 'ol/coordinate';
 	export let data:PageData;
 
 	// Initialize the tilesets, map, and mount.
@@ -117,7 +116,6 @@
 				//console.log("station", item.coord.coordinates[0], item.coord.coordinates[1]);
 				// Create a feature for the marker
 				var marker = new Feature({
-					name: item._id,
 					geometry: new Point(
 						fromLonLat([item.coord.coordinates[0], item.coord.coordinates[1]]) // Marker position
 					),
@@ -202,18 +200,12 @@
 		//  displayFeatureInfo(pixel, evt.originalEvent.target);
 		//});
 
-		let curr_longitude: number = 0;
-		let curr_latitude: number = 0;
-
 		async function onMapClick({dragging, map, coordinate}: MapBrowserEvent<any>) {
 			console.log("started onMapClick function");
-			//console.log(coordinate);
-			const convertedCoordinate = toLonLat(coordinate);
-			//console.log(convertedCoordinate);
-
-			curr_longitude = convertedCoordinate[0];
-			curr_latitude = convertedCoordinate[1];
-
+			//console.log(transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326'));
+			console.log(coordinate);
+			
+			
 			if(!dragging) {
 				const pixel = map.getPixelFromCoordinate(coordinate);
 				const [feat, ..._ ] = map.getFeaturesAtPixel(pixel);
@@ -223,16 +215,7 @@
 					console.log("is defined");
 					console.log(feat);
 					const obtained_id = feat.get('name');
-
-					const pinType = feat.get('attributes').pinType;
-					console.log(pinType);
-					if(typeof obtained_id !== 'undefined') {
-						if(pinType == "earthquake") await goto(`/earthquake/${obtained_id}`);
-
-						else if(pinType == "seismic station") await goto(`/seismic/${obtained_id}`);
-
-						else if(pinType == "evacuation center") await goto(`/evaccenter/${obtained_id}`);
-					}
+					if(typeof obtained_id !== 'undefined') await goto(`/earthquake/${obtained_id}`);
 					return;
 				}
 			}
@@ -244,7 +227,6 @@
 
 		async function onMapHover({dragging, map, coordinate}: MapBrowserEvent<any>) {
 			console.log("started onMapHover function");
-			console.log(curr_longitude, curr_latitude);
 
 			if(!dragging) {
 				const pixel = map.getPixelFromCoordinate(coordinate);
