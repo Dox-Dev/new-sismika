@@ -11,14 +11,9 @@ import { ok } from 'assert';
 import { UserSchema, type User } from '$lib/model/src/user';
 import type { Session } from '$lib/server/model/session';
 import {
-	Media,
+	type Media,
 	MediaArraySchema,
-	MediaSchema,
-	PostSchema,
-	type Article,
-	type Comment
 } from '$lib/model/src/posts';
-import { assert } from 'console';
 import { LocationData } from '$lib/model/src/locations';
 import MongoEnv from '$lib/model/src/env/mongodb';
 
@@ -443,7 +438,7 @@ export async function postMedia(media: Media) {
 	}
 }
 
-export async function collateNearbyLocations(equakeId: ObjectId, distanceMeters: number) {
+export async function collateNearbyLocations(equakeId: ObjectId) {
 	const db = await connect();
 
 	try {
