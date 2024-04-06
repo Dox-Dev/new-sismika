@@ -242,18 +242,26 @@
 						if(pinType == "earthquake") {
 							previousToast = toastStore.trigger({
 								message: `${pinType} ${gotten_feature.time}`,
+								background: 'variant-filled-primary',
+								autohide: true,
 							});
 						} else if (pinType == "seismic station") {
 							previousToast = toastStore.trigger({
 								message: `${pinType} ${gotten_feature.code} ${gotten_feature.name}`,
+								background: 'variant-filled-secondary',
+								timeout: 500,
 							});
 						} else if (pinType == "evacuation center") { // evacuation center
 							previousToast = toastStore.trigger({
 								message: `${pinType} ${gotten_feature.name}`,
+								background: 'variant-filled-tertiary',
+								timeout: 500,
 							})
 						} else if (pinType == "geoJSON") {
 							previousToast = toastStore.trigger({
 								message: `${pinType} ${feat.get('adm1_en')}`,
+								background: 'variant-filled-success',
+								timeout: 500,
 							});
 						}
 					}
