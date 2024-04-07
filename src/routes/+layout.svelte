@@ -60,6 +60,9 @@
 	// Light/Dark mode toggle button
 	import { LightSwitch } from '@skeletonlabs/skeleton';
 	import type { LayoutServerData } from './$types';
+	import Loading from '$lib/components/Loading.svelte';
+	import { navigating } from '$app/stores';
+
 </script>
 
 <Drawer>
@@ -109,7 +112,15 @@
 	<!-- (sidebarRight) -->
 	<!-- (pageHeader) -->
 	<!-- Router Slot -->
-	<slot />
+	{#if $navigating}
+	<div class='flex align-middle h-dvh items-center'>
+		<div class='w-screen flex flex-rowalign-middle justify-center'>
+			<Loading/>
+		</div>
+	</div>
+	{:else}
+		<slot />
+	{/if}
 	<!-- ---- / ---- -->
 	<!--  <svelte:fragment slot="pageFooter">Page Footer</svelte:fragment> -->
 	<!-- (footer) -->

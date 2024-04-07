@@ -1,52 +1,42 @@
-<script>
+<script lang="ts">
+	import LoginUserPromptError from "$lib/components/ui/LoginUserPromptError.svelte";
+
+    export let form;
+    let entryForm: HTMLFormElement;
 </script>
 
-<!--
-export const EarthquakeEventSchema = z.object({
-	_id: ObjectIDSchema,
-	time: z.string().datetime(),
-	coord: CoordinatesSchema,
-	depth: z.number(),
-	mi: z.number(), //moment magnitude, mi
-	mb: z.number(), //body-wave magnitude
-	ms: z.number(), //surface wave magnitude.
-	mw: z.number(),
-	li: z.string() //string list of local intensities
-});
--->
-<h1 class="h1">Earthquake Entry Submission</h1>
-<!-- <h1>Evacuation Center Submission</h1> -->
-<br />
-<!-- To connect with certain values, use bind:value={variableName} in the input header-->
-<form method="POST" enctype="application/x-www-form-urlencoded" class="card space-y-4 p-4">
-	<label class="label">
-		<span class="h3">ID</span>
-		<input class="input" type="text" placeholder="Input the earthquake ID here" />
-	</label>
-	<br />
-	<label class="label">
-		<span class="h3">Time</span>
-		<input class="input" type="text" placeholder="Input the time the earthquake happened here" />
-	</label>
-	<br />
-
-	<span class="h3">Local Intensity</span>
-	<textarea class="textarea" rows="4" placeholder="Local Intensity" />
-	<br />
-
-	<span class="h3">Coordinates</span>
-	<div class="input-group input-group-divider grid-cols-[1fr_1fr]">
-		<input type="text" placeholder="Longitude" />
-		<input type="text" placeholder="Latitude" />
-	</div>
-
-	<span class="h3">Magnitudes</span>
-	<div class="input-group input-group-divider grid-cols-[1fr_1fr_1fr]">
-		<input type="text" placeholder="Moment Magnitude" />
-		<input type="text" placeholder="Body-Wave Magnitude" />
-		<input type="text" placeholder="Surface Wave Magnitude" />
-	</div>
-
-	<br />
-	<a href="/earthquake"><button type="button" class="btn btn-sm variant-filled">Submit</button></a>
+<h1 class="h1"> Earthquake Entry Submission </h1>
+<hr>
+{#if (form?.authFail || form?.noPerms)}
+    <LoginUserPromptError/>
+{/if}
+<form method="POST" enctype="application/x-www-form-urlencoded" class="flex-col flex card space-y-4 p4" bind:this={entryForm}>
+    <article class="card flex-row m-4 p-1 space-y-3">
+        <div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
+            <div class="input-group-shim">Datetime</div>
+            <input name="time" title="Input Datetime for Earthquake Event" type="datetime-local" value={form?.time ?? ''}>
+        </div>
+        <div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
+            <div class="input-group-shim">Longitude</div>
+            <input class:input-error={!form?.long && form?.missing} type="number" name="long" title="Longitude" step="any" value={form?.long ?? ''}/>
+            <div class="input-group-shim">°</div>
+        </div>
+        <div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
+            <div class="input-group-shim">Latitude</div>
+            <input type="number" name="lat" title="Latitude" step="any" value={form?.lat ?? ''}/>
+            <div class="input-group-shim">°</div>
+        </div>
+        <div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
+            <div class="input-group-shim">Depth</div>
+            <input type="number" name="depth" title="Depth" step="any" value={form?.depth ?? ''}/>
+            <div class="input-group-shim">km</div>
+        </div>
+        <div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
+            <div class="input-group-shim">Moment Magnitude</div>
+            <input type="number" name="mw" title="Magnitude" step="any" value={form?.mw ?? ''}/>
+            <div class="input-group-shim">mw</div>
+        </div>
+        <textarea name="li" class="textarea" rows="4" placeholder="Enter local intensities." value={form?.li ?? ''} />
+    </article>
+    <button type="button" class="btn btn-sm variant-filled" on:click={() => entryForm.requestSubmit()}>Submit</button>
 </form>
