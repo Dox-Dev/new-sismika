@@ -40,6 +40,7 @@
 <div class="p-10">
 	<OpenLayersMapEarthquake {data} />
 </div>
+<h1 class="h1">{data.title}</h1>
 <EarthquakeTop {totalAffected} info={data.selectedEarthquake} />
 <button type="button" class="btn btn-sm variant-filled" on:click={() => goto(`./${_id}/submit`)}
 	>Submit Article/Information</button

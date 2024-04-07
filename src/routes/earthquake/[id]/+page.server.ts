@@ -1,7 +1,8 @@
 import {
 	collateNearbyLocations,
 	getEarthquakeData,
-	getMediaForEarthquake
+	getMediaForEarthquake,
+	resolveEarthquakeTitle
 } from '$lib/server/database/index.js';
 import { error } from '@sveltejs/kit';
 import { StatusCodes } from 'http-status-codes';
@@ -12,6 +13,7 @@ export async function load({ params: { id } }) {
 	const res = await getEarthquakeData(objId);
 	const effectId = await collateNearbyLocations(objId);
 	const articles = await getMediaForEarthquake(objId);
+	const title = await resolveEarthquakeTitle(objId)
 
 	if (typeof articles !== 'boolean')
 		articles.forEach((element) => {
@@ -22,5 +24,5 @@ export async function load({ params: { id } }) {
 	if (res === false) error(StatusCodes.NOT_FOUND);
 	res._id = res._id?.toString();
 
-	return { selectedEarthquake: res, affected: effectId, articles };
+	return { selectedEarthquake: res, affected: effectId, articles, title };
 }

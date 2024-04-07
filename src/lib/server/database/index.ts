@@ -1,7 +1,7 @@
 import { MongoClient, ObjectId, Binary, ServerApiVersion } from 'mongodb';
 import { DatabaseConnectionError, ParseValidationError } from '$lib/model/src/errors';
 import { EarthquakeEventSchema, type EarthquakeEvent } from '$lib/model/src/event';
-import { Collection } from '$lib/model/src/util';
+import { calculateDistanceinMeters, Collection } from '$lib/model/src/util';
 import { EvacCenterSchema, type EvacCenter } from '$lib/model/src/evac';
 import { StationSchema } from '$lib/model/src/station';
 import { PendingSchema, SessionSchema } from '../model/session';
@@ -537,5 +537,59 @@ export async function retrieveFurthestIntensityRadius(equakeId: ObjectId) {
 		// 	//get the location string of every in
 	} catch (err) {
 		throw err;
+	}
+}
+
+export async function resolveEarthquakeTitle(equakeId: ObjectId) {
+	const db = await connect()
+
+	try {
+		const earthquakeCollection = db.collection(Collection.EARTHQUAKE);
+		const earthquake = await earthquakeCollection.findOne({ _id: equakeId });
+
+		const parsedEvent = EarthquakeEventSchema.parse(earthquake);
+		const { coord } = parsedEvent;
+		
+		const locationQuery = {
+			coord: {
+				$near: {
+					$geometry: coord,
+				}
+			}
+		};
+
+		const locationTable = db.collection(Collection.LOCATION);
+		const locationResults = await locationTable
+			.findOne(locationQuery, { projection: { coord: 1, longname: 1 } })
+
+		const parsedLocation = LocationData.pick({coord: true, longname: true}).parse(locationResults)
+
+		ok(parsedLocation.coord)
+		
+		const [startLng, startLat] = parsedLocation.coord.coordinates.map(coord => coord * Math.PI / 180);
+		const [endLng, endLat] = coord.coordinates.map(coord => coord * Math.PI / 180);
+		
+		const dLng = endLng - startLng;
+
+		const y = Math.sin(dLng) * Math.cos(endLat);
+		const x = Math.cos(startLat) * Math.sin(endLat) - Math.sin(startLat) * Math.cos(endLat) * Math.cos(dLng);
+		const bearing = Math.atan2(y, x) * 180 / Math.PI;
+
+		const norm = (bearing + 360) & 360
+
+		const directions = [
+			"North", "North-North-East", "North-East", "East-North-East", 
+			"East", "East-South-East", "South-East", "South-South-East",
+			"South", "South-South-West", "South-West", "West-South-West",
+			"West", "West-North-West", "North-West", "North-North-West"
+		];
+		const index = Math.round(norm / 22.5) % 16; // There are 16 segments
+		
+		const cardinality = directions[index];
+		const distanceMeters = calculateDistanceinMeters(parsedLocation.coord, coord);
+
+		return `${(distanceMeters/1000).toPrecision(2)}km ${cardinality} of ${parsedLocation.longname}` 
+	} catch (err) {
+		throw err
 	}
 }

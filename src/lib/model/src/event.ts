@@ -4,6 +4,7 @@ import { ObjectId } from 'mongodb';
 
 export const EarthquakeEventSchema = z.object({
 	_id: ObjectIDSchema,
+	title: z.string().optional(),
 	time: z.string().datetime(),
 	coord: CoordinatesSchema,
 	depth: z.number(),
