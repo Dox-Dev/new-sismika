@@ -55,7 +55,7 @@
 				new VectorLayer({
 					source: new VectorSource({
 						format: new GeoJSON(),
-						url: '../../../src/lib/assets/philippines-geojson.json' // Replace with your GeoJSON file path
+						url: '/philippines-geojson.json' // Replace with your GeoJSON file path
 					}),
 				})
 			],
@@ -69,7 +69,7 @@
 			//title: 'GeoJSON Layer',
 			source: new VectorSource({
 				format: new GeoJSON(),
-				url: '../../../src/lib/assets/philippines-geojson.json' // Replace with your GeoJSON file path
+				url: '/philippines-geojson.json' // Replace with your GeoJSON file path
 			}),
 		})
 		mountedMap.addLayer(geojsonLayer);
@@ -96,7 +96,7 @@
 			let icon = new Icon({
 				width: 20,
 				height: 20,
-				src: `../../../src/lib/assets/seismic-${intensity}.png`
+				src: `../seismic-${intensity}.png`
 			});
 
 			// Create a style for the marker
@@ -138,7 +138,7 @@
 				const icon = new Icon({
 					width: 10,
 					height: 10,
-					src: `../../../src/lib/assets/seismic-1.png`
+					src: `../seismic-1.png`
 				})
 				
 				const iconStyle = new Style({
