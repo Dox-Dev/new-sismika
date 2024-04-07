@@ -1,10 +1,20 @@
 import { MediaSchema } from '$lib/model/src/posts.js';
 import { Permission } from '$lib/model/src/user.js';
-import { getUserFromSession, postMedia } from '$lib/server/database/index.js';
-import { fail, redirect } from '@sveltejs/kit';
+import { collateNearbyLocations, getEarthquakeData, getUserFromSession, postMedia } from '$lib/server/database/index.js';
+import { error, fail, redirect } from '@sveltejs/kit';
 import { StatusCodes } from 'http-status-codes';
 import { ObjectId } from 'mongodb';
 
+export async function load({ params: { id } }) {
+	const objId = ObjectId.createFromHexString(id);
+	const res = await getEarthquakeData(objId);
+	const effectId = await collateNearbyLocations(objId);
+
+	if (res === false) error(StatusCodes.NOT_FOUND);
+	res._id = res._id?.toString();
+
+	return { selectedEarthquake: res, affected: effectId };
+}	
 export const actions = {
     async default({cookies, request, params: {id}}) {
         const form = await request.formData();

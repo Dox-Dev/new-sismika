@@ -1,16 +1,24 @@
 <script lang="ts">
 	import MarkdownEditor from "$lib/components/MarkdownEditor.svelte";
     import LoginUserPromptError from "$lib/components/ui/LoginUserPromptError.svelte";
+    import EarthquakeTop from "$lib/components/ui/EarthquakeTop.svelte";
+
+	import type { PageData } from "./$types.js";
     export let form;
     let selected = form?.mediaType ?? 0;
     let content = form?.content ?? '';
 
     let thisForm: HTMLFormElement;
 
+    export let data: PageData;
+	$: affectedLocations = data.affected;
+	$: totalAffected = affectedLocations !== undefined ? affectedLocations.reduce((n, {population}) => n + population, 0).toLocaleString() : "0";
+
 </script>
 
 <style>
 </style>
+<EarthquakeTop {totalAffected} info={data.selectedEarthquake}/>
 <h1 class="h1">Media Submission Form</h1>
 {#if (form?.authFail || form?.noPerms)}
     <LoginUserPromptError/>
