@@ -5,12 +5,14 @@
 	import HorizontalContainter from '$lib/components/ui/containers/HorizontalContainter.svelte';
 	import ArticleCard from '$lib/components/ui/ArticleCard.svelte';
 	import EarthquakeTop from '$lib/components/ui/EarthquakeTop.svelte';
+	import { goto } from '$app/navigation';
+	import OpenLayersMapEarthquake from './OpenLayersMap-Earthquake.svelte';
 
 	export let data: import('./$types').PageServerData;
 	$: ({ _id, time, coord, depth, mi, mb, ms, li } = data.selectedEarthquake);
 	$: affectedLocations = data.affected;
 
-	$: totalAffected = affectedLocations.reduce((n, {population}) => n + population, 0).toLocaleString();
+	$: totalAffected = affectedLocations !== undefined ? affectedLocations.reduce((n, {population}) => n + population, 0).toLocaleString() : "0";
 
 	let paginationSettings = {
 		page: 0,
@@ -23,9 +25,12 @@
 	$: paginatedSource = affectedLocations.slice(paginationSettings.page * paginationSettings.limit, paginationSettings.page * paginationSettings.limit + paginationSettings.limit)
 </script>
 
-<!-- Responsive Container (recommended) -->
-<p> Put map here that can take in locations and earthquakes</p>
+<!-- Responsive Container (recommended) -->	
+<div class="p-10">
+	<OpenLayersMapEarthquake {data}/>
+</div>
 <EarthquakeTop {totalAffected} info={data.selectedEarthquake}/>
+<button type="button" class="btn btn-sm variant-filled" on:click={() => goto(`./${_id}/submit`)}>Submit Article/Information</button>
 <Accordion>
 	{#if (typeof articles === 'object')}
 		<AccordionItem open>
