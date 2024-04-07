@@ -11,33 +11,37 @@ export const actions = {
 		const form = await request.formData();
 
 		const time = form.get('time')?.toString();
-		if (time === undefined) return fail(StatusCodes.BAD_REQUEST, {missing: true});
+		if (time === undefined) return fail(StatusCodes.BAD_REQUEST, { missing: true });
 
 		const long = form.get('long')?.toString();
-		if (long === undefined) return fail(StatusCodes.BAD_REQUEST, {time, missing: true});
+		if (long === undefined) return fail(StatusCodes.BAD_REQUEST, { time, missing: true });
 
 		const lat = form.get('lat')?.toString();
-		if (lat === undefined) return fail(StatusCodes.BAD_REQUEST, {time, long, missing: true});
+		if (lat === undefined) return fail(StatusCodes.BAD_REQUEST, { time, long, missing: true });
 
 		const depth = form.get('depth');
-		if (depth === null || depth instanceof File) return fail(StatusCodes.BAD_REQUEST, {time, long, lat, missing:true});
+		if (depth === null || depth instanceof File)
+			return fail(StatusCodes.BAD_REQUEST, { time, long, lat, missing: true });
 		const mi = form.get('mi')?.toString();
 		const mb = form.get('mb')?.toString();
 		const ms = form.get('ms')?.toString();
 		const mw = form.get('mw')?.toString();
 		if (mi === undefined && mb === undefined && ms === undefined && mw === undefined)
-			return fail(StatusCodes.BAD_REQUEST, {time, long, lat, depth, missing:true});
+			return fail(StatusCodes.BAD_REQUEST, { time, long, lat, depth, missing: true });
 
 		const li = form.get('li')?.toString();
-		if (li === undefined) return fail(StatusCodes.BAD_REQUEST, {time, long, lat, depth, mw, missing:true});
+		if (li === undefined)
+			return fail(StatusCodes.BAD_REQUEST, { time, long, lat, depth, mw, missing: true });
 
 		const sid = cookies.get('sid');
-		if (!sid) return fail(StatusCodes.UNAUTHORIZED, {time, long, lat, depth, mw, authFail:true});
+		if (!sid) return fail(StatusCodes.UNAUTHORIZED, { time, long, lat, depth, mw, authFail: true });
 		// A check can be done to see if a session exists.
 
 		const user = await getUserFromSession(sid);
-		if (user === false) return fail(StatusCodes.UNAUTHORIZED, {time, long, lat, depth, mw, authFail:true});
-		if (user.permission < Permission.RESEARCHER) return fail(StatusCodes.UNAUTHORIZED, {time, long, lat, depth, mw, noPerms:true});
+		if (user === false)
+			return fail(StatusCodes.UNAUTHORIZED, { time, long, lat, depth, mw, authFail: true });
+		if (user.permission < Permission.RESEARCHER)
+			return fail(StatusCodes.UNAUTHORIZED, { time, long, lat, depth, mw, noPerms: true });
 
 		const insert = {
 			time: new Date(time).toISOString(),
@@ -60,9 +64,9 @@ export const actions = {
 			if (typeof result === 'object') {
 				return redirect(StatusCodes.MOVED_TEMPORARILY, `/earthquake/${resId}`);
 			}
-			return fail(StatusCodes.BAD_REQUEST, {time, long, lat, depth, mw, li, parseFail:true});
+			return fail(StatusCodes.BAD_REQUEST, { time, long, lat, depth, mw, li, parseFail: true });
 		} catch (err) {
-			throw err
+			throw err;
 		}
 	}
 } satisfies Actions;

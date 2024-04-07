@@ -69,7 +69,7 @@
 				)
 			});
 
-			const intensity = Math.round(Number(item.mw))
+			const intensity = Math.round(Number(item.mw));
 			let icon = new Icon({
 				width: 20,
 				height: 20,

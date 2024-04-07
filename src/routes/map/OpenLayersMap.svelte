@@ -24,7 +24,6 @@
 
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	const toastStore = getToastStore();
-	
 
 	// Take JSON data of points from /src/routes/map/+page.svelte
 	// dirty way: PageData automatically gives the type of the data
@@ -33,7 +32,7 @@
 	import type { MapBrowserEvent } from 'ol';
 	import { goto } from '$app/navigation';
 	import type { Coordinate } from 'ol/coordinate';
-	export let data:PageData;
+	export let data: PageData;
 
 	// Initialize the tilesets, map, and mount.
 	// Note that the tile_server will have change
@@ -42,8 +41,8 @@
 	let mapElement: HTMLElement;
 	let mountedMap: Map;
 
-	let earthquakeLayer = new VectorLayer(); 
-	let seismicLayer = new VectorLayer(); 
+	let earthquakeLayer = new VectorLayer();
+	let seismicLayer = new VectorLayer();
 	let evacLayer = new VectorLayer();
 
 	onMount(() => {
@@ -59,7 +58,7 @@
 					source: new VectorSource({
 						format: new GeoJSON(),
 						url: '/philippines-geojson.json' // Replace with your GeoJSON file path
-					}),
+					})
 				})
 			],
 			view: new View({
@@ -73,16 +72,15 @@
 			source: new VectorSource({
 				format: new GeoJSON(),
 				url: '/philippines-geojson.json' // Replace with your GeoJSON file path
-			}),
-		})
+			})
+		});
 		mountedMap.addLayer(geojsonLayer);
-
 
 		var vectorSource = new VectorSource();
 
 		// Iterate over the data to create and add each marker
 		console.log('earthquake', data.equake);
-		if(typeof data.equake !== 'boolean') {
+		if (typeof data.equake !== 'boolean') {
 			data.equake.forEach(function (item) {
 				console.log('earthquake', item._id, item.coord.coordinates[0], item.coord.coordinates[1]);
 				// Create a feature for the marker
@@ -92,12 +90,12 @@
 						fromLonLat([item.coord.coordinates[0], item.coord.coordinates[1]]) // Marker position
 					),
 					attributes: {
-						"pinType": "earthquake",
-						"time": `${item.time}`,
-					},
+						pinType: 'earthquake',
+						time: `${item.time}`
+					}
 				});
 
-				const intensity = Math.round(Number(item.mw))
+				const intensity = Math.round(Number(item.mw));
 				let icon = new Icon({
 					width: 20,
 					height: 20,
@@ -122,13 +120,12 @@
 		//	source: vectorSource,
 		//});
 		earthquakeLayer.setSource(vectorSource);
-		mountedMap.addLayer(earthquakeLayer);	
-
+		mountedMap.addLayer(earthquakeLayer);
 
 		vectorSource = new VectorSource();
 
 		console.log('stations', data.station);
-		if(typeof data.station !== 'boolean') {
+		if (typeof data.station !== 'boolean') {
 			data.station.forEach(function (item) {
 				//console.log("station", item.coord.coordinates[0], item.coord.coordinates[1]);
 				// Create a feature for the marker
@@ -138,10 +135,10 @@
 						fromLonLat([item.coord.coordinates[0], item.coord.coordinates[1]]) // Marker position
 					),
 					attributes: {
-						"pinType": "seismic station",
-						"code": `${item.code}`,
-						"name": `${item.name}`,
-					},
+						pinType: 'seismic station',
+						code: `${item.code}`,
+						name: `${item.name}`
+					}
 				});
 
 				let icon = new Icon({
@@ -175,7 +172,7 @@
 
 		// Iterate over the data to create and add each marker
 		console.log('evacuation centers', data.evac);
-		if(typeof data.evac !== 'boolean') {
+		if (typeof data.evac !== 'boolean') {
 			data.evac.forEach(function (item) {
 				console.log('evacuation', item.coord.coordinates[0], item.coord.coordinates[1]);
 				// Create a feature for the marker
@@ -185,9 +182,9 @@
 						fromLonLat([item.coord.coordinates[0], item.coord.coordinates[1]]) // Marker position
 					),
 					attributes: {
-						"pinType": "evacuation center",
-						"name": `${item.name}`,
-					},
+						pinType: 'evacuation center',
+						name: `${item.name}`
+					}
 				});
 
 				let icon = new Icon({
@@ -222,7 +219,7 @@
 		//var markerLayer = new VectorLayer({
 		//	source: vectorSource,
 		//});
-		//mountedMap.addLayer(markerLayer);	
+		//mountedMap.addLayer(markerLayer);
 
 		//mountedMap.on('pointermove', function (evt) {
 		//  if (evt.dragging) {
@@ -237,8 +234,8 @@
 		let curr_longitude: number = 0;
 		let curr_latitude: number = 0;
 
-		async function onMapClick({dragging, map, coordinate}: MapBrowserEvent<any>) {
-			console.log("started onMapClick function");
+		async function onMapClick({ dragging, map, coordinate }: MapBrowserEvent<any>) {
+			console.log('started onMapClick function');
 			//console.log(coordinate);
 			const convertedCoordinate = toLonLat(coordinate);
 			//console.log(convertedCoordinate);
@@ -246,24 +243,22 @@
 			curr_longitude = convertedCoordinate[0];
 			curr_latitude = convertedCoordinate[1];
 
-			if(!dragging) {
+			if (!dragging) {
 				const pixel = map.getPixelFromCoordinate(coordinate);
-				const [feat, ..._ ] = map.getFeaturesAtPixel(pixel);
-				
+				const [feat, ..._] = map.getFeaturesAtPixel(pixel);
+
 				// feat = 0th elem of array of features
 				if (typeof feat !== 'undefined') {
-					console.log("is defined");
+					console.log('is defined');
 					console.log(feat);
 					const obtained_id = feat.get('name');
 
 					const pinType = feat.get('attributes').pinType;
 					console.log(pinType);
-					if(typeof obtained_id !== 'undefined') {
-						if(pinType == "earthquake") await goto(`/earthquake/${obtained_id}`);
-
-						else if(pinType == "seismic station") await goto(`/seismic/${obtained_id}`);
-
-						else if(pinType == "evacuation center") await goto(`/evaccenter/${obtained_id}`);
+					if (typeof obtained_id !== 'undefined') {
+						if (pinType == 'earthquake') await goto(`/earthquake/${obtained_id}`);
+						else if (pinType == 'seismic station') await goto(`/seismic/${obtained_id}`);
+						else if (pinType == 'evacuation center') await goto(`/evaccenter/${obtained_id}`);
 					}
 					return;
 				}
@@ -274,48 +269,49 @@
 
 		let previousToast: string;
 
-		function onMapHover({dragging, map, coordinate}: MapBrowserEvent<any>) {
-			console.log("started onMapHover function");
+		function onMapHover({ dragging, map, coordinate }: MapBrowserEvent<any>) {
+			console.log('started onMapHover function');
 			console.log(curr_longitude, curr_latitude);
 
-			if(!dragging) {
+			if (!dragging) {
 				const pixel = map.getPixelFromCoordinate(coordinate);
-				const [feat, ..._ ] = map.getFeaturesAtPixel(pixel);
+				const [feat, ..._] = map.getFeaturesAtPixel(pixel);
 				toastStore.close(previousToast);
 				toastStore.clear();
 
 				// feat = 0th elem of array of features
 				if (typeof feat !== 'undefined') {
-					console.log("is defined");
+					console.log('is defined');
 					console.log(feat);
-					
+
 					const gotten_feature = feat.get('attributes');
-					
+
 					const pinType = gotten_feature.pinType;
-					if(typeof pinType !== 'undefined') {
-						if(pinType == "earthquake") {
+					if (typeof pinType !== 'undefined') {
+						if (pinType == 'earthquake') {
 							previousToast = toastStore.trigger({
 								message: `${pinType} ${gotten_feature.time}`,
 								background: 'variant-filled-primary',
-								autohide: true,
+								autohide: true
 							});
-						} else if (pinType == "seismic station") {
+						} else if (pinType == 'seismic station') {
 							previousToast = toastStore.trigger({
 								message: `${pinType} ${gotten_feature.code} ${gotten_feature.name}`,
 								background: 'variant-filled-secondary',
-								autohide: true,
+								autohide: true
 							});
-						} else if (pinType == "evacuation center") { // evacuation center
+						} else if (pinType == 'evacuation center') {
+							// evacuation center
 							previousToast = toastStore.trigger({
 								message: `${pinType} ${gotten_feature.name}`,
 								background: 'variant-filled-tertiary',
-								autohide: true,
-							})
-						} else if (pinType == "geoJSON") {
+								autohide: true
+							});
+						} else if (pinType == 'geoJSON') {
 							previousToast = toastStore.trigger({
 								message: `${pinType} ${feat.get('adm1_en')}`,
 								background: 'variant-filled-success',
-								autohide: true,
+								autohide: true
 							});
 						}
 					}
@@ -328,26 +324,29 @@
 		mountedMap.on('pointermove', onMapHover);
 	});
 
-	let isHidden: Array<boolean> = [false,false,false]; // earthquake, seismic center, evaccenter
-		export function showOrHideIcons(iconType: string) {
-			if(iconType == "earthquake") {
-				if(isHidden[0]) earthquakeLayer.setVisible(true); // show icon type
-				else earthquakeLayer.setVisible(false); // hide icon
+	let isHidden: Array<boolean> = [false, false, false]; // earthquake, seismic center, evaccenter
+	export function showOrHideIcons(iconType: string) {
+		if (iconType == 'earthquake') {
+			if (isHidden[0])
+				earthquakeLayer.setVisible(true); // show icon type
+			else earthquakeLayer.setVisible(false); // hide icon
 
-				isHidden[0] = !isHidden[0];
-			} else if (iconType == "seismic center") {
-				if(isHidden[1]) seismicLayer.setVisible(true); // show icon type
-				else seismicLayer.setVisible(false); // hide icon
+			isHidden[0] = !isHidden[0];
+		} else if (iconType == 'seismic center') {
+			if (isHidden[1])
+				seismicLayer.setVisible(true); // show icon type
+			else seismicLayer.setVisible(false); // hide icon
 
-				isHidden[1] = !isHidden[1];
-			} else if (iconType == "evacuation center") {
-				if(isHidden[2]) evacLayer.setVisible(true); // show icon type
-				else evacLayer.setVisible(false); // hide icon
+			isHidden[1] = !isHidden[1];
+		} else if (iconType == 'evacuation center') {
+			if (isHidden[2])
+				evacLayer.setVisible(true); // show icon type
+			else evacLayer.setVisible(false); // hide icon
 
-				isHidden[2] = !isHidden[2];
-			}
-			return;
+			isHidden[2] = !isHidden[2];
 		}
+		return;
+	}
 
 	// Dynamically change the themeURL and tile_server link.
 	let themeURL: string;
@@ -359,19 +358,37 @@
 </script>
 
 <div bind:this={mapElement} class="map">
-	<button type="button" class="btn btn-sm variant-filled" on:click={() => showOrHideIcons("earthquake")}>
-		{#if isHidden[0]} Show Earthquakes
-		{:else} Hide Earthquakes
+	<button
+		type="button"
+		class="btn btn-sm variant-filled"
+		on:click={() => showOrHideIcons('earthquake')}
+	>
+		{#if isHidden[0]}
+			Show Earthquakes
+		{:else}
+			Hide Earthquakes
 		{/if}
 	</button>
-	<button type="button" class="btn btn-sm variant-filled" on:click={() => showOrHideIcons("seismic center")}>
-		{#if isHidden[1]} Show Seismic Centers
-		{:else} Hide Seismic Centers
+	<button
+		type="button"
+		class="btn btn-sm variant-filled"
+		on:click={() => showOrHideIcons('seismic center')}
+	>
+		{#if isHidden[1]}
+			Show Seismic Centers
+		{:else}
+			Hide Seismic Centers
 		{/if}
 	</button>
-	<button type="button" class="btn btn-sm variant-filled" on:click={() => showOrHideIcons("evacuation center")}>
-		{#if isHidden[2]} Show Evacuation Centers
-		{:else} Hide Evacuation Centers
+	<button
+		type="button"
+		class="btn btn-sm variant-filled"
+		on:click={() => showOrHideIcons('evacuation center')}
+	>
+		{#if isHidden[2]}
+			Show Evacuation Centers
+		{:else}
+			Hide Evacuation Centers
 		{/if}
 	</button>
 </div>

@@ -34,7 +34,7 @@
 	import Navigation from '$lib/components/Navigation.svelte';
 	import { initializeStores, Drawer, getDrawerStore } from '@skeletonlabs/skeleton';
 	import { Toast, getToastStore } from '@skeletonlabs/skeleton';
-	import type { ToastSettings, ToastStore } from '@skeletonlabs/skeleton';	
+	import type { ToastSettings, ToastStore } from '@skeletonlabs/skeleton';
 	initializeStores();
 
 	export let data: LayoutServerData;
@@ -62,7 +62,6 @@
 	import type { LayoutServerData } from './$types';
 	import Loading from '$lib/components/Loading.svelte';
 	import { navigating } from '$app/stores';
-
 </script>
 
 <Drawer>
@@ -74,7 +73,7 @@
 	</Drawer>
 </Drawer>
 
-<Toast/>
+<Toast />
 
 <!--- <AppShell slotSidebarLeft="bg-surface-500/5 w-56 p-4"> -->
 <AppShell slotSidebarLeft="hidden bg-surface-500/5 w-0px">
@@ -113,11 +112,11 @@
 	<!-- (pageHeader) -->
 	<!-- Router Slot -->
 	{#if $navigating}
-	<div class='flex align-middle h-dvh items-center'>
-		<div class='w-screen flex flex-rowalign-middle justify-center'>
-			<Loading/>
+		<div class="flex align-middle h-dvh items-center">
+			<div class="w-screen flex flex-rowalign-middle justify-center">
+				<Loading />
+			</div>
 		</div>
-	</div>
 	{:else}
 		<slot />
 	{/if}

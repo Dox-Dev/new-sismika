@@ -1,3 +1,3 @@
 export enum Events {
-    CardClick = "cardClick"
+	CardClick = 'cardClick'
 }

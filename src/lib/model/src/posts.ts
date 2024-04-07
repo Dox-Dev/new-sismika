@@ -17,7 +17,7 @@ export const MediaSchema = z.object({
 	time: z.string().datetime(),
 	url: z.string(),
 	content: z.string(),
-	submitter_id: GoogleUserId,
+	submitter_id: GoogleUserId
 });
 
 export type Media = z.infer<typeof MediaSchema>;

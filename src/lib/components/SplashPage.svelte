@@ -1,6 +1,6 @@
 <script lang="ts">
-    export let innerHeight: number;
-    export let innerWidth: number;
+	export let innerHeight: number;
+	export let innerWidth: number;
 </script>
 
 <div class="container h-full v-full mx-auto flex justify-center items-center">

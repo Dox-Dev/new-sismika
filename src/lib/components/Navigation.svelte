@@ -13,8 +13,8 @@
 	async function logout() {
 		const res = await fetch('/auth/logout', {
 			method: 'DELETE'
-		})
-		location.reload()
+		});
+		location.reload();
 	}
 	export let user: User | undefined;
 </script>

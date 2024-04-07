@@ -1,5 +1,10 @@
 <script lang="ts">
-	import { Accordion, AccordionItem, Paginator, type PaginationSettings } from '@skeletonlabs/skeleton';
+	import {
+		Accordion,
+		AccordionItem,
+		Paginator,
+		type PaginationSettings
+	} from '@skeletonlabs/skeleton';
 	import VerticalContainer from '$lib/components/ui/containers/VerticalContainer.svelte';
 	import LocationCard from '$lib/components/ui/LocationCard.svelte';
 	import HorizontalContainter from '$lib/components/ui/containers/HorizontalContainter.svelte';
@@ -12,40 +17,48 @@
 	$: ({ _id, time, coord, depth, mi, mb, ms, li } = data.selectedEarthquake);
 	$: affectedLocations = data.affected;
 
-	$: totalAffected = affectedLocations !== undefined ? affectedLocations.reduce((n, {population}) => n + population, 0).toLocaleString() : "0";
+	$: totalAffected =
+		affectedLocations !== undefined
+			? affectedLocations.reduce((n, { population }) => n + population, 0).toLocaleString()
+			: '0';
 
 	let paginationSettings = {
 		page: 0,
 		limit: 5,
 		size: data.affected.length,
-		amounts: [3, 5, 8, 10],
+		amounts: [3, 5, 8, 10]
 	} satisfies PaginationSettings;
 
-	$: ( {articles} = data)
-	$: paginatedSource = affectedLocations.slice(paginationSettings.page * paginationSettings.limit, paginationSettings.page * paginationSettings.limit + paginationSettings.limit)
+	$: ({ articles } = data);
+	$: paginatedSource = affectedLocations.slice(
+		paginationSettings.page * paginationSettings.limit,
+		paginationSettings.page * paginationSettings.limit + paginationSettings.limit
+	);
 </script>
 
-<!-- Responsive Container (recommended) -->	
+<!-- Responsive Container (recommended) -->
 <div class="p-10">
-	<OpenLayersMapEarthquake {data}/>
+	<OpenLayersMapEarthquake {data} />
 </div>
-<EarthquakeTop {totalAffected} info={data.selectedEarthquake}/>
-<button type="button" class="btn btn-sm variant-filled" on:click={() => goto(`./${_id}/submit`)}>Submit Article/Information</button>
+<EarthquakeTop {totalAffected} info={data.selectedEarthquake} />
+<button type="button" class="btn btn-sm variant-filled" on:click={() => goto(`./${_id}/submit`)}
+	>Submit Article/Information</button
+>
 <Accordion>
-	{#if (typeof articles === 'object')}
+	{#if typeof articles === 'object'}
 		<AccordionItem open>
 			<svelte:fragment slot="summary">Media and Articles</svelte:fragment>
 			<svelte:fragment slot="content">
 				<HorizontalContainter>
 					{#each articles as article}
-						<ArticleCard {...article}/>
+						<ArticleCard {...article} />
 					{/each}
 				</HorizontalContainter>
 			</svelte:fragment>
 		</AccordionItem>
 	{/if}
 	{#if li}
-		<AccordionItem >
+		<AccordionItem>
 			<svelte:fragment slot="summary">Local Intensities</svelte:fragment>
 			<svelte:fragment slot="content">
 				{li}
@@ -57,7 +70,7 @@
 		<svelte:fragment slot="content">
 			<VerticalContainer>
 				{#each paginatedSource as location}
-					<LocationCard {...location}/>
+					<LocationCard {...location} />
 				{/each}
 			</VerticalContainer>
 			<Paginator
@@ -104,12 +117,10 @@
 						<!-- {/each} -->
 					</tbody>
 				</table>
-			</div>			
+			</div>
 		</svelte:fragment>
 	</AccordionItem>
 </Accordion>
 <article class="flex">
-	<section>
-
-	</section>
+	<section></section>
 </article>

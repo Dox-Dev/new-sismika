@@ -10,10 +10,7 @@ import { randomFillSync } from 'crypto';
 import { ok } from 'assert';
 import { UserSchema, type User } from '$lib/model/src/user';
 import type { Session } from '$lib/server/model/session';
-import {
-	type Media,
-	MediaArraySchema,
-} from '$lib/model/src/posts';
+import { type Media, MediaArraySchema } from '$lib/model/src/posts';
 import { LocationData } from '$lib/model/src/locations';
 import MongoEnv from '$lib/model/src/env/mongodb';
 
