@@ -62,17 +62,21 @@ export async function addEarthquakeData(data: EarthquakeEvent) {
  * @returns EarthquakeEventSchema[] an array of validated EarthquakeEvents
  * @returns false - if there is no earthquakeData in the database
  */
-export async function getAllEarthquakeData() {
+export async function getAllEarthquakeData(page?: number, limit?: number) {
 	const db = await connect();
 
-	const collection = db.collection(Collection.EARTHQUAKE);
-	const equakeCursor = collection.find({});
+	const collection = db.collection(Collection.EARTHQUAKE,);
+
+	let equakeCursor = collection.find({},{projection: {_id: {$toString: "$_id"}}});;
+
+	if (page && limit) equakeCursor = equakeCursor.skip(page - 1* limit).limit(limit)
+
 	const equakes = await equakeCursor.toArray();
 
 	if (equakes === null) return false;
 
 	try {
-		const validated = equakes.map((doc) => EarthquakeEventSchema.parse(doc));
+		const validated = EarthquakeEventSchema.array().parse(equakes)
 		return validated;
 	} catch (err) {
 		throw ParseValidationError;
@@ -89,8 +93,8 @@ export async function getEarthquakeData(id: ObjectId) {
 	const db = await connect();
 
 	const collection = db.collection(Collection.EARTHQUAKE);
-	const equakeCursor = await collection.findOne({ _id: id });
-	console.log(equakeCursor);
+	const equakeCursor = await collection.findOne({ _id: id }, {projection: {_id: {$toString: "$_id"}}});
+
 	if (equakeCursor === null) return false;
 
 	try {
@@ -123,18 +127,20 @@ export async function deleteEarthquakeData(id: ObjectId) {
  * @returns StationSchema[]: returns an array of validated StationSchemas
  * @returns false - if no StationData is found
  */
-export async function getAllStationData() {
+export async function getAllStationData(page?: number, limit?: number) {
 	const db = await connect();
 
 	const collection = db.collection(Collection.STATION);
-	const stationCursor = collection.find({});
+	let stationCursor = collection.find({}, {projection: {_id: {$toString: "$_id"}}});
+
+	if (page && limit) stationCursor.limit(limit).skip(page - 1* limit); 
 
 	if (stationCursor === null) return false;
 
 	const stations = await stationCursor.toArray();
 
 	try {
-		const validated = stations.map((doc) => StationSchema.parse(doc));
+		const validated = StationSchema.array().parse(stations)
 		return validated;
 	} catch (err) {
 		throw ParseValidationError;
@@ -188,8 +194,8 @@ export async function getStationData(id: ObjectId) {
 	const db = await connect();
 
 	const collection = db.collection(Collection.STATION);
-	const stationCursor = await collection.findOne({ _id: id });
-	console.log(stationCursor);
+	const stationCursor = await collection.findOne({ _id: id }, {projection: {_id: {$toString: "$_id"}}});
+
 	if (stationCursor === null) return false;
 
 	try {
@@ -205,18 +211,20 @@ export async function getStationData(id: ObjectId) {
  * @returns EvacCenter[]: an array of EvacCenters
  * @false - if MongoDB does not have any EvacCenters
  */
-export async function getAllEvacData() {
+export async function getAllEvacData(page?: number, limit?:number) {
 	const db = await connect();
 
 	const collection = db.collection(Collection.EVAC);
-	const evacCursor = collection.find({});
+	let evacCursor = collection.find({}, {projection: {_id: {$toString: "$_id"}}});
+
+	if (page && limit) evacCursor.skip(page - 1* limit).limit(limit)
 
 	if (evacCursor === null) return false;
 
 	const evacs = await evacCursor.toArray();
 
 	try {
-		const validated = evacs.map((doc) => EvacCenterSchema.parse(doc));
+		const validated = EvacCenterSchema.array().parse(evacs);
 		return validated;
 	} catch (err) {
 		throw err;
@@ -270,7 +278,7 @@ export async function getEvacData(id: ObjectId) {
 	const db = await connect();
 
 	const collection = db.collection(Collection.EVAC);
-	const evacCursor = await collection.findOne({ _id: id });
+	const evacCursor = await collection.findOne({ _id: id }, {projection: {_id: {$toString: "$_id"}}});
 
 	if (evacCursor === null) return false;
 
@@ -392,16 +400,18 @@ export async function getUserFromSession(sid: string) {
 	}
 }
 
-export async function getMediaForEarthquake(equakeId: ObjectId) {
+export async function getMediaForEarthquake(equakeId: ObjectId, page?: number, limit?: number) {
 	const db = await connect();
 
 	try {
 		const collection = db.collection(Collection.MEDIA);
-		const postArray = await collection.find({ equakeId: equakeId }).sort({ time: -1 }).toArray();
+		let postArray = collection.find({ equakeId: equakeId}, {projection: {_id: {$toString: "$_id"}}});
 
-		if (postArray.length === 0) return false;
+		if (page && limit) postArray.limit(limit).skip(page - 1*limit)
 
-		return MediaArraySchema.parse(postArray);
+		const postPointer = postArray.toArray()
+
+		return MediaArraySchema.parse(postPointer)
 	} catch (err) {
 		throw err;
 	}
@@ -435,12 +445,12 @@ export async function postMedia(media: Media) {
 	}
 }
 
-export async function collateNearbyLocations(equakeId: ObjectId) {
+export async function collateNearbyLocations(equakeId: ObjectId, limit?: number, page?: number) {
 	const db = await connect();
 
 	try {
 		const earthquakeTable = db.collection(Collection.EARTHQUAKE);
-		const event = await earthquakeTable.findOne({ _id: equakeId });
+		const event = await earthquakeTable.findOne({ _id: equakeId }, {projection: {_id: {$toString: "$_id"}}});
 
 		const parsedEarthquake = EarthquakeEventSchema.parse(event);
 		const { coord } = parsedEarthquake;
@@ -456,19 +466,21 @@ export async function collateNearbyLocations(equakeId: ObjectId) {
 		};
 
 		const locationTable = db.collection(Collection.LOCATION);
-		const locationResults = await locationTable
-			.find(locationQuery, { projection: { osmresult: 0, _id: 0 } })
-			.toArray();
+		let locationResults = locationTable.find(locationQuery, {projection: { osmresult: 0, _id:0 }})
+		
+		if (page && limit) locationResults.limit(limit).skip(page - 1 * limit)
+		
 
-		if (locationResults.length === 0) return [];
+		const locationPointer = await locationResults.toArray()
 
-		return locationResults.map((loc) => LocationData.parse(loc));
+		if (locationPointer.length === 0) return [];
+		return LocationData.array().parse(locationPointer)
 	} catch (err) {
 		throw err;
 	}
 }
 
-export async function collateNearbyEarthquakes(code: string, distanceMeters: number) {
+export async function collateNearbyEarthquakes(code: string, distanceMeters: number, limit?: number, page?: number) {
 	const db = await connect();
 
 	try {
@@ -491,11 +503,14 @@ export async function collateNearbyEarthquakes(code: string, distanceMeters: num
 		};
 
 		const earthquakeTable = db.collection(Collection.EARTHQUAKE);
-		const equakeResults = await earthquakeTable.find(earthquakeQuery).toArray();
 
-		if (equakeResults.length === 0) return [];
+		let equakeResults = earthquakeTable.find(earthquakeQuery, {projection: {_id: {$toString: "$_id"}}});
+		if (limit && page) equakeResults.skip(page - 1 * limit).limit(limit)
+		
+		const equakePointer = await equakeResults.toArray()
 
-		return equakeResults.map((loc) => EarthquakeEventSchema.parse(loc));
+		if (equakePointer.length === 0) return [];
+		return EarthquakeEventSchema.array().parse(equakePointer)
 	} catch (err) {
 		throw err;
 	}
@@ -535,6 +550,33 @@ export async function retrieveFurthestIntensityRadius(equakeId: ObjectId) {
 		// 		).
 		// 	}
 		// 	//get the location string of every in
+	} catch (err) {
+		throw err;
+	}
+}
+
+export async function getProvincialLocations(page?: number, limit?: number) {
+	const db = await connect()
+
+	try {
+		const locationCollection = db.collection(Collection.LOCATION);
+		let provinceCursor;
+		if (page !== undefined && limit !== undefined) {
+			provinceCursor = await locationCollection.find({geographicLevel: "Prov"}, {projection: {
+				psgc: 1, longname: 1
+			}}).limit(limit).skip(page*limit).toArray()
+		} else {
+			provinceCursor = await locationCollection.find({geographicLevel: "Prov"}, {projection: {
+				psgc: 1, longname: 1
+			}}).toArray()
+		}
+
+		if (provinceCursor.length === 0) return false;
+
+		return {
+			location: provinceCursor,
+			length: provinceCursor.length
+		}
 	} catch (err) {
 		throw err;
 	}
