@@ -1,13 +1,13 @@
 import { MongoClient, ObjectId, Binary, ServerApiVersion } from 'mongodb';
 import { DatabaseConnectionError, ParseValidationError } from '$lib/model/src/errors';
-import { EarthquakeEventSchema, type EarthquakeEvent } from '$lib/model/src/event';
+import { EarthquakeEventSchema, type EarthquakeEvent, type EarthquakeFilters } from '$lib/model/src/event';
 import { Collection } from '$lib/model/src/util';
 import { EvacCenterSchema, type EvacCenter } from '$lib/model/src/evac';
 import { StationSchema } from '$lib/model/src/station';
 import { PendingSchema, SessionSchema } from '../model/session';
 import { v4 as uuidv4 } from 'uuid';
 import { randomFillSync } from 'crypto';
-import { ok } from 'assert';
+import { match, ok } from 'assert';
 import { UserSchema, type User } from '$lib/model/src/user';
 import { z } from 'zod'
 import type { Session } from '$lib/server/model/session';
@@ -66,22 +66,59 @@ export async function addEarthquakeData(data: EarthquakeEvent) {
  * @returns EarthquakeEventSchema[] an array of validated EarthquakeEvents
  * @returns false - if there is no earthquakeData in the database
  */
-export async function getAllEarthquakeData(page?: number, limit?: number) {
+export async function getAllEarthquakeData(page?: number, limit?: number, filter?:EarthquakeFilters) {
 	const db = await connect();
 
 	const collection = db.collection(Collection.EARTHQUAKE);
 
-	let pipeline: PipelineType = [
-		{
-			$addFields: {_id: { $toString: '$_id'}}
-		},
+	let matchConditions: Record<string, object> = {};
+	if (filter) {
+		if (filter.minDepth !== undefined) matchConditions['depth'] = { $gte: filter.minDepth };
+        if (filter.maxDepth !== undefined) matchConditions['depth'] = { $lte: filter.maxDepth };
+        if (filter.minIntensity !== undefined) matchConditions['mi'] = { $gte: filter.minIntensity };
+        if (filter.maxIntensity !== undefined) matchConditions['mi'] = { $lte: filter.maxIntensity };
+        if (filter.minTime !== undefined) matchConditions['time'] = { $gte: new Date(filter.minTime) };
+        if (filter.maxTime !== undefined) matchConditions['time'] = { $lte: new Date(filter.maxTime) };
+		if (filter.geographicBound !== undefined) {
+            matchConditions['coord'] = {
+                $geoWithin: {
+                    $geometry: {
+                        type: "Polygon",
+                        coordinates: [[
+                            [filter.geographicBound.coordinates[0][0], filter.geographicBound.coordinates[0][1]],
+                            [filter.geographicBound.coordinates[1][0], filter.geographicBound.coordinates[1][1]],
+                            [filter.geographicBound.coordinates[2][0], filter.geographicBound.coordinates[2][1]],
+                            [filter.geographicBound.coordinates[3][0], filter.geographicBound.coordinates[3][1]],
+                            [filter.geographicBound.coordinates[0][0], filter.geographicBound.coordinates[0][1]] // Closing the loop
+                        ]]
+                    }
+                }
+            };
+        }
+    }
+
+	let sortConditions: Record<string, number> = {};
+    if (filter && filter.orderDepth) sortConditions['depth'] = 1;
+    if (filter && filter.orderIntensity) sortConditions['mi'] = 1;
+    if (filter && filter.orderTime) sortConditions['time'] = 1;
+
+	let pipeline: PipelineType = [{ $addFields: {_id: { $toString: '$_id'}}}]
+	
+	if (Object.keys(matchConditions).length > 0) {
+		pipeline = [...pipeline, {$match: matchConditions}]
+	}
+	if (Object.keys(sortConditions).length > 0) {
+		pipeline = [...pipeline, {$sort: sortConditions}];
+	}
+
+	pipeline = [...pipeline,
 		{
 			$facet: {
 				paginatedResults: [...(page !== undefined && limit !== undefined ? [{$skip: (page) * limit}, { $limit: limit}]: [])],
 				totalCount: [{$count: 'total'}]
 			}
 		}
-	];
+	]
 	
 	const [{paginatedResults, totalCount: [{ total }]}] = await collection.aggregate(pipeline).toArray();
 	try {
