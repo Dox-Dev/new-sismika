@@ -9,8 +9,12 @@ import { v4 as uuidv4 } from 'uuid';
 import { randomFillSync } from 'crypto';
 import { ok } from 'assert';
 import { UserSchema, type User } from '$lib/model/src/user';
+import { z } from 'zod'
 import type { Session } from '$lib/server/model/session';
-import { type Media, MediaArraySchema } from '$lib/model/src/posts';
+import {
+	MediaSchema,
+	type Media,
+} from '$lib/model/src/posts';
 import { LocationData } from '$lib/model/src/locations';
 import MongoEnv from '$lib/model/src/env/mongodb';
 
@@ -23,7 +27,7 @@ const client = new MongoClient(uri, {
 		deprecationErrors: true
 	}
 });
-
+interface PipelineType extends Array<Record<string, any>> {};
 /**
  * Attempts to connect to the MongoDB client with the following information.
  * @returns connect
@@ -65,21 +69,29 @@ export async function addEarthquakeData(data: EarthquakeEvent) {
 export async function getAllEarthquakeData(page?: number, limit?: number) {
 	const db = await connect();
 
-	const collection = db.collection(Collection.EARTHQUAKE,);
+	const collection = db.collection(Collection.EARTHQUAKE);
 
-	let equakeCursor = collection.find({},{projection: {_id: {$toString: "$_id"}}});;
-
-	if (page && limit) equakeCursor = equakeCursor.skip(page - 1* limit).limit(limit)
-
-	const equakes = await equakeCursor.toArray();
-
-	if (equakes === null) return false;
-
+	let pipeline: PipelineType = [
+		{
+			$addFields: {_id: { $toString: '$_id'}}
+		},
+		{
+			$facet: {
+				paginatedResults: [...(page !== undefined && limit !== undefined ? [{$skip: (page) * limit}, { $limit: limit}]: [])],
+				totalCount: [{$count: 'total'}]
+			}
+		}
+	];
+	
+	const [{paginatedResults, totalCount: [{ total }]}] = await collection.aggregate(pipeline).toArray();
 	try {
-		const validated = EarthquakeEventSchema.array().parse(equakes)
-		return validated;
+		return {
+			equakes: EarthquakeEventSchema.array().parse(paginatedResults),
+			totalCount: z.number().parse(total)
+		}
 	} catch (err) {
-		throw ParseValidationError;
+		console.error("Validation error:", err);
+		throw err;
 	}
 }
 
@@ -92,16 +104,25 @@ export async function getAllEarthquakeData(page?: number, limit?: number) {
 export async function getEarthquakeData(id: ObjectId) {
 	const db = await connect();
 
-	const collection = db.collection(Collection.EARTHQUAKE);
-	const equakeCursor = await collection.findOne({ _id: id }, {projection: {_id: {$toString: "$_id"}}});
+	const pipeline: PipelineType = [
+		{ $match: {_id: id}},
+		{
+			$addFields: {
+				_id: { $toString: '$_id' }
+			}
+		}
+	]
 
-	if (equakeCursor === null) return false;
+	const collection = db.collection(Collection.EARTHQUAKE);
+	
+	const [first, ...rest] = await collection.aggregate(pipeline).toArray()
+	if (!first) return false;
 
 	try {
-		const validated = EarthquakeEventSchema.parse(equakeCursor);
-		return validated;
+		return EarthquakeEventSchema.parse(first);
 	} catch (err) {
-		throw ParseValidationError;
+		console.error("Validation error:", err);
+		throw err;
 	}
 }
 
@@ -130,20 +151,29 @@ export async function deleteEarthquakeData(id: ObjectId) {
 export async function getAllStationData(page?: number, limit?: number) {
 	const db = await connect();
 
+	let pipeline: PipelineType = [
+		{
+			$addFields: {_id: { $toString: '$_id'}}
+		},
+		{
+			$facet: {
+				paginatedResults: [...(page !== undefined && limit !== undefined ? [{$skip: (page) * limit}, {$limit: limit}] : [] )],
+				totalCount: [{$count: 'total'}]
+			}
+		}
+	];
+
 	const collection = db.collection(Collection.STATION);
-	let stationCursor = collection.find({}, {projection: {_id: {$toString: "$_id"}}});
-
-	if (page && limit) stationCursor.limit(limit).skip(page - 1* limit); 
-
-	if (stationCursor === null) return false;
-
-	const stations = await stationCursor.toArray();
-
+	const [{paginatedResults, totalCount: [{ total }]}] = await collection.aggregate(pipeline).toArray()
+	
 	try {
-		const validated = StationSchema.array().parse(stations)
-		return validated;
+		return {
+			stations: StationSchema.array().parse(paginatedResults),
+			totalCount: z.number().parse(total)
+		}
 	} catch (err) {
-		throw ParseValidationError;
+		console.error("Validation error:", err);
+		throw err;
 	}
 }
 
@@ -162,6 +192,7 @@ export async function addStationData(data: StationSchema) {
 
 		return insertedId;
 	} catch (err) {
+		console.error("Validation error:", err);
 		throw err;
 	}
 }
@@ -180,6 +211,7 @@ export async function deleteStationData(id: ObjectId) {
 
 		return deletedCount;
 	} catch (err) {
+		console.error("Validation error:", err);
 		throw err;
 	}
 }
@@ -193,15 +225,25 @@ export async function deleteStationData(id: ObjectId) {
 export async function getStationData(id: ObjectId) {
 	const db = await connect();
 
-	const collection = db.collection(Collection.STATION);
-	const stationCursor = await collection.findOne({ _id: id }, {projection: {_id: {$toString: "$_id"}}});
+	const pipeline: PipelineType = [
+		{ $match: {_id: id}},
+		{
+			$addFields: {
+				_id: { $toString: '$_id' }
+			}
+		}
+	]
 
-	if (stationCursor === null) return false;
+	const collection = db.collection(Collection.STATION);
+	
+	const [first, ...rest] = await collection.aggregate(pipeline).toArray()
+
+	if (!first) return false;
 
 	try {
-		const validated = StationSchema.parse(stationCursor);
-		return validated;
+		return StationSchema.parse(first)
 	} catch (err) {
+		console.error("Validation error:", err)
 		throw err;
 	}
 }
@@ -215,18 +257,26 @@ export async function getAllEvacData(page?: number, limit?:number) {
 	const db = await connect();
 
 	const collection = db.collection(Collection.EVAC);
-	let evacCursor = collection.find({}, {projection: {_id: {$toString: "$_id"}}});
 
-	if (page && limit) evacCursor.skip(page - 1* limit).limit(limit)
+	let pipeline: PipelineType = [
+		{
+			$addFields: {_id: { $toString: '$_id'}}
+		}
+	];
 
-	if (evacCursor === null) return false;
+	if (page && limit) {
+        // Add pagination to the pipeline
+		pipeline = [...pipeline, { $skip: (page - 1) * limit }, {$limit: limit}]
+    }
 
-	const evacs = await evacCursor.toArray();
+	const result = await collection.aggregate(pipeline).toArray()
+
+	if (!result || result.length) return false;
 
 	try {
-		const validated = EvacCenterSchema.array().parse(evacs);
-		return validated;
+		return EvacCenterSchema.array().parse(result);
 	} catch (err) {
+		console.error("Validation error:", err);
 		throw err;
 	}
 }
@@ -246,6 +296,7 @@ export async function addEvacData(data: EvacCenter) {
 
 		return insertedId;
 	} catch (err) {
+		console.error("Validation error:", err);
 		throw err;
 	}
 }
@@ -264,6 +315,7 @@ export async function deleteEvacData(id: ObjectId) {
 
 		return deletedCount;
 	} catch (err) {
+		console.error("Validation error:", err);
 		throw err;
 	}
 }
@@ -277,16 +329,24 @@ export async function deleteEvacData(id: ObjectId) {
 export async function getEvacData(id: ObjectId) {
 	const db = await connect();
 
+	const pipeline: PipelineType = [
+		{ $match: {_id: id}},
+		{
+			$addFields: {
+				_id: { $toString: '$_id' }
+			}
+		}
+	]
+
 	const collection = db.collection(Collection.EVAC);
-	const evacCursor = await collection.findOne({ _id: id }, {projection: {_id: {$toString: "$_id"}}});
+	const [first, ...rest] = await collection.aggregate(pipeline).toArray()
 
-	if (evacCursor === null) return false;
-
+	if (!first) return false;
 	try {
-		const validated = EvacCenterSchema.parse(evacCursor);
-		return validated;
+		return EvacCenterSchema.parse(first);
 	} catch (err) {
-		throw ParseValidationError;
+		console.error("Validation error:", err);
+		throw (err)
 	}
 }
 
@@ -405,14 +465,21 @@ export async function getMediaForEarthquake(equakeId: ObjectId, page?: number, l
 
 	try {
 		const collection = db.collection(Collection.MEDIA);
-		let postArray = collection.find({ equakeId: equakeId}, {projection: {_id: {$toString: "$_id"}}});
 
-		if (page && limit) postArray.limit(limit).skip(page - 1*limit)
+		let pipeline: PipelineType = [ 
+			{ $match: {equakeId: equakeId} },
+			{ $addFields: {_id: {$toString: '$_id'}}}
+		]
 
-		const postPointer = postArray.toArray()
+		if (page && limit) {
+			pipeline = [...pipeline, { $skip: (page - 1) * limit }, {$limit: limit}]
+		}
 
-		return MediaArraySchema.parse(postPointer)
+		const results = await collection.aggregate(pipeline).toArray();
+
+		return MediaSchema.array().parse(results)
 	} catch (err) {
+		console.error(err)
 		throw err;
 	}
 }
@@ -450,7 +517,7 @@ export async function collateNearbyLocations(equakeId: ObjectId, limit?: number,
 
 	try {
 		const earthquakeTable = db.collection(Collection.EARTHQUAKE);
-		const event = await earthquakeTable.findOne({ _id: equakeId }, {projection: {_id: {$toString: "$_id"}}});
+		const event = await earthquakeTable.findOne({ _id: equakeId });
 
 		const parsedEarthquake = EarthquakeEventSchema.parse(event);
 		const { coord } = parsedEarthquake;
@@ -468,7 +535,7 @@ export async function collateNearbyLocations(equakeId: ObjectId, limit?: number,
 		const locationTable = db.collection(Collection.LOCATION);
 		let locationResults = locationTable.find(locationQuery, {projection: { osmresult: 0, _id:0 }})
 		
-		if (page && limit) locationResults.limit(limit).skip(page - 1 * limit)
+		if (page && limit) locationResults.limit(limit).skip((page - 1) * limit)
 		
 
 		const locationPointer = await locationResults.toArray()
@@ -505,7 +572,7 @@ export async function collateNearbyEarthquakes(code: string, distanceMeters: num
 		const earthquakeTable = db.collection(Collection.EARTHQUAKE);
 
 		let equakeResults = earthquakeTable.find(earthquakeQuery, {projection: {_id: {$toString: "$_id"}}});
-		if (limit && page) equakeResults.skip(page - 1 * limit).limit(limit)
+		if (limit && page) equakeResults.skip((page - 1) * limit).limit(limit)
 		
 		const equakePointer = await equakeResults.toArray()
 
