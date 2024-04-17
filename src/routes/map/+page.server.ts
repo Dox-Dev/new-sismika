@@ -7,11 +7,7 @@ export async function load() {
 	const evacData = await getAllEvacData();
 	const stationData = await getAllStationData();
 
-	if (equakeData !== false) equakeData.map((data) => (data._id = data._id?.toString()));
-	if (evacData !== false) evacData.map((data) => (data._id = data._id?.toString()));
-	if (stationData !== false) stationData.map((data) => (data._id = data._id?.toString()));
-
 	if ([equakeData, evacData, stationData].every((el) => el === false)) error(StatusCodes.NOT_FOUND);
 
-	return { equake: equakeData, evac: evacData, station: stationData };
+	return { equake: equakeData.equakes, evac: evacData, station: stationData.stations };
 }

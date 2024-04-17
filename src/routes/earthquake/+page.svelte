@@ -8,8 +8,8 @@
 	const {equakes, totalCount, page, limit} = data;
 
 	let paginationSettings = {
-		page: page,
-		limit: limit,
+		page,
+		limit,
 		size: totalCount,
 		amounts: [8, 10, 15, 20],
 	} satisfies PaginationSettings;
