@@ -102,7 +102,7 @@ export async function getAllEarthquakeData(page?: number, limit?: number, filter
     if (filter && filter.orderIntensity) sortConditions['mi'] = 1;
     if (filter && filter.orderTime) sortConditions['time'] = 1;
 
-	let pipeline: PipelineType = [{ $addFields: {_id: { $toString: '$_id'}}}]
+	let pipeline: PipelineType = []
 	
 	if (Object.keys(matchConditions).length > 0) {
 		pipeline = [...pipeline, {$match: matchConditions}]
@@ -112,6 +112,7 @@ export async function getAllEarthquakeData(page?: number, limit?: number, filter
 	}
 
 	pipeline = [...pipeline,
+		{ $addFields: {_id: { $toString: '$_id'}}},
 		{
 			$facet: {
 				paginatedResults: [...(page !== undefined && limit !== undefined ? [{$skip: (page) * limit}, { $limit: limit}]: [])],
@@ -120,11 +121,11 @@ export async function getAllEarthquakeData(page?: number, limit?: number, filter
 		}
 	]
 	
-	const [{paginatedResults, totalCount: [{ total }]}] = await collection.aggregate(pipeline).toArray();
+	const [{paginatedResults, totalCount}] = await collection.aggregate(pipeline).toArray();
 	try {
 		return {
 			equakes: EarthquakeEventSchema.array().parse(paginatedResults),
-			totalCount: z.number().parse(total)
+			totalCount: totalCount[0]?.total ? z.number().parse(totalCount[0]?.total) : 0
 		}
 	} catch (err) {
 		console.error("Validation error:", err);
@@ -201,12 +202,12 @@ export async function getAllStationData(page?: number, limit?: number) {
 	];
 
 	const collection = db.collection(Collection.STATION);
-	const [{paginatedResults, totalCount: [{ total }]}] = await collection.aggregate(pipeline).toArray()
+	const [{paginatedResults, totalCount}] = await collection.aggregate(pipeline).toArray()
 	
 	try {
 		return {
 			stations: StationSchema.array().parse(paginatedResults),
-			totalCount: z.number().parse(total)
+			totalCount: totalCount[0]?.count ? z.number().parse(totalCount[0]?.total) : 0,
 		}
 	} catch (err) {
 		console.error("Validation error:", err);
@@ -298,20 +299,20 @@ export async function getAllEvacData(page?: number, limit?:number) {
 	let pipeline: PipelineType = [
 		{
 			$addFields: {_id: { $toString: '$_id'}}
+		},
+		{
+			$facet: {
+				paginatedResults: [...(page !== undefined && limit !== undefined ? [{$skip: (page) * limit}, { $limit: limit}]: [])],
+				totalCount: [{$count: 'total'}]
+			}
 		}
 	];
-
-	if (page && limit) {
-        // Add pagination to the pipeline
-		pipeline = [...pipeline, { $skip: (page - 1) * limit }, {$limit: limit}]
-    }
-
-	const result = await collection.aggregate(pipeline).toArray()
-
-	if (!result || result.length) return false;
-
-	try {
-		return EvacCenterSchema.array().parse(result);
+	const [{paginatedResults, totalCount}] = await collection.aggregate(pipeline).toArray()
+		try {
+		return {
+			evacs: EvacCenterSchema.array().parse(paginatedResults),
+			totalCount: totalCount[0]?.count ? z.number().parse(totalCount[0]?.total) : 0
+		}
 	} catch (err) {
 		console.error("Validation error:", err);
 		throw err;
@@ -505,16 +506,21 @@ export async function getMediaForEarthquake(equakeId: ObjectId, page?: number, l
 
 		let pipeline: PipelineType = [ 
 			{ $match: {equakeId: equakeId} },
-			{ $addFields: {_id: {$toString: '$_id'}}}
-		]
+			{ $addFields: {_id: {$toString: '$_id'}, equakeId: {$toString: '$equakeId'}}},
+			{
+				$facet: {
+					paginatedResults: [...(page !== undefined && limit !== undefined ? [{$limit: limit}, {$skip: page * limit}] : [])],
+					totalCount: [{$count: 'total'}]
+				}
+			}
+		];
 
-		if (page && limit) {
-			pipeline = [...pipeline, { $skip: (page - 1) * limit }, {$limit: limit}]
+		const [{paginatedResults, totalCount}] = await collection.aggregate(pipeline).toArray();
+		
+		return {
+			articles: MediaSchema.array().parse(paginatedResults),
+			totalCount: totalCount[0]?.count ? z.number().parse(totalCount[0]?.count) : 0,
 		}
-
-		const results = await collection.aggregate(pipeline).toArray();
-
-		return MediaSchema.array().parse(results)
 	} catch (err) {
 		console.error(err)
 		throw err;
@@ -560,26 +566,40 @@ export async function collateNearbyLocations(equakeId: ObjectId, limit?: number,
 		const { coord } = parsedEarthquake;
 		const distanceMeters = await retrieveFurthestIntensityRadius(equakeId);
 
-		const locationQuery = {
-			coord: {
-				$near: {
-					$geometry: coord,
-					$maxDistance: distanceMeters
+		const pipeline: PipelineType = [
+			{
+				$match: {
+					coord: {
+						$geoWithin: {
+							$centerSphere: [
+								coord.coordinates, 
+								distanceMeters / 6378137
+							]
+						}
+					}
+				}
+			},
+			{
+				$project: {osmresult: 0, _id: 0}
+			},
+			{
+				$facet: {
+					paginatedResults: [...(page !== undefined && limit !== undefined ? [{$skip: limit * page}, {$limit: limit}] : [])],
+					totalCount: [{$count: 'total'}],
+					totalPopulation: [{$group: {_id: null, sumPopulation: {$sum: "$population"}}}]
 				}
 			}
-		};
-
+		]
 		const locationTable = db.collection(Collection.LOCATION);
-		let locationResults = locationTable.find(locationQuery, {projection: { osmresult: 0, _id:0 }})
-		
-		if (page && limit) locationResults.limit(limit).skip((page - 1) * limit)
-		
-
-		const locationPointer = await locationResults.toArray()
-
-		if (locationPointer.length === 0) return [];
-		return LocationData.array().parse(locationPointer)
+		const [{paginatedResults, totalCount, totalPopulation}] = await locationTable.aggregate(pipeline).toArray()
+		console.log(totalPopulation)
+		return {
+			locations: LocationData.array().parse(paginatedResults),
+			totalCount: totalCount[0]?.count ? z.number().parse(totalCount[0]?.count) : 0,
+			totalPopulation: totalPopulation[0]?.sumPopulation ? z.number().parse(totalPopulation[0]?.sumPopulation) : 0
+		}
 	} catch (err) {
+		console.error(err);
 		throw err;
 	}
 }
@@ -664,22 +684,27 @@ export async function getProvincialLocations(page?: number, limit?: number) {
 
 	try {
 		const locationCollection = db.collection(Collection.LOCATION);
-		let provinceCursor;
-		if (page !== undefined && limit !== undefined) {
-			provinceCursor = await locationCollection.find({geographicLevel: "Prov"}, {projection: {
-				psgc: 1, longname: 1
-			}}).limit(limit).skip(page*limit).toArray()
-		} else {
-			provinceCursor = await locationCollection.find({geographicLevel: "Prov"}, {projection: {
-				psgc: 1, longname: 1
-			}}).toArray()
-		}
 
-		if (provinceCursor.length === 0) return false;
-
+		let pipeline: PipelineType = [
+			{
+				$match: {geographicLevel: "Prov"}
+			},
+			{ $addFields: {_id: {$toString: '$_id'}}},
+			{
+				$project: { osmresult: 0, _id: 0}
+			},
+			{
+				$facet: {
+					paginatedResults: [...(page !== undefined && limit !== undefined ? [{$skip: page * limit}, {$limit: limit}] : [])],
+					totalCount: [{$count: 'count'}]
+				}
+			}
+		]
+		
+		const [{ paginatedResults, totalCount }] = await locationCollection.aggregate(pipeline).toArray()
 		return {
-			location: provinceCursor,
-			length: provinceCursor.length
+			location: LocationData.omit({osmresult: true, _id: true}).array().parse(paginatedResults),
+			totalCount: totalCount[0]?.count ? z.number().parse(totalCount[0]?.count) : 0	
 		}
 	} catch (err) {
 		throw err;
