@@ -1,26 +1,26 @@
-import {
-	collateNearbyLocations,
-	getEarthquakeData,
-	getMediaForEarthquake
-} from '$lib/server/database/index.js';
+import { paginationHandler } from '$lib/model/src/util.js';
+import { collateNearbyLocations, getEarthquakeData, getMediaForEarthquake } from '$lib/server/database/index.js';
 import { error } from '@sveltejs/kit';
 import { StatusCodes } from 'http-status-codes';
 import { ObjectId } from 'mongodb';
 
-export async function load({ params: { id } }) {
+export async function load({ params: { id }, url: {searchParams}}) {
+	const {page: mediaPage, limit: mediaLimit} = paginationHandler(searchParams, {name: 'mPage', number: 0 }, {name: 'mLimit', number: 10})
+	
 	const objId = ObjectId.createFromHexString(id);
 	const res = await getEarthquakeData(objId);
 	const effectId = await collateNearbyLocations(objId);
-	const articles = await getMediaForEarthquake(objId);
-
-	if (typeof articles !== 'boolean')
-		articles.forEach((element) => {
-			element._id = element._id?.toString();
-			element.equakeId = element.equakeId?.toString();
-		});
+	const articles = await getMediaForEarthquake(objId, mediaPage, mediaLimit);
 
 	if (res === false) error(StatusCodes.NOT_FOUND);
-	res._id = res._id?.toString();
-
-	return { selectedEarthquake: res, affected: effectId, articles };
-}
+	return { 
+		selectedEarthquake: res, 
+		affectedLocations: effectId.locations, 
+		locationSize: effectId.totalCount, 
+		affectedPopulation: effectId.totalPopulation,
+		articles: articles.articles,
+		articleSize: articles.totalCount,
+		mediaPage,
+		mediaLimit,
+	};
+}	

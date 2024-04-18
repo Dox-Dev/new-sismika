@@ -15,43 +15,42 @@
 
 	export let data: import('./$types').PageServerData;
 	$: ({ _id, time, coord, depth, mi, mb, ms, li } = data.selectedEarthquake);
-	$: affectedLocations = data.affected;
+	$: affectedLocations = data.affectedLocations;
 
-	$: totalAffected =
-		affectedLocations !== undefined
-			? affectedLocations.reduce((n, { population }) => n + population, 0).toLocaleString()
-			: '0';
+	$: totalAffected = data.affectedPopulation
 
-	let paginationSettings = {
+	let paginationSettingsArticle = {
 		page: 0,
 		limit: 5,
-		size: data.affected.length,
-		amounts: [3, 5, 8, 10]
+		size: data.locationSize,
+		amounts: [3, 5, 8, 10],
 	} satisfies PaginationSettings;
 
-	$: ({ articles } = data);
-	$: paginatedSource = affectedLocations.slice(
-		paginationSettings.page * paginationSettings.limit,
-		paginationSettings.page * paginationSettings.limit + paginationSettings.limit
-	);
+	let paginationSettingsLocation = {
+		page: 0,
+		limit: 5,
+		size: data.locationSize,
+		amounts: [3,5,8,10]
+	}
+
+	$: paginatedArticles = data.articles
+	$: paginatedLocations = data.affectedLocations
 </script>
 
 <!-- Responsive Container (recommended) -->
 <div class="p-10">
 	<OpenLayersMapEarthquake {data} />
 </div>
-<EarthquakeTop {totalAffected} info={data.selectedEarthquake} />
-<button type="button" class="btn btn-sm variant-filled" on:click={() => goto(`./${_id}/submit`)}
-	>Submit Article/Information</button
->
+<EarthquakeTop totalAffected={totalAffected.toLocaleString()} info={data.selectedEarthquake}/>
+<button type="button" class="btn btn-sm variant-filled" on:click={() => goto(`./${_id}/submit`)}>Submit Article/Information</button>
 <Accordion>
-	{#if typeof articles === 'object'}
+	{#if (typeof paginatedArticles=== 'object')}
 		<AccordionItem open>
 			<svelte:fragment slot="summary">Media and Articles</svelte:fragment>
 			<svelte:fragment slot="content">
 				<HorizontalContainter>
-					{#each articles as article}
-						<ArticleCard {...article} />
+					{#each paginatedArticles as article}
+						<ArticleCard {...article}/>
 					{/each}
 				</HorizontalContainter>
 			</svelte:fragment>
@@ -69,12 +68,12 @@
 		<svelte:fragment slot="summary">Affected Areas</svelte:fragment>
 		<svelte:fragment slot="content">
 			<VerticalContainer>
-				{#each paginatedSource as location}
-					<LocationCard {...location} />
+				{#each paginatedLocations as location}
+					<LocationCard {...location}/>
 				{/each}
 			</VerticalContainer>
 			<Paginator
-				bind:settings={paginationSettings}
+				bind:settings={paginationSettingsLocation}
 				showFirstLastButtons={false}
 				showPreviousNextButtons
 				showNumerals
