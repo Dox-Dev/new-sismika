@@ -86,9 +86,9 @@ export async function getAllEarthquakeData(page?: number, limit?: number, filter
                         type: "Polygon",
                         coordinates: [[
                             [filter.geographicBound.coordinates[0][0], filter.geographicBound.coordinates[0][1]],
-                            [filter.geographicBound.coordinates[1][0], filter.geographicBound.coordinates[1][1]],
                             [filter.geographicBound.coordinates[2][0], filter.geographicBound.coordinates[2][1]],
                             [filter.geographicBound.coordinates[3][0], filter.geographicBound.coordinates[3][1]],
+							[filter.geographicBound.coordinates[1][0], filter.geographicBound.coordinates[1][1]],
                             [filter.geographicBound.coordinates[0][0], filter.geographicBound.coordinates[0][1]] // Closing the loop
                         ]]
                     }
@@ -708,5 +708,27 @@ export async function getProvincialLocations(page?: number, limit?: number) {
 		}
 	} catch (err) {
 		throw err;
+	}
+}
+
+export async function getLocationFromPSGC(psgc: string) {
+	const db = await connect();
+
+	try {
+		const locationCollection = db.collection(Collection.LOCATION);
+
+		const pipeline: PipelineType = [
+			{$match: {psgc: psgc}},
+			{$project: {_id: 0}},
+		]
+
+		const [first, ...rest] = await locationCollection.aggregate(pipeline).toArray()
+
+		if (!first) return false
+
+		return LocationData.parse(first)
+	} catch (err) {
+		console.error(err);
+		throw err
 	}
 }
