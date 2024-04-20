@@ -54,12 +54,6 @@
 					// https://github.com/CartoDB/basemap-styles
 					source: tile_server
 				}),
-				new VectorLayer({
-					source: new VectorSource({
-						format: new GeoJSON(),
-						url: '/philippines-geojson.json' // Replace with your GeoJSON file path
-					})
-				})
 			],
 			view: new View({
 				center: fromLonLat([122.0641419, 9.16875]), // Center of the map [longitude, latitude]
