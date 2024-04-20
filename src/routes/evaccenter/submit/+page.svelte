@@ -1,34 +1,46 @@
-<script>
-	// export const EvacCenterSchema = z.object({
-	//     _id: ObjectIDSchema,
-	//     name: z.string(),
-	//     coord: CoordinatesSchema
-	// });
+<script lang="ts">
+	import LoginUserPromptError from '$lib/components/ui/LoginUserPromptError.svelte';
+
+	export let form;
+	let entryForm: HTMLFormElement;
 </script>
 
-<h1 class="h1">Evacuation Center Submission</h1>
-<!-- <h1>Evacuation Center Submission</h1> -->
-<br />
-<!-- To connect with certain values, use bind:value={variableName} in the input header-->
-
-<form method="POST" enctype="application/x-www-form-urlencoded" class="card space-y-4 p-4">
-	<label class="label">
-		<span class="h3">ID</span>
-		<input class="input" type="text" placeholder="Input the evacuation center ID here" />
-	</label>
-	<br />
-	<label class="label">
-		<span class="h3">Name</span>
-		<input class="input" type="text" placeholder="Input the evacuation center name here" />
-	</label>
-	<br />
-
-	<span class="h3">Coordinates</span>
-	<div class="input-group input-group-divider grid-cols-[1fr_1fr]">
-		<input type="text" placeholder="Longitude" />
-		<input type="text" placeholder="Latitude" />
-	</div>
-
-	<br />
-	<a href="/evaccenter"><button type="button" class="btn btn-sm variant-filled">Submit</button></a>
+<h1 class="h1">Evacuation Center Entry Submission</h1>
+<hr />
+{#if form?.authFail || form?.noPerms}
+	<LoginUserPromptError />
+{/if}
+<form
+	method="POST"
+	enctype="application/x-www-form-urlencoded"
+	class="flex-col flex card space-y-4 p4"
+	bind:this={entryForm}
+>
+	<article class="card flex-row m-4 p-1 space-y-3">
+		<div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
+			<div class="input-group-shim">Name</div>
+			<input type="text" name="name" title="Name" value={form?.name ?? ''} />
+		</div>
+		<div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
+			<div class="input-group-shim">Longitude</div>
+				<input
+					class:input-error={!form?.long && form?.missing}
+					type="number"
+					name="long"
+					title="Longitude"
+					step="any"
+					value={form?.long ?? ''}
+				/>
+			<div class="input-group-shim">°</div>
+		</div>
+		<div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
+			<div class="input-group-shim">Latitude</div>
+			<input type="number" name="lat" title="Latitude" step="any" value={form?.lat ?? ''} />
+			<div class="input-group-shim">°</div>
+		</div>
+	</article>
+	<button type="button" class="btn btn-sm variant-filled" on:click={() => entryForm.requestSubmit()}
+		>Submit</button
+	>
 </form>
+
