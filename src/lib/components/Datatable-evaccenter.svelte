@@ -51,8 +51,8 @@
 				>
 					<td>{row._id}</td>
 					<td>{row.name}</td>
-					<td>{row.coord.long}</td>
-					<td>{row.coord.lat}</td>
+					<td>{row.coord.coordinates[0]}</td>
+					<td>{row.coord.coordinates[1]}</td>
 				</tr>
 			{/each}
 		</tbody>
