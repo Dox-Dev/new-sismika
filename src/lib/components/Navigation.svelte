@@ -29,6 +29,12 @@
 			</a>
 		</li>
 		<li>
+			<a href="/tutorial" on:click={drawerClose}>
+				<span><i class="fa fa-lightbulb"></i></span>
+				<span>Tutorial</span>
+			</a>
+		</li>
+		<li>
 			<a href="/map" on:click={drawerClose}>
 				<i class="fa-solid fa-map" />
 				<span>Map</span>
