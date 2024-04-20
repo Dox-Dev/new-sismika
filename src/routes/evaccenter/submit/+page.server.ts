@@ -30,7 +30,7 @@ export const actions = {
 			return fail(StatusCodes.UNAUTHORIZED, { name, long, lat, noPerms: true });
 
 		const insert = {
-			name: name,
+			name,
 			coord: {
 				type: 'Point',
 				coordinates: [parseFloat(long), parseFloat(lat)]
