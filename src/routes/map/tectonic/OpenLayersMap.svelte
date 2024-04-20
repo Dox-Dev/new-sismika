@@ -32,7 +32,6 @@
 	import type { MapBrowserEvent } from 'ol';
 	import { goto } from '$app/navigation';
 	import type { Coordinate } from 'ol/coordinate';
-	export let data: PageData;
 
 	// Initialize the tilesets, map, and mount.
 	// Note that the tile_server will have change
