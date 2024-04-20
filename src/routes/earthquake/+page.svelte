@@ -31,3 +31,10 @@
 		<EarthquakeCard magnitude={mw} equakeId={_id} dateTime={time} />
 	{/each}
 </VerticalContainer>
+
+<div>
+	Anything missing? Tell us!
+	<a href="/earthquake/submit">
+		<button type="button" class="btn btn-sm variant-filled"> Submit </button>
+	</a>
+</div>
