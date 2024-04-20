@@ -61,15 +61,16 @@
 			})
 		});
 
-		const geojsonLayer = new VectorLayer({
+		const platesGeojsonLayer = new VectorLayer({
 			//title: 'GeoJSON Layer',
 			source: new VectorSource({
 				format: new GeoJSON(),
-				url: '/philippines-geojson.json' // Replace with your GeoJSON file path
+				url: '/plates-geojson.json' // Replace with your GeoJSON file path
 			})
 		});
-		mountedMap.addLayer(geojsonLayer);
+		mountedMap.addLayer(platesGeojsonLayer);
 
+		/*
 		var vectorSource = new VectorSource();
 
 		// Iterate over the data to create and add each marker
@@ -225,41 +226,43 @@
 		//  displayFeatureInfo(pixel, evt.originalEvent.target);
 		//});
 
+		*/
+
 		let curr_longitude: number = 0;
 		let curr_latitude: number = 0;
 
-		async function onMapClick({ dragging, map, coordinate }: MapBrowserEvent<any>) {
-			console.log('started onMapClick function');
-			//console.log(coordinate);
-			const convertedCoordinate = toLonLat(coordinate);
-			//console.log(convertedCoordinate);
-
-			curr_longitude = convertedCoordinate[0];
-			curr_latitude = convertedCoordinate[1];
-
-			if (!dragging) {
-				const pixel = map.getPixelFromCoordinate(coordinate);
-				const [feat, ..._] = map.getFeaturesAtPixel(pixel);
-
-				// feat = 0th elem of array of features
-				if (typeof feat !== 'undefined') {
-					console.log('is defined');
-					console.log(feat);
-					const obtained_id = feat.get('name');
-
-					const pinType = feat.get('attributes').pinType;
-					console.log(pinType);
-					if (typeof obtained_id !== 'undefined') {
-						if (pinType == 'earthquake') await goto(`/earthquake/${obtained_id}`);
-						else if (pinType == 'seismic station') await goto(`/seismic/${obtained_id}`);
-						else if (pinType == 'evacuation center') await goto(`/evaccenter/${obtained_id}`);
-					}
-					return;
-				}
-			}
-		}
-
-		mountedMap.on('click', onMapClick);
+		//async function onMapClick({ dragging, map, coordinate }: MapBrowserEvent<any>) {
+		//	console.log('started onMapClick function');
+		//	//console.log(coordinate);
+		//	const convertedCoordinate = toLonLat(coordinate);
+		//	//console.log(convertedCoordinate);
+		//
+		//	curr_longitude = convertedCoordinate[0];
+		//	curr_latitude = convertedCoordinate[1];
+		//
+		//	if (!dragging) {
+		//		const pixel = map.getPixelFromCoordinate(coordinate);
+		//		const [feat, ..._] = map.getFeaturesAtPixel(pixel);
+		//
+		//		// feat = 0th elem of array of features
+		//		if (typeof feat !== 'undefined') {
+		//			console.log('is defined');
+		//			console.log(feat);
+		//			const obtained_id = feat.get('name');
+		//
+		//			const pinType = feat.get('attributes').pinType;
+		//			console.log(pinType);
+		//			if (typeof obtained_id !== 'undefined') {
+		//				if (pinType == 'earthquake') await goto(`/earthquake/${obtained_id}`);
+		//				else if (pinType == 'seismic station') await goto(`/seismic/${obtained_id}`);
+		//				else if (pinType == 'evacuation center') await goto(`/evaccenter/${obtained_id}`);
+		//			}
+		//			return;
+		//		}
+		//	}
+		//}
+		//
+		//mountedMap.on('click', onMapClick);
 
 		let previousToast: string;
 
@@ -282,28 +285,9 @@
 
 					const pinType = gotten_feature.pinType;
 					if (typeof pinType !== 'undefined') {
-						if (pinType == 'earthquake') {
+						if (pinType == 'plate') {
 							previousToast = toastStore.trigger({
-								message: `${pinType} ${gotten_feature.time}`,
-								background: 'variant-filled-primary',
-								autohide: true
-							});
-						} else if (pinType == 'seismic station') {
-							previousToast = toastStore.trigger({
-								message: `${pinType} ${gotten_feature.code} ${gotten_feature.name}`,
-								background: 'variant-filled-secondary',
-								autohide: true
-							});
-						} else if (pinType == 'evacuation center') {
-							// evacuation center
-							previousToast = toastStore.trigger({
-								message: `${pinType} ${gotten_feature.name}`,
-								background: 'variant-filled-tertiary',
-								autohide: true
-							});
-						} else if (pinType == 'geoJSON') {
-							previousToast = toastStore.trigger({
-								message: `${pinType} ${feat.get('adm1_en')}`,
+								message: `${feat.get('PlateName')} Plate`,
 								background: 'variant-filled-success',
 								autohide: true
 							});
@@ -318,30 +302,6 @@
 		mountedMap.on('pointermove', onMapHover);
 	});
 
-	let isHidden: Array<boolean> = [false, false, false]; // earthquake, seismic center, evaccenter
-	export function showOrHideIcons(iconType: string) {
-		if (iconType == 'earthquake') {
-			if (isHidden[0])
-				earthquakeLayer.setVisible(true); // show icon type
-			else earthquakeLayer.setVisible(false); // hide icon
-
-			isHidden[0] = !isHidden[0];
-		} else if (iconType == 'seismic center') {
-			if (isHidden[1])
-				seismicLayer.setVisible(true); // show icon type
-			else seismicLayer.setVisible(false); // hide icon
-
-			isHidden[1] = !isHidden[1];
-		} else if (iconType == 'evacuation center') {
-			if (isHidden[2])
-				evacLayer.setVisible(true); // show icon type
-			else evacLayer.setVisible(false); // hide icon
-
-			isHidden[2] = !isHidden[2];
-		}
-		return;
-	}
-
 	// Dynamically change the themeURL and tile_server link.
 	let themeURL: string;
 	$: themeURL = $modeCurrent
@@ -351,53 +311,7 @@
 	$: tile_server.setUrl(themeURL);
 </script>
 
-<div class="grid grid-cols-5">
-</div>
-
-<button type="button"
-		class="btn btn-sm variant-filled"
-		on:click={() => showOrHideIcons('earthquake')}
->
-	{#if isHidden[0]}
-		Show Earthquakes
-	{:else}
-		Hide Earthquakes
-	{/if}
-</button>
-
-<button type="button"
-		class="btn btn-sm variant-filled"
-		on:click={() => showOrHideIcons('seismic center')}
->
-	{#if isHidden[1]}
-		Show Seismic Centers
-	{:else}
-		Hide Seismic Centers
-	{/if}
-</button>
-
-<button type="button"
-		class="btn btn-sm variant-filled"
-		on:click={() => showOrHideIcons('evacuation center')}
->
-	{#if isHidden[2]}
-		Show Evacuation Centers
-	{:else}
-		Hide Evacuation Centers
-	{/if}
-</button>
-
-<button type="button"
-		class="btn btn-sm variant-filled"
->
-	<a href="/map/tectonic">
-		See Tectonic Plates
-	</a>
-</button>
-
-
-<div bind:this={mapElement} class="map">
-</div>
+<div bind:this={mapElement} class="map" />
 
 <style>
 	.map {
