@@ -33,6 +33,7 @@
 	// https://www.skeleton.dev/blog/how-to-implement-a-responsive-sidebar-drawer
 	import Navigation from '$lib/components/Navigation.svelte';
 	import { initializeStores, Drawer, getDrawerStore } from '@skeletonlabs/skeleton';
+	import type { DrawerSettings } from '@skeletonlabs/skeleton';
 	import { Toast, getToastStore } from '@skeletonlabs/skeleton';
 	import type { ToastSettings, ToastStore } from '@skeletonlabs/skeleton';
 	initializeStores();
