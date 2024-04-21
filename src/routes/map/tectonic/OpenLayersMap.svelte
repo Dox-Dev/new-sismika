@@ -310,6 +310,14 @@
 	$: tile_server.setUrl(themeURL);
 </script>
 
+<button type="button"
+		class="btn btn-sm variant-filled"
+>
+	<a href="/map">
+		See Pins and Country Regions
+	</a>
+</button>
+
 <div bind:this={mapElement} class="map" />
 
 <style>
