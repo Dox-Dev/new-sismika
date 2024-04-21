@@ -1,5 +1,5 @@
 <script>
-    import SismikaOnboarding from '$lib/components/SismikaOnboarding.svelte';
+    import SismikaOnboarding from './SismikaOnboarding.svelte';
 </script>
 
 <SismikaOnboarding/>
