@@ -3,7 +3,6 @@
 <!-- YOU CAN DELETE EVERYTHING IN THIS PAGE -->
 
 <script>
-	import SismikaOnboarding from '$lib/components/SismikaOnboarding.svelte';
 	import SplashPage from '$lib/components/SplashPage.svelte';
 
 	let innerWidth = 0;
@@ -19,5 +18,4 @@
 
 <svelte:window bind:innerWidth bind:innerHeight />
 
-<SismikaOnboarding />
 <SplashPage {innerWidth} {innerHeight} />
