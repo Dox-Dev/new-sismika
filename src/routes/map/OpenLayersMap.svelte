@@ -54,12 +54,6 @@
 					// https://github.com/CartoDB/basemap-styles
 					source: tile_server
 				}),
-				new VectorLayer({
-					source: new VectorSource({
-						format: new GeoJSON(),
-						url: '/philippines-geojson.json' // Replace with your GeoJSON file path
-					})
-				})
 			],
 			view: new View({
 				center: fromLonLat([122.0641419, 9.16875]), // Center of the map [longitude, latitude]
@@ -357,40 +351,52 @@
 	$: tile_server.setUrl(themeURL);
 </script>
 
-<div bind:this={mapElement} class="map">
-	<button
-		type="button"
+<div class="grid grid-cols-5">
+</div>
+
+<button type="button"
 		class="btn btn-sm variant-filled"
 		on:click={() => showOrHideIcons('earthquake')}
-	>
-		{#if isHidden[0]}
-			Show Earthquakes
-		{:else}
-			Hide Earthquakes
-		{/if}
-	</button>
-	<button
-		type="button"
+>
+	{#if isHidden[0]}
+		Show Earthquakes
+	{:else}
+		Hide Earthquakes
+	{/if}
+</button>
+
+<button type="button"
 		class="btn btn-sm variant-filled"
 		on:click={() => showOrHideIcons('seismic center')}
-	>
-		{#if isHidden[1]}
-			Show Seismic Centers
-		{:else}
-			Hide Seismic Centers
-		{/if}
-	</button>
-	<button
-		type="button"
+>
+	{#if isHidden[1]}
+		Show Seismic Centers
+	{:else}
+		Hide Seismic Centers
+	{/if}
+</button>
+
+<button type="button"
 		class="btn btn-sm variant-filled"
 		on:click={() => showOrHideIcons('evacuation center')}
-	>
-		{#if isHidden[2]}
-			Show Evacuation Centers
-		{:else}
-			Hide Evacuation Centers
-		{/if}
-	</button>
+>
+	{#if isHidden[2]}
+		Show Evacuation Centers
+	{:else}
+		Hide Evacuation Centers
+	{/if}
+</button>
+
+<button type="button"
+		class="btn btn-sm variant-filled"
+>
+	<a href="/map/tectonic">
+		See Tectonic Plates
+	</a>
+</button>
+
+
+<div bind:this={mapElement} class="map">
 </div>
 
 <style>

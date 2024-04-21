@@ -19,15 +19,27 @@
 	);
 </script>
 
-<Paginator
-	bind:settings={paginationSettings}
-	showFirstLastButtons={false}
-	showPreviousNextButtons
-	showNumerals
-	maxNumerals={1}
-/>
-<VerticalContainer>
-	{#each paginatedSource as { mw, _id, time }}
-		<EarthquakeCard magnitude={mw} equakeId={_id} dateTime={time} />
-	{/each}
-</VerticalContainer>
+<main>
+	<Paginator
+		bind:settings={paginationSettings}
+		showFirstLastButtons={false}
+		showPreviousNextButtons
+		showNumerals
+		maxNumerals={1}
+	/>
+
+	<VerticalContainer>
+		{#each paginatedSource as { mw, _id, time }}
+			{#if typeof _id === "string"}
+				<EarthquakeCard magnitude={mw} equakeId={_id} dateTime={time} />
+			{/if}
+		{/each}
+	</VerticalContainer>
+
+	<div>
+		Anything missing? Tell us!
+		<a href="/earthquake/submit">
+			<button type="button" class="btn btn-sm variant-filled"> Submit </button>
+		</a>
+	</div>
+</main>
