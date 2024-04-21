@@ -207,7 +207,7 @@ export async function getAllStationData(page?: number, limit?: number) {
 	try {
 		return {
 			stations: StationSchema.array().parse(paginatedResults),
-			totalCount: totalCount[0]?.count ? z.number().parse(totalCount[0]?.total) : 0,
+			totalCount: totalCount[0]?.total ? z.number().parse(totalCount[0]?.total) : 0,
 		}
 	} catch (err) {
 		console.error("Validation error:", err);
