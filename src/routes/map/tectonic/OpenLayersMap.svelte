@@ -9,16 +9,13 @@
 	// This is used to convert from [longitude, latitude]
 	// to a coordinate system OpenLayers can read.
 	// https://stackoverflow.com/questions/27820784/openlayers-3-center-map
-	import { fromLonLat, toLonLat } from 'ol/proj';
+	import { fromLonLat } from 'ol/proj';
 
 	// This is used to check the current theme mode of the webpage.
 	import { modeCurrent } from '@skeletonlabs/skeleton';
 
 	// This is used for the markers in the OpenStreetMap.
-	import Feature from 'ol/Feature';
-	import Point from 'ol/geom/Point';
 	import VectorSource from 'ol/source/Vector';
-	import { Icon, Style } from 'ol/style';
 	import VectorLayer from 'ol/layer/Vector';
 	import GeoJSON from 'ol/format/GeoJSON.js';
 
@@ -26,12 +23,7 @@
 	const toastStore = getToastStore();
 
 	// Take JSON data of points from /src/routes/map/+page.svelte
-	// dirty way: PageData automatically gives the type of the data
-	import type { PageData } from './$types';
-	import type { Pixel } from 'ol/pixel';
 	import type { MapBrowserEvent } from 'ol';
-	import { goto } from '$app/navigation';
-	import type { Coordinate } from 'ol/coordinate';
 
 	// Initialize the tilesets, map, and mount.
 	// Note that the tile_server will have change
@@ -69,199 +61,8 @@
 		});
 		mountedMap.addLayer(platesGeojsonLayer);
 
-		/*
-		var vectorSource = new VectorSource();
-
-		// Iterate over the data to create and add each marker
-		console.log('earthquake', data.equake);
-		if (typeof data.equake !== 'boolean') {
-			data.equake.forEach(function (item) {
-				console.log('earthquake', item._id, item.coord.coordinates[0], item.coord.coordinates[1]);
-				// Create a feature for the marker
-				var marker = new Feature({
-					name: item._id,
-					geometry: new Point(
-						fromLonLat([item.coord.coordinates[0], item.coord.coordinates[1]]) // Marker position
-					),
-					attributes: {
-						pinType: 'earthquake',
-						time: `${item.time}`
-					}
-				});
-
-				const intensity = Math.round(Number(item.mw));
-				let icon = new Icon({
-					width: 20,
-					height: 20,
-					src: `/seismic-${intensity}.png`
-				});
-
-				// Create a style for the marker
-				var iconStyle = new Style({
-					image: icon
-				});
-
-				// Apply the style to the marker
-				marker.setStyle(iconStyle);
-
-				// Add the marker to the vector source
-				vectorSource.addFeature(marker);
-			});
-		}
-
-		// Add the vector source to a layer and add it to the map
-		//const earthquakeLayer = new VectorLayer({
-		//	source: vectorSource,
-		//});
-		earthquakeLayer.setSource(vectorSource);
-		mountedMap.addLayer(earthquakeLayer);
-
-		vectorSource = new VectorSource();
-
-		console.log('stations', data.station);
-		if (typeof data.station !== 'boolean') {
-			data.station.forEach(function (item) {
-				//console.log("station", item.coord.coordinates[0], item.coord.coordinates[1]);
-				// Create a feature for the marker
-				var marker = new Feature({
-					name: item._id,
-					geometry: new Point(
-						fromLonLat([item.coord.coordinates[0], item.coord.coordinates[1]]) // Marker position
-					),
-					attributes: {
-						pinType: 'seismic station',
-						code: `${item.code}`,
-						name: `${item.name}`
-					}
-				});
-
-				let icon = new Icon({
-					width: 20,
-					height: 20,
-					src: '/station.png'
-				});
-
-				// Create a style for the marker
-				var iconStyle = new Style({
-					image: icon
-				});
-
-				// Apply the style to the marker
-				marker.setStyle(iconStyle);
-				//console.log(marker);
-
-				// Add the marker to the vector source
-				vectorSource.addFeature(marker);
-			});
-		}
-
-		// Add the vector source to a layer and add it to the map
-		//const seismicLayer = new VectorLayer({
-		//	source: vectorSource,
-		//});
-		seismicLayer.setSource(vectorSource);
-		mountedMap.addLayer(seismicLayer);
-
-		vectorSource = new VectorSource();
-
-		// Iterate over the data to create and add each marker
-		console.log('evacuation centers', data.evac);
-		if (typeof data.evac !== 'boolean') {
-			data.evac.forEach(function (item) {
-				console.log('evacuation', item.coord.coordinates[0], item.coord.coordinates[1]);
-				// Create a feature for the marker
-				var marker = new Feature({
-					name: item._id,
-					geometry: new Point(
-						fromLonLat([item.coord.coordinates[0], item.coord.coordinates[1]]) // Marker position
-					),
-					attributes: {
-						pinType: 'evacuation center',
-						name: `${item.name}`
-					}
-				});
-
-				let icon = new Icon({
-					width: 20,
-					height: 20,
-					src: '/evacuation.png'
-				});
-
-				// Create a style for the marker
-				var iconStyle = new Style({
-					image: icon
-				});
-
-				// Apply the style to the marker
-				marker.setStyle(iconStyle);
-
-				// Add the marker to the vector source
-				vectorSource.addFeature(marker);
-			});
-		}
-
-		// Add the vector source to a layer and add it to the map
-		//const evacLayer = new VectorLayer({
-		//	source: vectorSource,
-		//});
-		evacLayer.setSource(vectorSource);
-		mountedMap.addLayer(evacLayer);
-
-		console.log(vectorSource);
-
-		// Add the vector source to a layer and add it to the map
-		//var markerLayer = new VectorLayer({
-		//	source: vectorSource,
-		//});
-		//mountedMap.addLayer(markerLayer);
-
-		//mountedMap.on('pointermove', function (evt) {
-		//  if (evt.dragging) {
-		//    info.style.visibility = 'hidden';
-		//    currentFeature = undefined;
-		//    return;
-		//  }
-		//  const pixel = mountedMap.getEventPixel(evt.originalEvent);
-		//  displayFeatureInfo(pixel, evt.originalEvent.target);
-		//});
-
-		*/
-
 		let curr_longitude: number = 0;
 		let curr_latitude: number = 0;
-
-		//async function onMapClick({ dragging, map, coordinate }: MapBrowserEvent<any>) {
-		//	console.log('started onMapClick function');
-		//	//console.log(coordinate);
-		//	const convertedCoordinate = toLonLat(coordinate);
-		//	//console.log(convertedCoordinate);
-		//
-		//	curr_longitude = convertedCoordinate[0];
-		//	curr_latitude = convertedCoordinate[1];
-		//
-		//	if (!dragging) {
-		//		const pixel = map.getPixelFromCoordinate(coordinate);
-		//		const [feat, ..._] = map.getFeaturesAtPixel(pixel);
-		//
-		//		// feat = 0th elem of array of features
-		//		if (typeof feat !== 'undefined') {
-		//			console.log('is defined');
-		//			console.log(feat);
-		//			const obtained_id = feat.get('name');
-		//
-		//			const pinType = feat.get('attributes').pinType;
-		//			console.log(pinType);
-		//			if (typeof obtained_id !== 'undefined') {
-		//				if (pinType == 'earthquake') await goto(`/earthquake/${obtained_id}`);
-		//				else if (pinType == 'seismic station') await goto(`/seismic/${obtained_id}`);
-		//				else if (pinType == 'evacuation center') await goto(`/evaccenter/${obtained_id}`);
-		//			}
-		//			return;
-		//		}
-		//	}
-		//}
-		//
-		//mountedMap.on('click', onMapClick);
 
 		let previousToast: string;
 
