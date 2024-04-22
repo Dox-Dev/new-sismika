@@ -1,16 +1,20 @@
 import { MongoClient, ObjectId, Binary, ServerApiVersion } from 'mongodb';
 import { DatabaseConnectionError, ParseValidationError } from '$lib/model/src/errors';
-import { EarthquakeEventSchema, type EarthquakeEvent } from '$lib/model/src/event';
+import { EarthquakeEventSchema, type EarthquakeEvent, type EarthquakeFilters } from '$lib/model/src/event';
 import { Collection } from '$lib/model/src/util';
 import { EvacCenterSchema, type EvacCenter } from '$lib/model/src/evac';
 import { StationSchema } from '$lib/model/src/station';
 import { PendingSchema, SessionSchema } from '../model/session';
 import { v4 as uuidv4 } from 'uuid';
 import { randomFillSync } from 'crypto';
-import { ok } from 'assert';
+import { match, ok } from 'assert';
 import { UserSchema, type User } from '$lib/model/src/user';
+import { z } from 'zod'
 import type { Session } from '$lib/server/model/session';
-import { type Media, MediaArraySchema } from '$lib/model/src/posts';
+import {
+	MediaSchema,
+	type Media,
+} from '$lib/model/src/posts';
 import { LocationData } from '$lib/model/src/locations';
 import MongoEnv from '$lib/model/src/env/mongodb';
 
@@ -23,7 +27,7 @@ const client = new MongoClient(uri, {
 		deprecationErrors: true
 	}
 });
-
+interface PipelineType extends Array<Record<string, any>> {};
 /**
  * Attempts to connect to the MongoDB client with the following information.
  * @returns connect
@@ -62,20 +66,70 @@ export async function addEarthquakeData(data: EarthquakeEvent) {
  * @returns EarthquakeEventSchema[] an array of validated EarthquakeEvents
  * @returns false - if there is no earthquakeData in the database
  */
-export async function getAllEarthquakeData() {
+export async function getAllEarthquakeData(page?: number, limit?: number, filter?:EarthquakeFilters) {
 	const db = await connect();
 
 	const collection = db.collection(Collection.EARTHQUAKE);
-	const equakeCursor = collection.find({});
-	const equakes = await equakeCursor.toArray();
 
-	if (equakes === null) return false;
+	let matchConditions: Record<string, object> = {};
+	if (filter) {
+		if (filter.minDepth !== undefined) matchConditions['depth'] = { $gte: filter.minDepth };
+        if (filter.maxDepth !== undefined) matchConditions['depth'] = { $lte: filter.maxDepth };
+        if (filter.minIntensity !== undefined) matchConditions['mi'] = { $gte: filter.minIntensity };
+        if (filter.maxIntensity !== undefined) matchConditions['mi'] = { $lte: filter.maxIntensity };
+        if (filter.minTime !== undefined) matchConditions['time'] = { $gte: new Date(filter.minTime) };
+        if (filter.maxTime !== undefined) matchConditions['time'] = { $lte: new Date(filter.maxTime) };
+		if (filter.geographicBound !== undefined) {
+            matchConditions['coord'] = {
+                $geoWithin: {
+                    $geometry: {
+                        type: "Polygon",
+                        coordinates: [[
+                            [filter.geographicBound.coordinates[0][0], filter.geographicBound.coordinates[0][1]],
+                            [filter.geographicBound.coordinates[2][0], filter.geographicBound.coordinates[2][1]],
+                            [filter.geographicBound.coordinates[3][0], filter.geographicBound.coordinates[3][1]],
+							[filter.geographicBound.coordinates[1][0], filter.geographicBound.coordinates[1][1]],
+                            [filter.geographicBound.coordinates[0][0], filter.geographicBound.coordinates[0][1]] // Closing the loop
+                        ]]
+                    }
+                }
+            };
+        }
+    }
 
+	let sortConditions: Record<string, number> = {};
+    if (filter && filter.orderDepth) sortConditions['depth'] = 1;
+    if (filter && filter.orderIntensity) sortConditions['mi'] = 1;
+    if (filter && filter.orderTime) sortConditions['time'] = 1;
+
+	let pipeline: PipelineType = []
+	
+	if (Object.keys(matchConditions).length > 0) {
+		pipeline = [...pipeline, {$match: matchConditions}]
+	}
+	if (Object.keys(sortConditions).length > 0) {
+		pipeline = [...pipeline, {$sort: sortConditions}];
+	}
+
+	pipeline = [...pipeline,
+		{ $addFields: {_id: { $toString: '$_id'}}},
+		{
+			$facet: {
+				paginatedResults: [...(page !== undefined && limit !== undefined ? [{$skip: (page) * limit}, { $limit: limit}]: [])],
+				totalCount: [{$count: 'total'}]
+			}
+		}
+	]
+	
+	const [{paginatedResults, totalCount}] = await collection.aggregate(pipeline).toArray();
 	try {
-		const validated = equakes.map((doc) => EarthquakeEventSchema.parse(doc));
-		return validated;
+		return {
+			equakes: EarthquakeEventSchema.array().parse(paginatedResults),
+			totalCount: totalCount[0]?.total ? z.number().parse(totalCount[0]?.total) : 0
+		}
 	} catch (err) {
-		throw ParseValidationError;
+		console.error("Validation error:", err);
+		throw err;
 	}
 }
 
@@ -88,16 +142,25 @@ export async function getAllEarthquakeData() {
 export async function getEarthquakeData(id: ObjectId) {
 	const db = await connect();
 
+	const pipeline: PipelineType = [
+		{ $match: {_id: id}},
+		{
+			$addFields: {
+				_id: { $toString: '$_id' }
+			}
+		}
+	]
+
 	const collection = db.collection(Collection.EARTHQUAKE);
-	const equakeCursor = await collection.findOne({ _id: id });
-	console.log(equakeCursor);
-	if (equakeCursor === null) return false;
+	
+	const [first, ...rest] = await collection.aggregate(pipeline).toArray()
+	if (!first) return false;
 
 	try {
-		const validated = EarthquakeEventSchema.parse(equakeCursor);
-		return validated;
+		return EarthquakeEventSchema.parse(first);
 	} catch (err) {
-		throw ParseValidationError;
+		console.error("Validation error:", err);
+		throw err;
 	}
 }
 
@@ -123,21 +186,32 @@ export async function deleteEarthquakeData(id: ObjectId) {
  * @returns StationSchema[]: returns an array of validated StationSchemas
  * @returns false - if no StationData is found
  */
-export async function getAllStationData() {
+export async function getAllStationData(page?: number, limit?: number) {
 	const db = await connect();
 
+	let pipeline: PipelineType = [
+		{
+			$addFields: {_id: { $toString: '$_id'}}
+		},
+		{
+			$facet: {
+				paginatedResults: [...(page !== undefined && limit !== undefined ? [{$skip: (page) * limit}, {$limit: limit}] : [] )],
+				totalCount: [{$count: 'total'}]
+			}
+		}
+	];
+
 	const collection = db.collection(Collection.STATION);
-	const stationCursor = collection.find({});
-
-	if (stationCursor === null) return false;
-
-	const stations = await stationCursor.toArray();
-
+	const [{paginatedResults, totalCount}] = await collection.aggregate(pipeline).toArray()
+	
 	try {
-		const validated = stations.map((doc) => StationSchema.parse(doc));
-		return validated;
+		return {
+			stations: StationSchema.array().parse(paginatedResults),
+			totalCount: totalCount[0]?.total ? z.number().parse(totalCount[0]?.total) : 0,
+		}
 	} catch (err) {
-		throw ParseValidationError;
+		console.error("Validation error:", err);
+		throw err;
 	}
 }
 
@@ -156,6 +230,7 @@ export async function addStationData(data: StationSchema) {
 
 		return insertedId;
 	} catch (err) {
+		console.error("Validation error:", err);
 		throw err;
 	}
 }
@@ -174,6 +249,7 @@ export async function deleteStationData(id: ObjectId) {
 
 		return deletedCount;
 	} catch (err) {
+		console.error("Validation error:", err);
 		throw err;
 	}
 }
@@ -187,15 +263,25 @@ export async function deleteStationData(id: ObjectId) {
 export async function getStationData(id: ObjectId) {
 	const db = await connect();
 
+	const pipeline: PipelineType = [
+		{ $match: {_id: id}},
+		{
+			$addFields: {
+				_id: { $toString: '$_id' }
+			}
+		}
+	]
+
 	const collection = db.collection(Collection.STATION);
-	const stationCursor = await collection.findOne({ _id: id });
-	console.log(stationCursor);
-	if (stationCursor === null) return false;
+	
+	const [first, ...rest] = await collection.aggregate(pipeline).toArray()
+
+	if (!first) return false;
 
 	try {
-		const validated = StationSchema.parse(stationCursor);
-		return validated;
+		return StationSchema.parse(first)
 	} catch (err) {
+		console.error("Validation error:", err)
 		throw err;
 	}
 }
@@ -205,20 +291,30 @@ export async function getStationData(id: ObjectId) {
  * @returns EvacCenter[]: an array of EvacCenters
  * @false - if MongoDB does not have any EvacCenters
  */
-export async function getAllEvacData() {
+export async function getAllEvacData(page?: number, limit?:number) {
 	const db = await connect();
 
 	const collection = db.collection(Collection.EVAC);
-	const evacCursor = collection.find({});
 
-	if (evacCursor === null) return false;
-
-	const evacs = await evacCursor.toArray();
-
-	try {
-		const validated = evacs.map((doc) => EvacCenterSchema.parse(doc));
-		return validated;
+	let pipeline: PipelineType = [
+		{
+			$addFields: {_id: { $toString: '$_id'}}
+		},
+		{
+			$facet: {
+				paginatedResults: [...(page !== undefined && limit !== undefined ? [{$skip: (page) * limit}, { $limit: limit}]: [])],
+				totalCount: [{$count: 'total'}]
+			}
+		}
+	];
+	const [{paginatedResults, totalCount}] = await collection.aggregate(pipeline).toArray()
+		try {
+		return {
+			evacs: EvacCenterSchema.array().parse(paginatedResults),
+			totalCount: totalCount[0]?.count ? z.number().parse(totalCount[0]?.total) : 0
+		}
 	} catch (err) {
+		console.error("Validation error:", err);
 		throw err;
 	}
 }
@@ -238,6 +334,7 @@ export async function addEvacData(data: EvacCenter) {
 
 		return insertedId;
 	} catch (err) {
+		console.error("Validation error:", err);
 		throw err;
 	}
 }
@@ -256,6 +353,7 @@ export async function deleteEvacData(id: ObjectId) {
 
 		return deletedCount;
 	} catch (err) {
+		console.error("Validation error:", err);
 		throw err;
 	}
 }
@@ -269,16 +367,24 @@ export async function deleteEvacData(id: ObjectId) {
 export async function getEvacData(id: ObjectId) {
 	const db = await connect();
 
+	const pipeline: PipelineType = [
+		{ $match: {_id: id}},
+		{
+			$addFields: {
+				_id: { $toString: '$_id' }
+			}
+		}
+	]
+
 	const collection = db.collection(Collection.EVAC);
-	const evacCursor = await collection.findOne({ _id: id });
+	const [first, ...rest] = await collection.aggregate(pipeline).toArray()
 
-	if (evacCursor === null) return false;
-
+	if (!first) return false;
 	try {
-		const validated = EvacCenterSchema.parse(evacCursor);
-		return validated;
+		return EvacCenterSchema.parse(first);
 	} catch (err) {
-		throw ParseValidationError;
+		console.error("Validation error:", err);
+		throw (err)
 	}
 }
 
@@ -392,17 +498,31 @@ export async function getUserFromSession(sid: string) {
 	}
 }
 
-export async function getMediaForEarthquake(equakeId: ObjectId) {
+export async function getMediaForEarthquake(equakeId: ObjectId, page?: number, limit?: number) {
 	const db = await connect();
 
 	try {
 		const collection = db.collection(Collection.MEDIA);
-		const postArray = await collection.find({ equakeId: equakeId }).sort({ time: -1 }).toArray();
 
-		if (postArray.length === 0) return false;
+		let pipeline: PipelineType = [ 
+			{ $match: {equakeId: equakeId} },
+			{ $addFields: {_id: {$toString: '$_id'}, equakeId: {$toString: '$equakeId'}}},
+			{
+				$facet: {
+					paginatedResults: [...(page !== undefined && limit !== undefined ? [{$limit: limit}, {$skip: page * limit}] : [])],
+					totalCount: [{$count: 'total'}]
+				}
+			}
+		];
 
-		return MediaArraySchema.parse(postArray);
+		const [{paginatedResults, totalCount}] = await collection.aggregate(pipeline).toArray();
+		
+		return {
+			articles: MediaSchema.array().parse(paginatedResults),
+			totalCount: totalCount[0]?.count ? z.number().parse(totalCount[0]?.count) : 0,
+		}
 	} catch (err) {
+		console.error(err)
 		throw err;
 	}
 }
@@ -435,7 +555,7 @@ export async function postMedia(media: Media) {
 	}
 }
 
-export async function collateNearbyLocations(equakeId: ObjectId) {
+export async function collateNearbyLocations(equakeId: ObjectId, limit?: number, page?: number) {
 	const db = await connect();
 
 	try {
@@ -446,29 +566,45 @@ export async function collateNearbyLocations(equakeId: ObjectId) {
 		const { coord } = parsedEarthquake;
 		const distanceMeters = await retrieveFurthestIntensityRadius(equakeId);
 
-		const locationQuery = {
-			coord: {
-				$near: {
-					$geometry: coord,
-					$maxDistance: distanceMeters
+		const pipeline: PipelineType = [
+			{
+				$match: {
+					coord: {
+						$geoWithin: {
+							$centerSphere: [
+								coord.coordinates, 
+								distanceMeters / 6378137
+							]
+						}
+					}
+				}
+			},
+			{
+				$project: {osmresult: 0, _id: 0}
+			},
+			{
+				$facet: {
+					paginatedResults: [...(page !== undefined && limit !== undefined ? [{$skip: limit * page}, {$limit: limit}] : [])],
+					totalCount: [{$count: 'total'}],
+					totalPopulation: [{$group: {_id: null, sumPopulation: {$sum: "$population"}}}]
 				}
 			}
-		};
-
+		]
 		const locationTable = db.collection(Collection.LOCATION);
-		const locationResults = await locationTable
-			.find(locationQuery, { projection: { osmresult: 0, _id: 0 } })
-			.toArray();
-
-		if (locationResults.length === 0) return [];
-
-		return locationResults.map((loc) => LocationData.parse(loc));
+		const [{paginatedResults, totalCount, totalPopulation}] = await locationTable.aggregate(pipeline).toArray()
+		console.log(totalPopulation)
+		return {
+			locations: LocationData.array().parse(paginatedResults),
+			totalCount: totalCount[0]?.count ? z.number().parse(totalCount[0]?.count) : 0,
+			totalPopulation: totalPopulation[0]?.sumPopulation ? z.number().parse(totalPopulation[0]?.sumPopulation) : 0
+		}
 	} catch (err) {
+		console.error(err);
 		throw err;
 	}
 }
 
-export async function collateNearbyEarthquakes(code: string, distanceMeters: number) {
+export async function collateNearbyEarthquakes(code: string, distanceMeters: number, limit?: number, page?: number) {
 	const db = await connect();
 
 	try {
@@ -491,11 +627,14 @@ export async function collateNearbyEarthquakes(code: string, distanceMeters: num
 		};
 
 		const earthquakeTable = db.collection(Collection.EARTHQUAKE);
-		const equakeResults = await earthquakeTable.find(earthquakeQuery).toArray();
 
-		if (equakeResults.length === 0) return [];
+		let equakeResults = earthquakeTable.find(earthquakeQuery, {projection: {_id: {$toString: "$_id"}}});
+		if (limit && page) equakeResults.skip((page - 1) * limit).limit(limit)
+		
+		const equakePointer = await equakeResults.toArray()
 
-		return equakeResults.map((loc) => EarthquakeEventSchema.parse(loc));
+		if (equakePointer.length === 0) return [];
+		return EarthquakeEventSchema.array().parse(equakePointer)
 	} catch (err) {
 		throw err;
 	}
@@ -537,5 +676,59 @@ export async function retrieveFurthestIntensityRadius(equakeId: ObjectId) {
 		// 	//get the location string of every in
 	} catch (err) {
 		throw err;
+	}
+}
+
+export async function getProvincialLocations(page?: number, limit?: number) {
+	const db = await connect()
+
+	try {
+		const locationCollection = db.collection(Collection.LOCATION);
+
+		let pipeline: PipelineType = [
+			{
+				$match: {geographicLevel: "Prov"}
+			},
+			{ $addFields: {_id: {$toString: '$_id'}}},
+			{
+				$project: { osmresult: 0, _id: 0}
+			},
+			{
+				$facet: {
+					paginatedResults: [...(page !== undefined && limit !== undefined ? [{$skip: page * limit}, {$limit: limit}] : [])],
+					totalCount: [{$count: 'count'}]
+				}
+			}
+		]
+		
+		const [{ paginatedResults, totalCount }] = await locationCollection.aggregate(pipeline).toArray()
+		return {
+			location: LocationData.omit({osmresult: true, _id: true}).array().parse(paginatedResults),
+			totalCount: totalCount[0]?.count ? z.number().parse(totalCount[0]?.count) : 0	
+		}
+	} catch (err) {
+		throw err;
+	}
+}
+
+export async function getLocationFromPSGC(psgc: string) {
+	const db = await connect();
+
+	try {
+		const locationCollection = db.collection(Collection.LOCATION);
+
+		const pipeline: PipelineType = [
+			{$match: {psgc: psgc}},
+			{$project: {_id: 0}},
+		]
+
+		const [first, ...rest] = await locationCollection.aggregate(pipeline).toArray()
+
+		if (!first) return false
+
+		return LocationData.parse(first)
+	} catch (err) {
+		console.error(err);
+		throw err
 	}
 }

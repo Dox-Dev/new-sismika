@@ -60,6 +60,28 @@ export function parseOrZero(value: string | undefined) {
 	return parseFloat(value);
 }
 
+export function parseIntOrZero(value: string | undefined | null) {
+	if (!value || isNaN(parseInt(value))) return 0
+	return parseInt(value);
+}
+
+export function paginationHandler(params: URLSearchParams, defpage = {name: 'page', number: 0}, deflimit = {name: 'limit', number: 10}) {
+	const page = params.get(defpage.name);
+	const limit = params.get(deflimit.name);
+
+	if (parseIntOrZero(page) === 0 || parseIntOrZero(limit) === 0) {
+		return {
+			page: defpage.number,
+			limit: deflimit.number,
+		}
+ 	} else {
+		return {
+			page: parseIntOrZero(page),
+			limit: parseIntOrZero(limit)
+		}
+	}
+}
+
 export function calculateDistanceinMeters(pointA: Coordinates, pointB: Coordinates) {
 	const radius = 6371e3; // Earth's radius in meters
 

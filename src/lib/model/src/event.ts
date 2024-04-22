@@ -1,6 +1,5 @@
 import { z } from 'zod';
-import { CoordinatesSchema, ObjectIDSchema } from './util';
-import { ObjectId } from 'mongodb';
+import { BoundingBoxSchema, CoordinatesSchema, ObjectIDSchema } from './util';
 
 export const EarthquakeEventSchema = z.object({
 	_id: ObjectIDSchema,
@@ -15,3 +14,20 @@ export const EarthquakeEventSchema = z.object({
 });
 
 export type EarthquakeEvent = z.infer<typeof EarthquakeEventSchema>;
+
+export const EarthquakeFilteringSchema = z.object({
+	maxDepth: z.number().optional(),
+	minDepth: z.number().optional(),
+	orderDepth: z.boolean().optional(),
+	maxIntensity: z.number().optional(),
+	minIntensity: z.number().optional(),
+	orderIntensity: z.boolean().optional(),
+	minTime: z.string().datetime().optional(),
+	maxTime: z.string().datetime().optional(),
+	orderTime: z.boolean().optional(),
+	geographicBound: BoundingBoxSchema.optional(),
+	limit: z.number().optional(),
+	
+})
+
+export type EarthquakeFilters = z.infer<typeof EarthquakeFilteringSchema>

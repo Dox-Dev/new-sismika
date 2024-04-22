@@ -113,10 +113,10 @@
 
 <button type="button"
 		class="btn btn-sm variant-filled"
+		on:click={() => history.back()}
 >
-	<a href="/map">
+
 		See Pins and Country Regions
-	</a>
 </button>
 
 <div bind:this={mapElement} class="map" />

@@ -47,6 +47,12 @@
 			</a>
 		</li>
 		<li>
+			<a href="/locations" on:click={drawerClose}>
+				<i class="fa-solid fa-location-dot"></i>
+				<span>Locations</span>
+			</a>
+		</li>
+		<li>
 			<a href="/seismic" on:click={drawerClose}>
 				<i class="fa-solid fa-radio" />
 				<span>Seismic Stations</span>
@@ -59,6 +65,22 @@
 			</a>
 		</li>
 		{#if user}
+			{#if user.permission > 0}
+			<li>
+				<a href="/reports" on:click={drawerClose}>
+					<span><i class="fa-solid fa-paperclip"></i></span>
+					<span>Reports</span>
+				</a>
+			</li>
+			{/if}
+			{#if user.permission > 1}
+			<li>
+				<a href="/admin" on:click={drawerClose}>
+					<span><i class="fa-solid fa-hammer"></i></span>
+					<span>Administrator</span>
+				</a>
+			</li>
+			{/if}
 			<li>
 				<a href="/" on:click={logout}>
 					<span><i class="fa-solid fa-right-from-bracket"></i></span>

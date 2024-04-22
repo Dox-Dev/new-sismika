@@ -1,22 +1,20 @@
 <script lang="ts">
-	import EarthquakeCard from '$lib/components/ui/EarthquakeCard.svelte';
-	import VerticalContainer from '$lib/components/ui/containers/VerticalContainer.svelte';
-	import { Paginator, type PaginationSettings } from '@skeletonlabs/skeleton';
+	import { goto } from "$app/navigation";
+	import EarthquakeCard from "$lib/components/ui/EarthquakeCard.svelte";
+	import VerticalContainer from "$lib/components/ui/containers/VerticalContainer.svelte";
+	import { Paginator, type PaginationSettings } from "@skeletonlabs/skeleton";
 	export let data;
 
-	const { equakeData } = data;
+	const {equakes, totalCount, page, limit} = data;
 
 	let paginationSettings = {
-		page: 0,
-		limit: 10,
-		size: equakeData.length,
-		amounts: [8, 10, 15, 20]
+		page,
+		limit,
+		size: totalCount,
+		amounts: [8, 10, 15, 20],
 	} satisfies PaginationSettings;
 
-	$: paginatedSource = equakeData.slice(
-		paginationSettings.page * paginationSettings.limit,
-		paginationSettings.page * paginationSettings.limit + paginationSettings.limit
-	);
+	$: paginatedSource = equakes
 </script>
 
 <main>
@@ -26,6 +24,8 @@
 		showPreviousNextButtons
 		showNumerals
 		maxNumerals={1}
+		on:page={(e)=> goto(`?page=${e.detail}&limit=${paginationSettings.limit}`)}
+		on:amount={(e)=> goto(`?page=${paginationSettings.page}&limit=${e.detail}`)}
 	/>
 
 	<VerticalContainer>

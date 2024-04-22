@@ -21,4 +21,3 @@ export const MediaSchema = z.object({
 });
 
 export type Media = z.infer<typeof MediaSchema>;
-export const MediaArraySchema = z.array(MediaSchema);

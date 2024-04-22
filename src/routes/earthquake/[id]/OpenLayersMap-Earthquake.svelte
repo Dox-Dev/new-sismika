@@ -120,9 +120,9 @@
 
 		vectorSource = new VectorSource();
 		// Iterate over the data to create and add each marker
-		if (typeof data.affected !== undefined) {
-			data.affected.forEach((item) => {
-				console.log(item);
+		if (typeof data.affectedLocations !== undefined) {
+			data.affectedLocations.forEach(item => {
+				console.log(item)
 				if (!item.coord) return;
 				const marker = new Feature({
 					name: item.psgc,
