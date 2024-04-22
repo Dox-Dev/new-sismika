@@ -145,7 +145,7 @@
 			
 			<br>
 			Clicking on an entry, you're brought to its individual entry whose route is located in <code class="code">/evaccenter/[id]</code> with some given evacuation center that has the website assigned id value of <code class="code">[id]</code>.
-			The information contained within this individual entry page are shown in cards rather than the tabular form displayed within the overall table in <code class="code">/seismic</code>.
+			The information contained within this individual entry page are shown in cards rather than the tabular form displayed within the overall table in <code class="code">/evaccenter</code>.
 			This is for the purpose of better visualization and hopefully better retention due to a more visual layout.
 		</Step>
 	</Stepper>
