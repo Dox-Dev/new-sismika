@@ -33,6 +33,8 @@
 	import { goto } from '$app/navigation';
 	import type { Coordinate } from 'ol/coordinate';
 	export let data: PageData;
+	export let centerCoord = [122.0641419, 9.16875];
+	export let zoom = 6;
 
 	// Initialize the tilesets, map, and mount.
 	// Note that the tile_server will have change
@@ -56,8 +58,8 @@
 				}),
 			],
 			view: new View({
-				center: fromLonLat([122.0641419, 9.16875]), // Center of the map [longitude, latitude]
-				zoom: 6 // Initial zoom level
+				center: fromLonLat(centerCoord), // Center of the map [longitude, latitude]
+				zoom // Initial zoom level
 			})
 		});
 
