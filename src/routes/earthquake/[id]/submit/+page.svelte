@@ -11,11 +11,8 @@
 	let thisForm: HTMLFormElement;
 
 	export let data: PageData;
-	$: affectedLocations = data.affected;
-	$: totalAffected =
-		affectedLocations !== undefined
-			? affectedLocations.reduce((n, { population }) => n + population, 0).toLocaleString()
-			: '0';
+	$: affectedLocations = data.affected.locations;
+	$: totalAffected = data.affected.totalCount.toLocaleString()
 </script>
 
 <EarthquakeTop {totalAffected} info={data.selectedEarthquake} />
