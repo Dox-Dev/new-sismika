@@ -4,6 +4,7 @@ import { ok } from 'assert';
 const { GOOGLE_ID, GOOGLE_SECRET, OAUTH_REDIRECT } = env;
 ok(GOOGLE_ID);
 ok(GOOGLE_SECRET);
+ok(OAUTH_REDIRECT);
 
 export default {
 	GOOGLE_ID,
