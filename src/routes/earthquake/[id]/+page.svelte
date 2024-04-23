@@ -15,8 +15,6 @@
 
 	export let data: import('./$types').PageServerData;
 	$: ({ _id, time, coord, depth, mi, mb, ms, li } = data.selectedEarthquake);
-	$: affectedLocations = data.affectedLocations;
-
 	$: totalAffected = data.affectedPopulation
 
 	let paginationSettingsArticle = {
@@ -34,7 +32,10 @@
 	}
 
 	$: paginatedArticles = data.articles
-	$: paginatedLocations = data.affectedLocations
+	$: paginatedLocations = data.affectedLocations.slice(
+		paginationSettingsLocation.page * paginationSettingsLocation.limit,
+		paginationSettingsLocation.page * paginationSettingsLocation.limit + paginationSettingsLocation.limit
+	);
 </script>
 
 <!-- Responsive Container (recommended) -->
