@@ -732,3 +732,52 @@ export async function getLocationFromPSGC(psgc: string) {
 		throw err
 	}
 }
+
+export async function getUsers() {
+	const db = await connect()	
+
+	const userCollection = db.collection(Collection.USERS)
+	const pipeline: PipelineType = [
+		{$facet: {
+			"user": [{$match: {permission: 0}}],
+			"researcher": [{$match: {permission: 1}}],
+			"admin": [{$match: {permission: 2}}]
+		}}
+	]
+
+	try {
+		const [{user, researcher, admin}] = await userCollection.aggregate(pipeline).toArray()
+
+		return {
+			user: UserSchema.array().parse(user),
+			researcher: UserSchema.array().parse(researcher),
+			admin: UserSchema.array().parse(admin)
+		}
+	} catch (err) {
+		console.error("Error occured:", err);
+		throw err;
+	}
+}
+
+export async function deleteUser(user: string) {
+	const db = await connect()
+
+	const userCollection = db.collection(Collection.USERS);
+	const { deletedCount } = await userCollection.deleteOne({user_id: user});
+	if (deletedCount) return true;
+	return false
+
+}
+export async function updatePermissions(user: string, perm: number) {
+	const db = await connect();
+
+	try {
+		const userCollection = db.collection(Collection.USERS);
+		const { modifiedCount } = await userCollection.updateOne({user_id: user}, {$set: { permission: perm }})
+		if (modifiedCount) return true;
+		return false;
+	} catch (err) {
+		console.error("Error occured", err);
+		throw err;
+	}
+}
