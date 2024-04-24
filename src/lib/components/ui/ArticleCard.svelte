@@ -36,7 +36,7 @@
 	const carta = new Carta();
 </script>
 
-<article class="card">
+<article class="card max-w-fit min-w-full max-h-96">
 	<header class="card-header">{header}</header>
 	<section class="p-4">
 		{#if type === 0}
