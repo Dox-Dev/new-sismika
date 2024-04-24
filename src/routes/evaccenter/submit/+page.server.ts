@@ -18,14 +18,13 @@ export const actions = {
 		const lat = form.get('lat')?.toString();
 		if (lat === undefined) return fail(StatusCodes.BAD_REQUEST, { name, long, missing: true });
 
-		console.log("reaches before trycatch");
+		console.log('reaches before trycatch');
 		const sid = cookies.get('sid');
 		if (!sid) return fail(StatusCodes.UNAUTHORIZED, { name, long, lat, authFail: true });
 		// A check can be done to see if a session exists.
-		
+
 		const user = await getUserFromSession(sid);
-		if (user === false)
-			return fail(StatusCodes.UNAUTHORIZED, { name, long, lat, authFail: true });
+		if (user === false) return fail(StatusCodes.UNAUTHORIZED, { name, long, lat, authFail: true });
 		if (user.permission < Permission.RESEARCHER)
 			return fail(StatusCodes.UNAUTHORIZED, { name, long, lat, noPerms: true });
 
@@ -34,9 +33,9 @@ export const actions = {
 			coord: {
 				type: 'Point',
 				coordinates: [parseFloat(long), parseFloat(lat)]
-			},
+			}
 		};
-		
+
 		try {
 			const insertValidated = EvacCenterSchema.parse(insert);
 			const result = await addEvacData(insertValidated);

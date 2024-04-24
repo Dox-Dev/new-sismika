@@ -55,7 +55,7 @@
 					// tile_server is where the links to the themes will be placed
 					// https://github.com/CartoDB/basemap-styles
 					source: tile_server
-				}),
+				})
 			],
 			view: new View({
 				center: fromLonLat(centerCoord), // Center of the map [longitude, latitude]
@@ -353,12 +353,12 @@
 	$: tile_server.setUrl(themeURL);
 </script>
 
-<div class="grid grid-cols-5">
-</div>
+<div class="grid grid-cols-5"></div>
 
-<button type="button"
-		class="btn btn-sm variant-filled"
-		on:click={() => showOrHideIcons('earthquake')}
+<button
+	type="button"
+	class="btn btn-sm variant-filled"
+	on:click={() => showOrHideIcons('earthquake')}
 >
 	{#if isHidden[0]}
 		Show Earthquakes
@@ -367,9 +367,10 @@
 	{/if}
 </button>
 
-<button type="button"
-		class="btn btn-sm variant-filled"
-		on:click={() => showOrHideIcons('seismic center')}
+<button
+	type="button"
+	class="btn btn-sm variant-filled"
+	on:click={() => showOrHideIcons('seismic center')}
 >
 	{#if isHidden[1]}
 		Show Seismic Centers
@@ -378,9 +379,10 @@
 	{/if}
 </button>
 
-<button type="button"
-		class="btn btn-sm variant-filled"
-		on:click={() => showOrHideIcons('evacuation center')}
+<button
+	type="button"
+	class="btn btn-sm variant-filled"
+	on:click={() => showOrHideIcons('evacuation center')}
 >
 	{#if isHidden[2]}
 		Show Evacuation Centers
@@ -389,17 +391,11 @@
 	{/if}
 </button>
 
-<button type="button"
-		class="btn btn-sm variant-filled"
->
-	<a href="/map/tectonic">
-		See Tectonic Plates
-	</a>
+<button type="button" class="btn btn-sm variant-filled">
+	<a href="/map/tectonic"> See Tectonic Plates </a>
 </button>
 
-
-<div bind:this={mapElement} class="map">
-</div>
+<div bind:this={mapElement} class="map"></div>
 
 <style>
 	.map {

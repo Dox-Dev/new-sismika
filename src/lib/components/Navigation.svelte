@@ -66,20 +66,20 @@
 		</li>
 		{#if user}
 			{#if user.permission > 0}
-			<li>
-				<a href="/reports" on:click={drawerClose}>
-					<span><i class="fa-solid fa-paperclip"></i></span>
-					<span>Reports</span>
-				</a>
-			</li>
+				<li>
+					<a href="/reports" on:click={drawerClose}>
+						<span><i class="fa-solid fa-paperclip"></i></span>
+						<span>Reports</span>
+					</a>
+				</li>
 			{/if}
 			{#if user.permission > 1}
-			<li>
-				<a href="/admin" on:click={drawerClose}>
-					<span><i class="fa-solid fa-hammer"></i></span>
-					<span>Administrator</span>
-				</a>
-			</li>
+				<li>
+					<a href="/admin" on:click={drawerClose}>
+						<span><i class="fa-solid fa-hammer"></i></span>
+						<span>Administrator</span>
+					</a>
+				</li>
 			{/if}
 			<li>
 				<a href="/" on:click={logout}>

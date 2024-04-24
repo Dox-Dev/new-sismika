@@ -9,20 +9,19 @@
 	export let population: number;
 </script>
 
-<BaseContentCard on:cardClick = {() => goto(`/locations/${psgc}`)}>
-    <article class="my-1 flex flex-col flex-nowrap items-stretch">
-        <section class="text-xl flex flex-col px-10">
-            <span>Population: {population.toLocaleString()}</span>
-        </section>
-        <hr>
-        <section class="flex flex-col flex-1 px-10">
-            <div>
-                {geographicLevel}. {name}
-            </div>
-            <div class="italic">
-                {longname}
-            </div>
-        </section>
-    </article>
-
+<BaseContentCard on:cardClick={() => goto(`/locations/${psgc}`)}>
+	<article class="my-1 flex flex-col flex-nowrap items-stretch">
+		<section class="text-xl flex flex-col px-10">
+			<span>Population: {population.toLocaleString()}</span>
+		</section>
+		<hr />
+		<section class="flex flex-col flex-1 px-10">
+			<div>
+				{geographicLevel}. {name}
+			</div>
+			<div class="italic">
+				{longname}
+			</div>
+		</section>
+	</article>
 </BaseContentCard>

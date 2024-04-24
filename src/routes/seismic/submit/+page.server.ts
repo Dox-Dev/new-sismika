@@ -74,16 +74,19 @@ export const actions = {
 		if (name === undefined) return fail(StatusCodes.BAD_REQUEST, { code, name, missing: true });
 
 		const long = form.get('long')?.toString();
-		if (long === undefined) return fail(StatusCodes.BAD_REQUEST, { code, name, type, missing: true });
+		if (long === undefined)
+			return fail(StatusCodes.BAD_REQUEST, { code, name, type, missing: true });
 
 		const lat = form.get('lat')?.toString();
-		if (lat === undefined) return fail(StatusCodes.BAD_REQUEST, { code, name, type, long, missing: true });
+		if (lat === undefined)
+			return fail(StatusCodes.BAD_REQUEST, { code, name, type, long, missing: true });
 
-		console.log("reaches before trycatch");
+		console.log('reaches before trycatch');
 		const sid = cookies.get('sid');
-		if (!sid) return fail(StatusCodes.UNAUTHORIZED, { code, name, type, long, lat, authFail: true });
+		if (!sid)
+			return fail(StatusCodes.UNAUTHORIZED, { code, name, type, long, lat, authFail: true });
 		// A check can be done to see if a session exists.
-		
+
 		const user = await getUserFromSession(sid);
 		if (user === false)
 			return fail(StatusCodes.UNAUTHORIZED, { code, name, type, long, lat, authFail: true });
@@ -97,9 +100,9 @@ export const actions = {
 			coord: {
 				type: 'Point',
 				coordinates: [parseFloat(long), parseFloat(lat)]
-			},
+			}
 		};
-		
+
 		try {
 			const insertValidated = StationSchema.parse(insert);
 			const result = await addStationData(insertValidated);

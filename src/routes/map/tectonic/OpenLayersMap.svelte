@@ -44,7 +44,7 @@
 					// tile_server is where the links to the themes will be placed
 					// https://github.com/CartoDB/basemap-styles
 					source: tile_server
-				}),
+				})
 			],
 			view: new View({
 				center: fromLonLat([122.0641419, 9.16875]), // Center of the map [longitude, latitude]
@@ -111,12 +111,8 @@
 	$: tile_server.setUrl(themeURL);
 </script>
 
-<button type="button"
-		class="btn btn-sm variant-filled"
-		on:click={() => history.back()}
->
-
-		See Pins and Country Regions
+<button type="button" class="btn btn-sm variant-filled" on:click={() => history.back()}>
+	See Pins and Country Regions
 </button>
 
 <div bind:this={mapElement} class="map" />

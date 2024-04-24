@@ -4,13 +4,13 @@
 	import DatatableEarthquake from './Datatable-earthquake.svelte';
 	export let data: PageData;
 
-	const {equakes} = data;
+	const { equakes } = data;
 </script>
 
 <main>
 	<div>
-		<DownloadReport data={equakes}/>
-		<DatatableEarthquake {data}/>
+		<DownloadReport data={equakes} />
+		<DatatableEarthquake {data} />
 	</div>
 
 	<div>
