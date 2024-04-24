@@ -81,7 +81,7 @@ export const actions = {
 		if (lat === undefined)
 			return fail(StatusCodes.BAD_REQUEST, { code, name, type, long, missing: true });
 
-		console.log('reaches before trycatch');
+		//console.log('reaches before trycatch');
 		const sid = cookies.get('sid');
 		if (!sid)
 			return fail(StatusCodes.UNAUTHORIZED, { code, name, type, long, lat, authFail: true });

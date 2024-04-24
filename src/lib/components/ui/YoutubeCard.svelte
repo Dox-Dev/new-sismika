@@ -3,7 +3,7 @@
 
 	let player;
 	export let id;
-	console.log(`ID ${id}`);
+	//console.log(`ID ${id}`);
 	const ytPlayerId = 'youtube-player';
 
 	onMount(() => {

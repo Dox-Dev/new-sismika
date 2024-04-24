@@ -58,9 +58,9 @@
 		var vectorSource = new VectorSource();
 
 		// Iterate over the data to create and add each marker
-		console.log('earthquake', data.equake);
+		//console.log('earthquake', data.equake);
 		data.equake.forEach(function (item) {
-			console.log('earthquake', item.coord.coordinates[0], item.coord.coordinates[1]);
+			//console.log('earthquake', item.coord.coordinates[0], item.coord.coordinates[1]);
 			// Create a feature for the marker
 			var marker = new Feature({
 				name: item.id,
@@ -88,9 +88,9 @@
 			vectorSource.addFeature(marker);
 		});
 
-		console.log('stations', data.station);
+		//console.log('stations', data.station);
 		data.station.forEach(function (item) {
-			//console.log("station", item.coord.coordinates[0], item.coord.coordinates[1]);
+			////console.log("station", item.coord.coordinates[0], item.coord.coordinates[1]);
 			// Create a feature for the marker
 			var marker = new Feature({
 				geometry: new Point(
@@ -111,16 +111,16 @@
 
 			// Apply the style to the marker
 			marker.setStyle(iconStyle);
-			//console.log(marker);
+			////console.log(marker);
 
 			// Add the marker to the vector source
 			vectorSource.addFeature(marker);
 		});
 
 		// Iterate over the data to create and add each marker
-		console.log('evacuation centers', data.evac);
+		//console.log('evacuation centers', data.evac);
 		data.evac.forEach(function (item) {
-			console.log('evacuation', item.coord.coordinates[0], item.coord.coordinates[1]);
+			//console.log('evacuation', item.coord.coordinates[0], item.coord.coordinates[1]);
 			// Create a feature for the marker
 			var marker = new Feature({
 				geometry: new Point(
@@ -146,7 +146,7 @@
 			vectorSource.addFeature(marker);
 		});
 
-		console.log(vectorSource);
+		//console.log(vectorSource);
 
 		// Add the vector source to a layer and add it to the map
 		var markerLayer = new VectorLayer({

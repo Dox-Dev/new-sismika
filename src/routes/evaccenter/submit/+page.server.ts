@@ -18,7 +18,7 @@ export const actions = {
 		const lat = form.get('lat')?.toString();
 		if (lat === undefined) return fail(StatusCodes.BAD_REQUEST, { name, long, missing: true });
 
-		console.log('reaches before trycatch');
+		//console.log('reaches before trycatch');
 		const sid = cookies.get('sid');
 		if (!sid) return fail(StatusCodes.UNAUTHORIZED, { name, long, lat, authFail: true });
 		// A check can be done to see if a session exists.

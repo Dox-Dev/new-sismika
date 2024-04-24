@@ -67,8 +67,8 @@
 		let previousToast: string;
 
 		function onMapHover({ dragging, map, coordinate }: MapBrowserEvent<any>) {
-			console.log('started onMapHover function');
-			console.log(curr_longitude, curr_latitude);
+			//console.log('started onMapHover function');
+			//console.log(curr_longitude, curr_latitude);
 
 			if (!dragging) {
 				const pixel = map.getPixelFromCoordinate(coordinate);
@@ -78,8 +78,8 @@
 
 				// feat = 0th elem of array of features
 				if (typeof feat !== 'undefined') {
-					console.log('is defined');
-					console.log(feat);
+					//console.log('is defined');
+					//console.log(feat);
 
 					const gotten_feature = feat.get('attributes');
 

@@ -20,7 +20,7 @@
 			method: 'PATCH'
 		});
 
-		console.log(res);
+		//console.log(res);
 	}
 
 	async function deleteUser() {

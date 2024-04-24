@@ -36,7 +36,7 @@ interface PipelineType extends Array<Record<string, any>> {}
 async function connect() {
 	try {
 		await client.connect();
-		console.log(`Connected to ${uri}`);
+		//console.log(`Connected to ${uri}`);
 		return client.db('sismika');
 	} catch (err) {
 		console.error('MongoDB connection error:', err);
