@@ -1,7 +1,7 @@
 import { MongoClient, ObjectId, Binary, ServerApiVersion } from 'mongodb';
 import { DatabaseConnectionError } from '$lib/model/src/errors';
 import { EarthquakeEventSchema, type EarthquakeEvent, type EarthquakeFilters } from '$lib/model/src/event';
-import { calculateDistanceinMeters, Collection } from '$lib/model/src/util';
+import { calculateDistanceinMeters, Collection, type Coordinates } from '$lib/model/src/util';
 import { EvacCenterSchema, type EvacCenter } from '$lib/model/src/evac';
 import { StationSchema } from '$lib/model/src/station';
 import { PendingSchema, SessionSchema } from '../model/session';
@@ -54,7 +54,12 @@ export async function addEarthquakeData(data: EarthquakeEvent) {
 		const collection = db.collection(Collection.EARTHQUAKE);
 
 		const { _id, ...entry } = data;
-		const { insertedId } = await collection.insertOne(entry);
+		
+		const titledEntry = {
+			...entry,
+			title: await resolveEarthquakeTitle(data.coord)
+		}
+		const { insertedId } = await collection.insertOne(titledEntry);
 		return insertedId;
 	} catch (err) {
 		throw err;
@@ -782,51 +787,39 @@ export async function updatePermissions(user: string, perm: number) {
 	}
 }
 
-export async function resolveEarthquakeTitle(equakeID: ObjectId) {
+export async function resolveEarthquakeTitle(locCoord: Coordinates) {
 	const db = await connect();
 
 	try {
 		const pipeline: PipelineType = [
-			{$match: {_id: equakeID}},
 			{
-				$lookup: {
-					from: Collection.LOCATION,
-					let: { earthquakeCoord: "$coord"},
-					pipeline: [
-						{
-							$geoNear: {
-								near: "$$earthquakeCoord",
-								distanceField: "distance",
-								includeLocs: "coord",
-								spherical: true,
-							}
-						},
-						{$limit: 1},
-						{
-							$project: {
-								longname: 1,
-								coord: 1, 
-								distance: 1
-							}
-						}
-					],
-					as: "nearestLocation"
+				$geoNear: {
+					near: locCoord,
+					distanceField: "distance",
+					includeLocs: "coord",
+					spherical: true,
 				}
 			},
-			{ $unwind: "$nearestLocation"},
-
+			{$limit: 1},
+			{
+				$project: {
+					longname: 1,
+					coord: 1, 
+					distance: 1
+				}
+			}
 		]
-		const earthquakeCollection = db.collection(Collection.EARTHQUAKE);
-		const res = await earthquakeCollection.aggregate(pipeline).toArray();
+
+		const locationCollection = db.collection(Collection.LOCATION)
+		const res = await locationCollection.aggregate(pipeline).toArray();
 
 		const [first, ...rest] = res;
 
-		const { coord } = first;
 		const parsedLocation = LocationData.pick({coord: true, longname: true}).parse(first.nearestLocation);
 		ok(parsedLocation.coord)
 
 		const [startLng, startLat] = parsedLocation.coord.coordinates.map((coord:number) => coord * Math.PI / 180);
-        const [endLng, endLat] = coord.coordinates.map((coord:number) => coord * Math.PI / 180);
+        const [endLng, endLat] = locCoord.coordinates.map((coord:number) => coord * Math.PI / 180);
         
         const dLng = endLng - startLng;
 
@@ -845,7 +838,7 @@ export async function resolveEarthquakeTitle(equakeID: ObjectId) {
         const index = Math.round(norm / 22.5) % 16; // There are 16 segments
         
         const cardinality = directions[index];
-        const distanceMeters = calculateDistanceinMeters(parsedLocation.coord, coord);
+        const distanceMeters = calculateDistanceinMeters(parsedLocation.coord, locCoord);
 
         return `${(distanceMeters/1000).toPrecision(2)}km ${cardinality} of ${parsedLocation.longname}` 
 	} catch (err) {
