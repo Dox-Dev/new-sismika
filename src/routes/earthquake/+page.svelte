@@ -29,9 +29,9 @@
 	/>
 
 	<VerticalContainer>
-		{#each paginatedSource as { mw, _id, time }}
+		{#each paginatedSource as { title, mw, _id, time }}
 			{#if typeof _id === "string"}
-				<EarthquakeCard magnitude={mw} equakeId={_id} dateTime={time} />
+				<EarthquakeCard {title} magnitude={mw} equakeId={_id} dateTime={time} />
 			{/if}
 		{/each}
 	</VerticalContainer>

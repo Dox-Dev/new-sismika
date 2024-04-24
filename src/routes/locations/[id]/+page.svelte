@@ -8,7 +8,6 @@
 
     export let data: PageData;
 
-    $: currentLocation = data.location;
 
 </script>
 <div class="card flex-row">
@@ -27,8 +26,8 @@
             <svelte:fragment slot="summary"><i class="fa-solid fa-house-crack"></i>Earthquakes</svelte:fragment>
             <svelte:fragment slot="content">
                 <VerticalContainer>
-                    {#each data.equake as {mw, _id, time}}
-                        <EarthquakeCard magnitude={mw} equakeId={_id} dateTime={time}/>
+                    {#each data.equake as {title, mw, _id, time}}
+                        <EarthquakeCard {title} magnitude={mw} equakeId={_id} dateTime={time}/>
                     {/each}
                 </VerticalContainer>
             </svelte:fragment>

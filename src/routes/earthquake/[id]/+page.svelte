@@ -39,6 +39,7 @@
 </script>
 
 <!-- Responsive Container (recommended) -->
+<h1 class=h1>{data.title}</h1>
 <div class="p-10">
 	<OpenLayersMapEarthquake {data} />
 </div>

@@ -1,5 +1,5 @@
 import { paginationHandler } from '$lib/model/src/util.js';
-import { collateNearbyLocations, getEarthquakeData, getMediaForEarthquake } from '$lib/server/database/index.js';
+import { collateNearbyLocations, getEarthquakeData, getMediaForEarthquake, resolveEarthquakeTitle } from '$lib/server/database/index.js';
 import { error } from '@sveltejs/kit';
 import { StatusCodes } from 'http-status-codes';
 import { ObjectId } from 'mongodb';
@@ -22,5 +22,6 @@ export async function load({ params: { id }, url: {searchParams}}) {
 		articleSize: articles.totalCount,
 		mediaPage,
 		mediaLimit,
+		title: res.title
 	};
 }	

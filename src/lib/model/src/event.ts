@@ -3,6 +3,7 @@ import { BoundingBoxSchema, CoordinatesSchema, ObjectIDSchema } from './util';
 
 export const EarthquakeEventSchema = z.object({
 	_id: ObjectIDSchema,
+	title: z.string(),
 	time: z.string().datetime(),
 	coord: CoordinatesSchema,
 	depth: z.number(),

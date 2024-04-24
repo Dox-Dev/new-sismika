@@ -3,6 +3,7 @@
 	import MagnitudeCard from './MagnitudeCard.svelte';
 	import { goto } from '$app/navigation';
 
+	export let title: string;
 	export let magnitude: number;
 	export let equakeId: string;
 	export let dateTime: string;
@@ -15,7 +16,7 @@
 	<article class="flex flex-row flex-nowrap items-stretch">
 		<MagnitudeCard magnitude={magnitudeRounded} />
 		<section class="flex flex-col flex-1 px-10">
-			<div>120km off of Mandaluyong</div>
+			<div><p class="font-bold">{title}</p></div>
 			<div>
 				{dateTime}
 			</div>

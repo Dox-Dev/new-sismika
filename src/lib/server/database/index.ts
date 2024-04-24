@@ -1,13 +1,13 @@
 import { MongoClient, ObjectId, Binary, ServerApiVersion } from 'mongodb';
-import { DatabaseConnectionError, ParseValidationError } from '$lib/model/src/errors';
+import { DatabaseConnectionError } from '$lib/model/src/errors';
 import { EarthquakeEventSchema, type EarthquakeEvent, type EarthquakeFilters } from '$lib/model/src/event';
-import { Collection } from '$lib/model/src/util';
+import { calculateDistanceinMeters, Collection } from '$lib/model/src/util';
 import { EvacCenterSchema, type EvacCenter } from '$lib/model/src/evac';
 import { StationSchema } from '$lib/model/src/station';
 import { PendingSchema, SessionSchema } from '../model/session';
 import { v4 as uuidv4 } from 'uuid';
 import { randomFillSync } from 'crypto';
-import { match, ok } from 'assert';
+import { ok } from 'assert';
 import { UserSchema, type User } from '$lib/model/src/user';
 import { z } from 'zod'
 import type { Session } from '$lib/server/model/session';
@@ -586,16 +586,16 @@ export async function collateNearbyLocations(equakeId: ObjectId, limit?: number,
 				$facet: {
 					paginatedResults: [...(page !== undefined && limit !== undefined ? [{$skip: limit * page}, {$limit: limit}] : [])],
 					totalCount: [{$count: 'total'}],
-					totalPopulation: [{$group: {_id: null, sumPopulation: {$sum: "$population"}}}]
+					totalPopulation: [{$match: {geographicLevel: "Bgy"}}, {$group: {_id: null, sumPopulation: {$sum: "$population"}}}]
 				}
 			}
 		]
 		const locationTable = db.collection(Collection.LOCATION);
 		const [{paginatedResults, totalCount, totalPopulation}] = await locationTable.aggregate(pipeline).toArray()
-		console.log(totalPopulation)
+
 		return {
 			locations: LocationData.array().parse(paginatedResults),
-			totalCount: totalCount[0]?.count ? z.number().parse(totalCount[0]?.count) : 0,
+			totalCount: totalCount[0]?.total ? z.number().parse(totalCount[0]?.total) : 0,
 			totalPopulation: totalPopulation[0]?.sumPopulation ? z.number().parse(totalPopulation[0]?.sumPopulation) : 0
 		}
 	} catch (err) {
@@ -778,6 +778,78 @@ export async function updatePermissions(user: string, perm: number) {
 		return false;
 	} catch (err) {
 		console.error("Error occured", err);
+		throw err;
+	}
+}
+
+export async function resolveEarthquakeTitle(equakeID: ObjectId) {
+	const db = await connect();
+
+	try {
+		const pipeline: PipelineType = [
+			{$match: {_id: equakeID}},
+			{
+				$lookup: {
+					from: Collection.LOCATION,
+					let: { earthquakeCoord: "$coord"},
+					pipeline: [
+						{
+							$geoNear: {
+								near: "$$earthquakeCoord",
+								distanceField: "distance",
+								includeLocs: "coord",
+								spherical: true,
+							}
+						},
+						{$limit: 1},
+						{
+							$project: {
+								longname: 1,
+								coord: 1, 
+								distance: 1
+							}
+						}
+					],
+					as: "nearestLocation"
+				}
+			},
+			{ $unwind: "$nearestLocation"},
+
+		]
+		const earthquakeCollection = db.collection(Collection.EARTHQUAKE);
+		const res = await earthquakeCollection.aggregate(pipeline).toArray();
+
+		const [first, ...rest] = res;
+
+		const { coord } = first;
+		const parsedLocation = LocationData.pick({coord: true, longname: true}).parse(first.nearestLocation);
+		ok(parsedLocation.coord)
+
+		const [startLng, startLat] = parsedLocation.coord.coordinates.map((coord:number) => coord * Math.PI / 180);
+        const [endLng, endLat] = coord.coordinates.map((coord:number) => coord * Math.PI / 180);
+        
+        const dLng = endLng - startLng;
+
+        const y = Math.sin(dLng) * Math.cos(endLat);
+        const x = Math.cos(startLat) * Math.sin(endLat) - Math.sin(startLat) * Math.cos(endLat) * Math.cos(dLng);
+        const bearing = Math.atan2(y, x) * 180 / Math.PI;
+
+        const norm = (bearing + 360) & 360
+
+        const directions = [
+            "South", "South-South-West", "South-West", "West-South-West",
+            "West", "West-North-West", "North-West", "North-North-West",
+			"North", "North-North-East", "North-East", "East-North-East", 
+            "East", "East-South-East", "South-East", "South-South-East",
+        ];
+        const index = Math.round(norm / 22.5) % 16; // There are 16 segments
+        
+        const cardinality = directions[index];
+        const distanceMeters = calculateDistanceinMeters(parsedLocation.coord, coord);
+
+        return `${(distanceMeters/1000).toPrecision(2)}km ${cardinality} of ${parsedLocation.longname}` 
+	} catch (err) {
+		console.error(err);
 		throw err;
 	}
 }
