@@ -15,7 +15,7 @@
 	export let data;
 
 	//Init data handler - CLIENT
-	const handler = new DataHandler(data.equakeData, { rowsPerPage: 5 });
+	const handler = new DataHandler(data.equakes, { rowsPerPage: 5 });
 	const rows = handler.getRows();
 </script>
 
@@ -29,7 +29,7 @@
 	<table class="table table-hover table-compact w-full table-auto">
 		<thead>
 			<tr>
-				<ThSort {handler} orderBy="_id">Event ID</ThSort>
+				<ThSort {handler} orderBy="title">Title</ThSort>
 				<ThSort {handler} orderBy="time">Time</ThSort>
 				<ThSort {handler} orderBy={(row) => row.coord.coordinates[0]}>Longitude</ThSort>
 				<ThSort {handler} orderBy={(row) => row.coord.coordinates[1]}>Latitude</ThSort>
@@ -40,7 +40,7 @@
 				<ThSort {handler} orderBy="li">Local Intensity</ThSort>
 			</tr>
 			<tr>
-				<ThFilter {handler} filterBy="_id" />
+				<ThFilter {handler} filterBy="title" />
 				<ThFilter {handler} filterBy="time" />
 				<ThFilter {handler} filterBy={(row) => row.coord.coordinates[0]} />
 				<ThFilter {handler} filterBy={(row) => row.coord.coordinates[1]} />
@@ -58,7 +58,7 @@
 						goto(`/earthquake/${row._id}`);
 					}}
 				>
-					<td>{row._id}</td>
+					<td>{row.title}</td>
 					<td>{row.time}</td>
 					<td>{row.coord.coordinates[0]}</td>
 					<td>{row.coord.coordinates[1]}</td>

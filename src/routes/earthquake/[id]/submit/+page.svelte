@@ -12,7 +12,7 @@
 
 	export let data: PageData;
 	$: affectedLocations = data.affected.locations;
-	$: totalAffected = data.affected.totalCount.toLocaleString()
+	$: totalAffected = data.affected.totalCount.toLocaleString();
 </script>
 
 <EarthquakeTop {totalAffected} info={data.selectedEarthquake} />

@@ -54,7 +54,8 @@ export const actions = {
 			mb: parseOrZero(mb),
 			ms: parseOrZero(ms),
 			mw: parseOrZero(mw),
-			li: li ?? ''
+			li: li ?? '',
+			title: ''
 		};
 
 		try {

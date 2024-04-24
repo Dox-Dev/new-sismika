@@ -3,6 +3,7 @@ import { BoundingBoxSchema, CoordinatesSchema, ObjectIDSchema } from './util';
 
 export const EarthquakeEventSchema = z.object({
 	_id: ObjectIDSchema,
+	title: z.string(),
 	time: z.string().datetime(),
 	coord: CoordinatesSchema,
 	depth: z.number(),
@@ -26,8 +27,7 @@ export const EarthquakeFilteringSchema = z.object({
 	maxTime: z.string().datetime().optional(),
 	orderTime: z.boolean().optional(),
 	geographicBound: BoundingBoxSchema.optional(),
-	limit: z.number().optional(),
-	
-})
+	limit: z.number().optional()
+});
 
-export type EarthquakeFilters = z.infer<typeof EarthquakeFilteringSchema>
+export type EarthquakeFilters = z.infer<typeof EarthquakeFilteringSchema>;

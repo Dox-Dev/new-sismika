@@ -79,10 +79,8 @@
 		var vectorSource = new VectorSource();
 
 		// Iterate over the data to create and add each marker
-		console.log('earthquake', data.equake);
 		if (typeof data.equake !== 'boolean') {
 			data.equake.forEach(function (item) {
-				console.log('earthquake', item._id, item.coord.coordinates[0], item.coord.coordinates[1]);
 				// Create a feature for the marker
 				var marker = new Feature({
 					name: item._id,
@@ -122,12 +120,8 @@
 		mountedMap.addLayer(earthquakeLayer);
 
 		vectorSource = new VectorSource();
-
-		console.log('stations', data.station);
 		if (typeof data.station !== 'boolean') {
 			data.station.forEach(function (item) {
-				//console.log("station", item.coord.coordinates[0], item.coord.coordinates[1]);
-				// Create a feature for the marker
 				var marker = new Feature({
 					name: item._id,
 					geometry: new Point(
@@ -153,7 +147,6 @@
 
 				// Apply the style to the marker
 				marker.setStyle(iconStyle);
-				//console.log(marker);
 
 				// Add the marker to the vector source
 				vectorSource.addFeature(marker);
@@ -170,10 +163,8 @@
 		vectorSource = new VectorSource();
 
 		// Iterate over the data to create and add each marker
-		console.log('evacuation centers', data.evac);
 		if (typeof data.evac !== 'boolean') {
 			data.evac.forEach(function (item) {
-				console.log('evacuation', item.coord.coordinates[0], item.coord.coordinates[1]);
 				// Create a feature for the marker
 				var marker = new Feature({
 					name: item._id,
@@ -212,8 +203,6 @@
 		evacLayer.setSource(vectorSource);
 		mountedMap.addLayer(evacLayer);
 
-		console.log(vectorSource);
-
 		// Add the vector source to a layer and add it to the map
 		//var markerLayer = new VectorLayer({
 		//	source: vectorSource,
@@ -234,10 +223,9 @@
 		let curr_latitude: number = 0;
 
 		async function onMapClick({ dragging, map, coordinate }: MapBrowserEvent<any>) {
-			console.log('started onMapClick function');
-			//console.log(coordinate);
+			////console.log(coordinate);
 			const convertedCoordinate = toLonLat(coordinate);
-			//console.log(convertedCoordinate);
+			////console.log(convertedCoordinate);
 
 			curr_longitude = convertedCoordinate[0];
 			curr_latitude = convertedCoordinate[1];
@@ -248,12 +236,12 @@
 
 				// feat = 0th elem of array of features
 				if (typeof feat !== 'undefined') {
-					console.log('is defined');
-					console.log(feat);
+					//console.log('is defined');
+					//console.log(feat);
 					const obtained_id = feat.get('name');
 
 					const pinType = feat.get('attributes').pinType;
-					console.log(pinType);
+					//console.log(pinType);
 					if (typeof obtained_id !== 'undefined') {
 						if (pinType == 'earthquake') await goto(`/earthquake/${obtained_id}`);
 						else if (pinType == 'seismic station') await goto(`/seismic/${obtained_id}`);
@@ -269,8 +257,8 @@
 		let previousToast: string;
 
 		function onMapHover({ dragging, map, coordinate }: MapBrowserEvent<any>) {
-			console.log('started onMapHover function');
-			console.log(curr_longitude, curr_latitude);
+			//console.log('started onMapHover function');
+			//console.log(curr_longitude, curr_latitude);
 
 			if (!dragging) {
 				const pixel = map.getPixelFromCoordinate(coordinate);
@@ -280,8 +268,8 @@
 
 				// feat = 0th elem of array of features
 				if (typeof feat !== 'undefined') {
-					console.log('is defined');
-					console.log(feat);
+					//console.log('is defined');
+					//console.log(feat);
 
 					const gotten_feature = feat.get('attributes');
 

@@ -106,7 +106,7 @@ const equakeDump = fs
 			else if (dataIn.ms > 0) dataIn.mw = convertToMw(dataIn.ms, 'Ms')
 		}
 		if (dataIn.mw === 0) {
-			console.log(dataIn)
+			//console.log(dataIn)
 			throw Error(`MW is not resolved! ${dataIn}`)
 		}
 		try {
@@ -120,7 +120,7 @@ const equakeDump = fs
 
 		const collection = db.collection('earthquake');
 		const { insertedIds } = await collection.insertMany(results);
-		console.log('Inserted this many documents in the earthquakes folder: ', insertedIds);
+		//console.log('Inserted this many documents in the earthquakes folder: ', insertedIds);
 		equakeDump.destroy();
 	});
 
@@ -129,7 +129,7 @@ const stationDump = fs
 	.pipe(stripBom())
 	.pipe(csvParser())
 	.on('data', (data) => {
-		console.log(data);
+		//console.log(data);
 		const dataIn = {
 			code: data['code'],
 			coord: {
@@ -150,7 +150,7 @@ const stationDump = fs
 
 		const collection = db.collection('station');
 		const { insertedIds } = await collection.insertMany(resStn);
-		console.log('Inserted this many in stations document:', insertedIds);
+		//console.log('Inserted this many in stations document:', insertedIds);
 		stationDump.destroy();
 	});
 
@@ -168,7 +168,7 @@ async function importPSGC() {
 	});
 
 	const {insertedCount} = await collection.insertMany(data);
-	console.log(`${insertedCount} this much locations.`)
+	//console.log(`${insertedCount} this much locations.`)
 	await client.close()
 }
 

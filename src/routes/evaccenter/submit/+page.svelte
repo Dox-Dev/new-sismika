@@ -23,14 +23,14 @@
 		</div>
 		<div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
 			<div class="input-group-shim">Longitude</div>
-				<input
-					class:input-error={!form?.long && form?.missing}
-					type="number"
-					name="long"
-					title="Longitude"
-					step="any"
-					value={form?.long ?? ''}
-				/>
+			<input
+				class:input-error={!form?.long && form?.missing}
+				type="number"
+				name="long"
+				title="Longitude"
+				step="any"
+				value={form?.long ?? ''}
+			/>
 			<div class="input-group-shim">°</div>
 		</div>
 		<div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
@@ -43,4 +43,3 @@
 		>Submit</button
 	>
 </form>
-

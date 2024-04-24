@@ -79,7 +79,7 @@
 		var vectorSource = new VectorSource();
 
 		// Iterate over the data to create and add each marker
-		console.log('earthquake', data.selectedEarthquake);
+		//console.log('earthquake', data.selectedEarthquake);
 		if (typeof data.selectedEarthquake !== 'boolean') {
 			const item = data.selectedEarthquake;
 			var marker = new Feature({
@@ -121,8 +121,8 @@
 		vectorSource = new VectorSource();
 		// Iterate over the data to create and add each marker
 		if (typeof data.affectedLocations !== undefined) {
-			data.affectedLocations.forEach(item => {
-				console.log(item)
+			data.affectedLocations.forEach((item) => {
+				//console.log(item);
 				if (!item.coord) return;
 				const marker = new Feature({
 					name: item.psgc,
@@ -176,10 +176,10 @@
 		let curr_latitude: number = 0;
 
 		async function onMapClick({ dragging, map, coordinate }: MapBrowserEvent<any>) {
-			console.log('started onMapClick function');
-			//console.log(coordinate);
+			//console.log('started onMapClick function');
+			////console.log(coordinate);
 			const convertedCoordinate = toLonLat(coordinate);
-			//console.log(convertedCoordinate);
+			////console.log(convertedCoordinate);
 
 			curr_longitude = convertedCoordinate[0];
 			curr_latitude = convertedCoordinate[1];
@@ -190,12 +190,12 @@
 
 				// feat = 0th elem of array of features
 				if (typeof feat !== 'undefined') {
-					console.log('is defined');
-					console.log(feat);
+					//console.log('is defined');
+					//console.log(feat);
 					const obtained_id = feat.get('name');
 
 					const pinType = feat.get('attributes').pinType;
-					console.log(pinType);
+					//console.log(pinType);
 					if (typeof obtained_id !== 'undefined') {
 						if (pinType == 'earthquake') await goto(`/earthquake/${obtained_id}`);
 						else if (pinType == 'seismic station') await goto(`/seismic/${obtained_id}`);
@@ -211,8 +211,8 @@
 		let previousToast: string;
 
 		function onMapHover({ dragging, map, coordinate }: MapBrowserEvent<any>) {
-			console.log('started onMapHover function');
-			console.log(curr_longitude, curr_latitude);
+			//console.log('started onMapHover function');
+			//console.log(curr_longitude, curr_latitude);
 
 			if (!dragging) {
 				const pixel = map.getPixelFromCoordinate(coordinate);
@@ -222,8 +222,8 @@
 
 				// feat = 0th elem of array of features
 				if (typeof feat !== 'undefined') {
-					console.log('is defined');
-					console.log(feat);
+					//console.log('is defined');
+					//console.log(feat);
 
 					const gotten_feature = feat.get('attributes');
 
