@@ -48,9 +48,6 @@ dependencies:
   mongodb:
     specifier: ^6.5.0
     version: 6.5.0
-  new-sismika:
-    specifier: 'link:'
-    version: 'link:'
   ol:
     specifier: ^8.2.0
     version: 8.2.0
