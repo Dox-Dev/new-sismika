@@ -1,4 +1,4 @@
-import { hash, load } from 'blake3-wasm';
+import { hash, load } from 'blake3';
 import { OAUTH_SCOPE_STRING } from '$lib/server/model/google';
 import { redirect, type RequestHandler } from '@sveltejs/kit';
 import { createPending } from '$lib/server/database';

@@ -44,12 +44,11 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@c4312/blake3-internal": "^3.0.0",
 		"@floating-ui/dom": "1.6.3",
 		"@types/uuid": "^9.0.8",
 		"@vercel/analytics": "^1.2.2",
 		"@vercel/speed-insights": "^1.0.10",
-		"blake3-wasm": "^3.0.0",
+		"blake3": "^3.0.0",
 		"carta-md": "^3.6.1",
 		"csv-parser": "^3.0.0",
 		"dotenv": "^16.4.5",

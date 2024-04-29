@@ -1,6 +1,6 @@
 import { AuthorizationCode, IdTokenSchema, TokenResponseSchema } from '$lib/server/model/google';
 import { error, redirect, type RequestHandler } from '@sveltejs/kit';
-import { hash, load } from 'blake3-wasm';
+import { hash, load } from 'blake3';
 import env from '$lib/model/src/env/oauth';
 import { StatusCodes } from 'http-status-codes';
 import { deletePending, upgradeSession, upsertUser } from '$lib/server/database';
