@@ -45,10 +45,10 @@
 	"type": "module",
 	"dependencies": {
 		"@floating-ui/dom": "1.6.3",
+		"@noble/hashes": "^1.4.0",
 		"@types/uuid": "^9.0.8",
 		"@vercel/analytics": "^1.2.2",
 		"@vercel/speed-insights": "^1.0.10",
-		"blake3": "^3.0.0",
 		"carta-md": "^3.6.1",
 		"csv-parser": "^3.0.0",
 		"dotenv": "^16.4.5",

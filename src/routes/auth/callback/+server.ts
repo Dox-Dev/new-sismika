@@ -1,6 +1,6 @@
 import { AuthorizationCode, IdTokenSchema, TokenResponseSchema } from '$lib/server/model/google';
 import { error, redirect, type RequestHandler } from '@sveltejs/kit';
-import { hash, load } from 'blake3';
+import { blake3 } from '@noble/hashes/blake3';
 import env from '$lib/model/src/env/oauth';
 import { StatusCodes } from 'http-status-codes';
 import { deletePending, upgradeSession, upsertUser } from '$lib/server/database';
@@ -15,9 +15,7 @@ export const GET: RequestHandler = async ({ cookies, url: { searchParams } }) =>
 	const state = searchParams.get('state');
 	if (!state) throw error(StatusCodes.BAD_REQUEST);
 
-	await load();
-
-	if (Buffer.from(state, 'base64url').compare(hash(sid)) !== 0)
+	if (Buffer.from(state, 'base64url').compare(blake3(sid)) !== 0)
 		throw error(StatusCodes.BAD_REQUEST);
 
 	const result = AuthorizationCode.safeParse(searchParams.get('code'));

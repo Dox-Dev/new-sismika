@@ -12,6 +12,9 @@ dependencies:
   '@floating-ui/dom':
     specifier: 1.6.3
     version: 1.6.3
+  '@noble/hashes':
+    specifier: ^1.4.0
+    version: 1.4.0
   '@types/uuid':
     specifier: ^9.0.8
     version: 9.0.8
@@ -21,9 +24,6 @@ dependencies:
   '@vercel/speed-insights':
     specifier: ^1.0.10
     version: 1.0.10(@sveltejs/kit@2.5.5)(svelte@4.2.12)
-  blake3:
-    specifier: ^3.0.0
-    version: 3.0.0
   carta-md:
     specifier: ^3.6.1
     version: 3.6.1(svelte@4.2.12)
@@ -48,6 +48,9 @@ dependencies:
   mongodb:
     specifier: ^6.5.0
     version: 6.5.0
+  new-sismika:
+    specifier: 'link:'
+    version: 'link:'
   ol:
     specifier: ^8.2.0
     version: 8.2.0
@@ -168,11 +171,6 @@ packages:
     dependencies:
       '@jridgewell/gen-mapping': 0.3.5
       '@jridgewell/trace-mapping': 0.3.25
-
-  /@c4312/blake3-internal@3.0.0:
-    resolution: {integrity: sha512-USnabcn5uQDbEEryzjK4F3L7HVbMsWtqkTjDbZ/zyMp2vXwlOVnYZbn2WEGx+RmN84U5S1dTe1+RI0fKBWxQsA==}
-    engines: {node: '>=16'}
-    dev: false
 
   /@esbuild/aix-ppc64@0.20.2:
     resolution: {integrity: sha512-D+EBOJHXdNZcLJRBkhENNG8Wji2kgc9AZ9KiPr1JuZjsNtyHzrsfLRrY0tk2H2aoFu6RANO1y1iPPUCDYWkb5g==}
@@ -473,6 +471,11 @@ packages:
     resolution: {integrity: sha512-XLNOMH66KhJzUJNwT/qlMnS4WsNDWD5ASdyaSH3EtK+F4r/CFGa3jT4GNi4mfOitGvWXtdLgQJkQjxSVrio+jA==}
     dependencies:
       sparse-bitfield: 3.0.3
+    dev: false
+
+  /@noble/hashes@1.4.0:
+    resolution: {integrity: sha512-V1JJ1WTRUqHHrOSh597hURcMqVKVGL/ea3kv0gSnEdsEZ0/+VyPghM1lMNGc00z7CIQorSvbKpuJkxvuHbvdbg==}
+    engines: {node: '>= 16'}
     dev: false
 
   /@nodelib/fs.scandir@2.1.5:
@@ -1082,21 +1085,6 @@ packages:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
     engines: {node: '>=8'}
     dev: true
-
-  /blake3-wasm@3.0.0:
-    resolution: {integrity: sha512-X410nN2AIX6k8gHQmXruQ9YV3U8fe7ZrfLMp88qBcGx5oEIGzz305HvquXoSTPdaR74EA99KHBTb8El9q0vjqQ==}
-    engines: {node: '>=16'}
-    dependencies:
-      '@c4312/blake3-internal': 3.0.0
-    dev: false
-
-  /blake3@3.0.0:
-    resolution: {integrity: sha512-59iHKatHHQHKYyzGUEZt4y2J3Pj1krKeFj3u+ALdugADLop9aLTRqd5oFc61sHeFtedvq/sNMD+nukco7NL8qA==}
-    engines: {node: '>=16'}
-    requiresBuild: true
-    dependencies:
-      blake3-wasm: 3.0.0
-    dev: false
 
   /brace-expansion@1.1.11:
     resolution: {integrity: sha512-iCuPHDFgrHX7H2vEI/5xpz07zSHB00TpugqhmYtVmMO6518mCuRMoOYFldEBl0g187ufozdaHgWKcYFb61qGiA==}

@@ -1,4 +1,4 @@
-import { hash, load } from 'blake3';
+import { blake3 } from '@noble/hashes/blake3';
 import { OAUTH_SCOPE_STRING } from '$lib/server/model/google';
 import { redirect, type RequestHandler } from '@sveltejs/kit';
 import { createPending } from '$lib/server/database';
@@ -14,10 +14,8 @@ export const GET: RequestHandler = async ({ cookies }) => {
 		sameSite: 'lax',
 		expires: expiration
 	});
-
-	await load();
 	const params = new URLSearchParams({
-		state: hash(session_id).toString('base64url'),
+		state: Buffer.from(blake3(session_id)).toString('base64url'),
 		client_id: env.GOOGLE_ID,
 		redirect_uri: env.OAUTH_REDIRECT,
 		nonce: Buffer.from(nonce).toString('base64url'),
