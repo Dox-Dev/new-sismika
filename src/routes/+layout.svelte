@@ -36,6 +36,12 @@
 	import type { DrawerSettings } from '@skeletonlabs/skeleton';
 	import { Toast, getToastStore } from '@skeletonlabs/skeleton';
 	import type { ToastSettings, ToastStore } from '@skeletonlabs/skeleton';
+
+	import { inject } from '@vercel/analytics';
+	import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
+
+	inject();
+	injectSpeedInsights();
 	initializeStores();
 
 	export let data: LayoutServerData;
