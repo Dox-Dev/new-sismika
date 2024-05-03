@@ -25,13 +25,13 @@
 	<article class="card flex-row m-4 p-1 space-y-3">
 		<div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
 			<div class="input-group-shim">Maximum Depth</div>
-			<input type="number" name="depth" title="maxDepth" step="any" value={form?.maxDepth ?? ''} />
+			<input type="number" name="maxDepth" title="maxDepth" step="any" value={form?.maxDepth ?? ''} />
 			<div class="input-group-shim">km</div>
 		</div>
 
 		<div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
 			<div class="input-group-shim">Minimum Depth</div>
-			<input type="number" name="depth" title="minDepth" step="any" value={form?.minDepth ?? ''} />
+			<input type="number" name="minDepth" title="minDepth" step="any" value={form?.minDepth ?? ''} />
 			<div class="input-group-shim">km</div>
 		</div>
 
