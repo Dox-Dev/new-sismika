@@ -11,7 +11,7 @@
 	$: isBoundingBox = true;
 </script>
 
-<h1 class="h1">Earthquake Entry Submission</h1>
+<h1 class="h1">Report Entry Submission</h1>
 <hr />
 {#if form?.authFail || form?.noPerms}
 	<LoginUserPromptError />
