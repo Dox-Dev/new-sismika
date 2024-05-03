@@ -11,6 +11,42 @@ export const actions = {
 	async default({ cookies, request }) {
 		const form = await request.formData();
 
+		/*
+		// I wasn't sure if this was the way
+		// to get the maxDepth and minDepth
+		const depth = form.get('depth');
+		if (depth === null || depth instanceof File)
+			return fail(StatusCodes.BAD_REQUEST, { time, long, lat, missing: true });
+		*/
+
+		const maxDepth = form.get('maxDepth')?.toString();
+		if (maxDepth === undefined) return fail(StatusCodes.BAD_REQUEST, { missing: true });
+
+		const minDepth = form.get('minDepth')?.toString();
+		if (minDepth === undefined) return fail(StatusCodes.BAD_REQUEST, { maxDepth, missing: true });
+
+		const maxIntensity = form.get('maxIntensity')?.toString();
+		if (maxIntensity === undefined) return fail(StatusCodes.BAD_REQUEST, { maxDepth, minDepth, missing: true });
+
+		const minIntensity = form.get('minIntensity')?.toString();
+		if (minIntensity === undefined) return fail(StatusCodes.BAD_REQUEST, { maxDepth, minDepth, maxIntensity, missing: true });
+
+		const maxTime = form.get('maxTime')?.toString();
+		if (maxTime === undefined) return fail(StatusCodes.BAD_REQUEST, { maxDepth, minDepth, maxIntensity, minIntensity, missing: true });
+
+		const minTime = form.get('minTime')?.toString();
+		if (minTime === undefined) return fail(StatusCodes.BAD_REQUEST, { maxDepth, minDepth, maxIntensity, minIntensity, maxTime, missing: true });
+
+		// TODO: add way to get geographicBound or coordinateCenter
+		// Notes:
+		// - to check for error, check if geographicBound is defined while coordinateCenter is NOT defined
+		//   or vice-versa (this results in no error)
+		// - Errors: both are defined, neither are defined
+
+
+		// DIVIDER (below is original)
+
+		/*
 		const time = form.get('time')?.toString();
 		if (time === undefined) return fail(StatusCodes.BAD_REQUEST, { missing: true });
 
@@ -33,16 +69,17 @@ export const actions = {
 		const li = form.get('li')?.toString();
 		if (li === undefined)
 			return fail(StatusCodes.BAD_REQUEST, { time, long, lat, depth, mw, missing: true });
+		*/
 
 		const sid = cookies.get('sid');
-		if (!sid) return fail(StatusCodes.UNAUTHORIZED, { time, long, lat, depth, mw, authFail: true });
+		if (!sid) return fail(StatusCodes.UNAUTHORIZED, { maxDepth, minDepth, maxIntensity, minIntensity, maxTime, authFail: true });
 		// A check can be done to see if a session exists.
 
 		const user = await getUserFromSession(sid);
 		if (user === false)
-			return fail(StatusCodes.UNAUTHORIZED, { time, long, lat, depth, mw, authFail: true });
+			return fail(StatusCodes.UNAUTHORIZED, { maxDepth, minDepth, maxIntensity, minIntensity, maxTime, authFail: true });
 		if (user.permission < Permission.RESEARCHER)
-			return fail(StatusCodes.UNAUTHORIZED, { time, long, lat, depth, mw, noPerms: true });
+			return fail(StatusCodes.UNAUTHORIZED, { maxDepth, minDepth, maxIntensity, minIntensity, maxTime, noPerms: true });
 
 		const insert = {
 			time: new Date(time).toISOString(),
