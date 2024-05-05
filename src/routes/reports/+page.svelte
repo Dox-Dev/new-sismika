@@ -15,7 +15,7 @@
 
 	<div>
 		Anything missing? Tell us!
-		<a href="/earthquake/submit">
+		<a href="/reports/query">
 			<button type="button" class="btn btn-sm variant-filled"> Submit </button>
 		</a>
 	</div>

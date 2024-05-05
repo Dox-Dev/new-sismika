@@ -27,6 +27,8 @@ export const EarthquakeFilteringSchema = z.object({
 	maxTime: z.string().datetime().optional(),
 	orderTime: z.boolean().optional(),
 	geographicBound: BoundingBoxSchema.optional(),
+	coordinateCenter: CoordinatesSchema.optional(),
+	radius: z.number().optional(),
 	limit: z.number().optional()
 });
 
