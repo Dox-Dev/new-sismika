@@ -58,12 +58,12 @@
 				<span>Seismic Stations</span>
 			</a>
 		</li>
-		<li>
+		<!-- <li>
 			<a href="/evaccenter" on:click={drawerClose}>
 				<i class="fa-solid fa-building-circle-arrow-right" />
 				<span>Evacuation Centers</span>
 			</a>
-		</li>
+		</li> -->
 		{#if user}
 			{#if user.permission > 0}
 				<li>
