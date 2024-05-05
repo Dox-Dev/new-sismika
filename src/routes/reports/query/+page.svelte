@@ -3,7 +3,7 @@
 	import { RadioGroup, RadioItem } from '@skeletonlabs/skeleton';
 
 	import LoginUserPromptError from '$lib/components/ui/LoginUserPromptError.svelte';
-	
+
 	export let form;
 	let entryForm: HTMLFormElement;
 
@@ -24,25 +24,51 @@
 	<article class="card flex-row m-4 p-1 space-y-3">
 		<div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
 			<div class="input-group-shim">Maximum Depth</div>
-			<input type="number" name="maxDepth" title="maxDepth" step="any" value={form?.maxDepth ?? ''} />
+			<input
+				type="number"
+				name="maxDepth"
+				title="maxDepth"
+				step="any"
+				value={form?.maxDepth ?? ''}
+			/>
 			<div class="input-group-shim">km</div>
 		</div>
 
 		<div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
 			<div class="input-group-shim">Minimum Depth</div>
-			<input type="number" name="minDepth" title="minDepth" step="any" value={form?.minDepth ?? ''} />
+			<input
+				type="number"
+				name="minDepth"
+				title="minDepth"
+				step="any"
+				value={form?.minDepth ?? ''}
+			/>
 			<div class="input-group-shim">km</div>
 		</div>
 
 		<div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
 			<div class="input-group-shim">Maximum Magnitude</div>
-			<input type="number" min={0} name="maxIntensity" title="maxIntensity" step="any" value={form?.maxIntensity ?? ''} />
+			<input
+				type="number"
+				min={0}
+				name="maxIntensity"
+				title="maxIntensity"
+				step="any"
+				value={form?.maxIntensity ?? ''}
+			/>
 			<div class="input-group-shim">Mw</div>
 		</div>
 
 		<div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
 			<div class="input-group-shim">Minimum Magnitude</div>
-			<input type="number" min={0} name="minIntensity" title="minIntensity" step="any" value={form?.minIntensity ?? ''} />
+			<input
+				type="number"
+				min={0}
+				name="minIntensity"
+				title="minIntensity"
+				step="any"
+				value={form?.minIntensity ?? ''}
+			/>
 			<div class="input-group-shim">Mw</div>
 		</div>
 
@@ -67,18 +93,31 @@
 		</div>
 		<div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
 			<div class="input-group-shim">Limit</div>
-			<input type="number" name="limit" title="limit" placeholder="Limit the affected locations here shown in the record to the X nearest locations." step="any" value={form?.limit ?? ''} />
+			<input
+				type="number"
+				name="limit"
+				title="limit"
+				placeholder="Limit the affected locations here shown in the record to the X nearest locations."
+				step="any"
+				value={form?.limit ?? ''}
+			/>
 			<div class="input-group-shim">locations</div>
 		</div>
 
-		
 		<div class="space-y-2">
 			<label class="flex items-center space-x-2">
-				<input class="radio" bind:group={selection} type="radio" checked name="selection" value={0}/>
+				<input
+					class="radio"
+					bind:group={selection}
+					type="radio"
+					checked
+					name="selection"
+					value={0}
+				/>
 				<p>No geographical search</p>
 			</label>
 			<label class="flex items-center space-x-2">
-				<input class="radio" bind:group={selection} type="radio" name="selection" value={1}/>
+				<input class="radio" bind:group={selection} type="radio" name="selection" value={1} />
 				<p>Bounding Box - Give the 4 corner coordinates of affected areas</p>
 			</label>
 			<label class="flex items-center space-x-2">
@@ -87,57 +126,122 @@
 			</label>
 		</div>
 
-					
-
-		{#if (selection === 1)}
+		{#if selection === 1}
 			<h2 class="h2">Bounding Box</h2>
 			<div class="input-group input-group-divider grid-cols-[0.6fr_1fr_1fr]">
 				<div class="input-group-shim">Top Left Coordinate</div>
-				<input type="number" name="tl_long" title="Longitude" placeholder="Longitude in °" step="any" 
-					value={form?.tl_long ?? ''} />
-				<input type="number" name="tl_lat" title="Latitude" placeholder="Latitude in °" step="any" 
-					value={form?.tl_lat ?? ''} />
+				<input
+					type="number"
+					name="tl_long"
+					title="Longitude"
+					placeholder="Longitude in °"
+					step="any"
+					value={form?.tl_long ?? ''}
+				/>
+				<input
+					type="number"
+					name="tl_lat"
+					title="Latitude"
+					placeholder="Latitude in °"
+					step="any"
+					value={form?.tl_lat ?? ''}
+				/>
 			</div>
 
 			<div class="input-group input-group-divider grid-cols-[0.6fr_1fr_1fr]">
 				<div class="input-group-shim">Top Right Coordinate</div>
-				<input type="number" name="tr_long" title="Longitude" placeholder="Longitude in °" step="any" 
-					value={form?.tr_long ?? ''} />
-				<input type="number" name="tr_lat" title="Latitude" placeholder="Latitude in °" step="any" 
-					value={form?.tr_lat ?? ''} />
+				<input
+					type="number"
+					name="tr_long"
+					title="Longitude"
+					placeholder="Longitude in °"
+					step="any"
+					value={form?.tr_long ?? ''}
+				/>
+				<input
+					type="number"
+					name="tr_lat"
+					title="Latitude"
+					placeholder="Latitude in °"
+					step="any"
+					value={form?.tr_lat ?? ''}
+				/>
 			</div>
 
 			<div class="input-group input-group-divider grid-cols-[0.6fr_1fr_1fr]">
 				<div class="input-group-shim">Bottom Left Coordinate</div>
-				<input type="number" name="bl_long" title="Longitude" placeholder="Longitude in °" step="any" 
-					value={form?.bl_long ?? ''} />
-				<input type="number" name="bl_lat" title="Latitude" placeholder="Latitude in °" step="any" 
-					value={form?.bl_lat ?? ''} />
+				<input
+					type="number"
+					name="bl_long"
+					title="Longitude"
+					placeholder="Longitude in °"
+					step="any"
+					value={form?.bl_long ?? ''}
+				/>
+				<input
+					type="number"
+					name="bl_lat"
+					title="Latitude"
+					placeholder="Latitude in °"
+					step="any"
+					value={form?.bl_lat ?? ''}
+				/>
 			</div>
 
 			<div class="input-group input-group-divider grid-cols-[0.6fr_1fr_1fr]">
 				<div class="input-group-shim">Bottom Right Coordinate</div>
-				<input type="number" name="br_long" title="Longitude" placeholder="Longitude in °" step="any" 
-					value={form?.br_long ?? ''} />
-				<input type="number" name="br_lat" title="Latitude" placeholder="Latitude in °" step="any" 
-					value={form?.br_lat ?? ''} />
+				<input
+					type="number"
+					name="br_long"
+					title="Longitude"
+					placeholder="Longitude in °"
+					step="any"
+					value={form?.br_long ?? ''}
+				/>
+				<input
+					type="number"
+					name="br_lat"
+					title="Latitude"
+					placeholder="Latitude in °"
+					step="any"
+					value={form?.br_lat ?? ''}
+				/>
 			</div>
-		{:else if (selection === 2)}
+		{:else if selection === 2}
 			<h2 class="h2">Radial Bounding</h2>
 			<div class="input-group input-group-divider grid-cols-[auto_1fr_1fr]">
 				<div class="input-group-shim">Center Coordinates</div>
-				<input type="number" name="c_long" title="Longitude" placeholder="Longitude in °" step="any" 
-					value={form?.c_long ?? ''} />
-				<input type="number" name="c_lat" title="Latitude" placeholder="Latitude in °" step="any" 
-					value={form?.c_lat ?? ''} />
+				<input
+					type="number"
+					name="c_long"
+					title="Longitude"
+					placeholder="Longitude in °"
+					step="any"
+					value={form?.c_long ?? ''}
+				/>
+				<input
+					type="number"
+					name="c_lat"
+					title="Latitude"
+					placeholder="Latitude in °"
+					step="any"
+					value={form?.c_lat ?? ''}
+				/>
 			</div>
 
 			<div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
 				<div class="input-group-shim">Radius</div>
-				<input type="number" name="radius" title="Radius" placeholder="Enter the radius of affected locations here." step="any" value={form?.radius ?? ''} />
+				<input
+					type="number"
+					name="radius"
+					title="Radius"
+					placeholder="Enter the radius of affected locations here."
+					step="any"
+					value={form?.radius ?? ''}
+				/>
 				<div class="input-group-shim">km</div>
 			</div>
-		{/if} 
+		{/if}
 	</article>
 	<button type="button" class="btn btn-sm variant-filled" on:click={() => entryForm.requestSubmit()}
 		>Search</button
