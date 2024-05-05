@@ -12,11 +12,4 @@
 		<DownloadReport data={equakes} />
 		<DatatableEarthquake {data} />
 	</div>
-
-	<div>
-		Anything missing? Tell us!
-		<a href="/reports/query">
-			<button type="button" class="btn btn-sm variant-filled"> Submit </button>
-		</a>
-	</div>
 </main>

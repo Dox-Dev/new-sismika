@@ -14,3 +14,6 @@
 <button on:click={() => downloadReport()} type="button" class="btn variant-filled"
 	>Download
 </button>
+<button on:click={() => goto(`/reports/query`)} type="button" class="btn variant-filled"
+	>Advanced Filtering
+</button>
