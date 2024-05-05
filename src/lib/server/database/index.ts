@@ -85,10 +85,10 @@ export async function getAllEarthquakeData(
 	if (filter) {
 		if (filter.minDepth !== undefined) matchConditions['depth'] = { $gte: filter.minDepth };
 		if (filter.maxDepth !== undefined) matchConditions['depth'] = { $lte: filter.maxDepth };
-		if (filter.minIntensity !== undefined) matchConditions['mi'] = { $gte: filter.minIntensity };
-		if (filter.maxIntensity !== undefined) matchConditions['mi'] = { $lte: filter.maxIntensity };
-		if (filter.minTime !== undefined) matchConditions['time'] = { $gte: new Date(filter.minTime) };
-		if (filter.maxTime !== undefined) matchConditions['time'] = { $lte: new Date(filter.maxTime) };
+		if (filter.minIntensity !== undefined) matchConditions['mw'] = { $gte: filter.minIntensity };
+		if (filter.maxIntensity !== undefined) matchConditions['mw'] = { $lte: filter.maxIntensity };
+		if (filter.minTime !== undefined) matchConditions['time'] = { $gte: new Date(filter.minTime).toISOString() };
+		if (filter.maxTime !== undefined) matchConditions['time'] = { $lte: new Date(filter.maxTime).toISOString() };
 		if (filter.geographicBound !== undefined) {
 			matchConditions['coord'] = {
 				$geoWithin: {
