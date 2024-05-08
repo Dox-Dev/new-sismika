@@ -72,6 +72,17 @@
 	<AccordionItem>
 		<svelte:fragment slot="summary">Affected Areas</svelte:fragment>
 		<svelte:fragment slot="content">
+			<div class="sticky top-0">
+			{#if paginatedLocations.length > 0}
+			<Paginator
+				bind:settings={paginationSettingsLocation}
+				showFirstLastButtons={false}
+				showPreviousNextButtons
+				showNumerals
+				maxNumerals={1}
+			/>
+			{/if}
+			</div>
 			<VerticalContainer>
 				{#each paginatedLocations as location}
 					<LocationCard {...location} />
@@ -79,15 +90,7 @@
 					<p>There are no affected locations!</p>
 				{/each}
 			</VerticalContainer>
-			{#if paginatedLocations.length > 0}
-				<Paginator
-					bind:settings={paginationSettingsLocation}
-					showFirstLastButtons={false}
-					showPreviousNextButtons
-					showNumerals
-					maxNumerals={1}
-				/>
-			{/if}
+
 		</svelte:fragment>
 	</AccordionItem>
 	<AccordionItem>

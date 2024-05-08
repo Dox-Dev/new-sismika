@@ -17,6 +17,7 @@
 	$: paginatedSource = stations;
 </script>
 
+<div class="sticky top-0">
 <Paginator
 	bind:settings={paginationSettings}
 	showFirstLastButtons={false}
@@ -26,6 +27,7 @@
 	on:page={(e) => goto(`?page=${e.detail}&limit=${paginationSettings.limit}`)}
 	on:amount={(e) => goto(`?page=${paginationSettings.page}&limit=${e.detail}`)}
 />
+</div>
 <div>
 	Anything missing? Tell us!
 	<a href="/seismic/submit">

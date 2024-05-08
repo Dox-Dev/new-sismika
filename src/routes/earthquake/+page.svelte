@@ -18,15 +18,17 @@
 </script>
 
 <main>
-	<Paginator
-		bind:settings={paginationSettings}
-		showFirstLastButtons={false}
-		showPreviousNextButtons
-		showNumerals
-		maxNumerals={1}
-		on:page={(e) => goto(`?page=${e.detail}&limit=${paginationSettings.limit}`)}
-		on:amount={(e) => goto(`?page=${paginationSettings.page}&limit=${e.detail}`)}
-	/>
+	<div class="sticky top-0">
+		<Paginator
+			bind:settings={paginationSettings}
+			showFirstLastButtons={false}
+			showPreviousNextButtons
+			showNumerals
+			maxNumerals={1}
+			on:page={(e) => goto(`?page=${e.detail}&limit=${paginationSettings.limit}`)}
+			on:amount={(e) => goto(`?page=${paginationSettings.page}&limit=${e.detail}`)}
+		/>
+	</div>
 
 	<VerticalContainer>
 		{#each paginatedSource as { title, mw, _id, time }}
