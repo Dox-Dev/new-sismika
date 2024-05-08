@@ -32,6 +32,8 @@
 	import type { MapBrowserEvent } from 'ol';
 	import { goto } from '$app/navigation';
 	import type { Coordinate } from 'ol/coordinate';
+	import MagnitudeCard from '$lib/components/ui/MagnitudeCard.svelte';
+	import { late } from 'zod';
 	export let data: PageData;
 	export let centerCoord = [122.0641419, 9.16875];
 	export let zoom = 6;
@@ -248,13 +250,13 @@
 					//console.log('is defined');
 					//console.log(feat);
 					const obtained_id = feat.get('name');
-
 					const pinType = feat.get('attributes').pinType;
 					//console.log(pinType);
 					if (typeof obtained_id !== 'undefined') {
 						if (pinType == 'earthquake') await goto(`/earthquake/${obtained_id}`);
 						else if (pinType == 'seismic station') await goto(`/seismic/${obtained_id}`);
 						else if (pinType == 'evacuation center') await goto(`/evaccenter/${obtained_id}`);
+						else if (pinType == "geoJSON") await goto(`/locations/${feat.get("adm1_psgc")}`)
 					}
 					return;
 				}
@@ -350,56 +352,47 @@
 		? 'https://{a-c}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
 		: 'https://{a-c}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
 
-	$: tile_server.setUrl(themeURL);
+	$: tile_server.setUrl(themeURL)
+	
+	$: latestEntry = data.equake[data.equake.length - 1]
 </script>
 
-<div class="grid grid-cols-5"></div>
 
-<button
-	type="button"
-	class="btn btn-sm variant-filled"
-	on:click={() => showOrHideIcons('earthquake')}
->
-	{#if isHidden[0]}
-		Show Earthquakes
-	{:else}
-		Hide Earthquakes
-	{/if}
-</button>
-
-<button
-	type="button"
-	class="btn btn-sm variant-filled"
-	on:click={() => showOrHideIcons('seismic center')}
->
-	{#if isHidden[1]}
-		Show Seismic Centers
-	{:else}
-		Hide Seismic Centers
-	{/if}
-</button>
-
-<button
-	type="button"
-	class="btn btn-sm variant-filled"
-	on:click={() => showOrHideIcons('evacuation center')}
->
-	{#if isHidden[2]}
-		Show Evacuation Centers
-	{:else}
-		Hide Evacuation Centers
-	{/if}
-</button>
-
-<button type="button" class="btn btn-sm variant-filled">
-	<a href="/map/tectonic"> See Tectonic Plates </a>
-</button>
-
-<div bind:this={mapElement} class="map"></div>
-
-<style>
-	.map {
-		height: 1080px; /* Specify a height for the map */
-		width: 100%; /* Full width */
-	}
-</style>
+<div class="overflow-hidden">
+	<div bind:this={mapElement} class="relative top-0 left-0 h-screen w-screen"></div>
+	<div class="absolute bottom-0 select-none">
+		<div class="flex flex-col">
+			<section class="flex flex-row items-center">
+				<input type="checkbox" on:click={() => showOrHideIcons('earthquake')} checked={isHidden[0]}>
+				<p class="underline decoration-dotted">
+					{#if isHidden[0]}
+					Show Earthquakes
+					{:else}
+					Hide Earthquakes
+					{/if} 
+				</p>
+			</section>
+			<section class="flex flex-row items-center">
+				<input type="checkbox" on:click={() => showOrHideIcons('seismic center')} checked={isHidden[1]}>
+				<p class="underline decoration-dotted">
+					{#if isHidden[1]}
+					Show Seismic Stations
+					{:else}
+					Hide Seismic Stations
+					{/if} 
+				</p>
+			</section>
+			<button type="button" class="btn btn-sm variant-filled max-w-48">
+				<a href="/map/tectonic"> See Tectonic Plates </a>
+			</button>
+		</div>
+	</div>
+	<div class="absolute bottom-0 right-0 min-w-40" on:click={() => goto(`/earthquake/${latestEntry._id}`)}>
+		Latest Earthquake
+		<div>
+		<MagnitudeCard magnitude={data.equake[data.equake.length -1].mw}/>
+		</div> 
+		{new Date(latestEntry.time).toDateString()}
+	</div>
+	
+</div>
