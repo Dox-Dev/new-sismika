@@ -11,7 +11,6 @@
 	let thisForm: HTMLFormElement;
 
 	export let data: PageData;
-	$: affectedLocations = data.affected.locations;
 	$: totalAffected = data.affected.totalCount.toLocaleString();
 </script>
 

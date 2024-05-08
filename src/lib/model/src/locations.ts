@@ -31,7 +31,8 @@ export const LocationData = z.object({
 	status: z.number(),
 	coord: CoordinatesSchema.optional(),
 	boundingBox: BoundingBoxSchema.optional(),
-	osmresult: OSMSchema.optional()
+	osmresult: OSMSchema.optional(),
+	distance: z.number().optional()
 });
 
 export type Location = z.infer<typeof LocationData>;
