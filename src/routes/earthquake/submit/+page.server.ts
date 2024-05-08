@@ -1,7 +1,7 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import { StatusCodes } from 'http-status-codes';
 import type { Actions } from './$types';
-import { addEarthquakeData, getUserFromSession } from '$lib/server/database';
+import { addEarthquakeData, getUserFromSession, resolveEarthquakeTitle } from '$lib/server/database';
 import { Permission } from '$lib/model/src/user';
 import { parseOrZero } from '$lib/model/src/util';
 import { EarthquakeEventSchema } from '$lib/model/src/event';
@@ -55,8 +55,12 @@ export const actions = {
 			ms: parseOrZero(ms),
 			mw: parseOrZero(mw),
 			li: li ?? '',
-			title: ''
+			title: await resolveEarthquakeTitle({
+				type: 'Point',
+				coordinates: [parseFloat(long), parseFloat(lat)]
+			})
 		};
+		console.log(insert.title)
 
 		try {
 			const insertValidated = EarthquakeEventSchema.parse(insert);

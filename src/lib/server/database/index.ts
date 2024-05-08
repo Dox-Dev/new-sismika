@@ -56,11 +56,7 @@ export async function addEarthquakeData(data: EarthquakeEvent) {
 
 		const { _id, ...entry } = data;
 
-		const titledEntry = {
-			...entry,
-			title: await resolveEarthquakeTitle(data.coord)
-		};
-		const { insertedId } = await collection.insertOne(titledEntry);
+		const { insertedId } = await collection.insertOne(entry);
 		return insertedId;
 	} catch (err) {
 		throw err;
@@ -642,6 +638,7 @@ export async function collateNearbyLocations(equakeId: ObjectId, limit?: number,
 			.aggregate(pipeline)
 			.toArray();
 
+
 		return {
 			locations: LocationData.array().parse(paginatedResults),
 			totalCount: totalCount[0]?.total ? z.number().parse(totalCount[0]?.total) : 0,
@@ -874,9 +871,8 @@ export async function resolveEarthquakeTitle(locCoord: Coordinates) {
 		const res = await locationCollection.aggregate(pipeline).toArray();
 
 		const [first, ...rest] = res;
-
 		const parsedLocation = LocationData.pick({ coord: true, longname: true }).parse(
-			first.nearestLocation
+			first
 		);
 		ok(parsedLocation.coord);
 
