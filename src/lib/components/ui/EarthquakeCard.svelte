@@ -20,9 +20,7 @@
 			<div>
 				{dateTime}
 			</div>
+			<div>M {magnitude} mw</div>
 		</section>
-		<aside class="flex-items flex-0 text-xl align-middle">
-			M {magnitude}
-		</aside>
 	</article>
 </BaseContentCard>
