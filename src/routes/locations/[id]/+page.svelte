@@ -1,6 +1,6 @@
 <script lang="ts">
 	import EarthquakeCard from '$lib/components/ui/EarthquakeCard.svelte';
-	import { Accordion, AccordionItem } from '@skeletonlabs/skeleton';
+	import { Accordion, AccordionItem, type PaginationSettings, Paginator } from '@skeletonlabs/skeleton';
 	import LocationCard from '$lib/components/ui/LocationCard.svelte';
 	import VerticalContainer from '$lib/components/ui/containers/VerticalContainer.svelte';
 
@@ -10,6 +10,17 @@
 	import { goto } from '$app/navigation';
 
 	export let data: PageData;
+
+	const { page: pageL, limit, equake, totalCount} = data;
+	
+	let paginationSettings = {
+		page: pageL,
+		limit,
+		size: totalCount,
+		amounts: [8, 10, 15, 20]
+	} satisfies PaginationSettings;
+
+	$: paginatedSource = equake;
 </script>
 
 <div class="card flex-row">
@@ -30,8 +41,21 @@
 					><i class="fa-solid fa-house-crack"></i>Earthquakes</svelte:fragment
 				>
 				<svelte:fragment slot="content">
+				{#if paginatedSource.length > 0}
+					<div class="sticky top-0">
+						<Paginator
+							bind:settings={paginationSettings}
+							showFirstLastButtons={false}
+							showPreviousNextButtons
+							showNumerals
+							maxNumerals={1}
+							on:page={(e) => goto(`?page=${e.detail}&limit=${paginationSettings.limit}`)}
+							on:amount={(e) => goto(`?page=${paginationSettings.page}&limit=${e.detail}`)}
+						/>
+					</div>
+				{/if}
 					<VerticalContainer>
-						{#each data.equake as { title, mw, _id, time }}
+						{#each paginatedSource as { title, mw, _id, time }}
 							<EarthquakeCard {title} magnitude={mw} equakeId={_id} dateTime={time} />
 						{:else}
 							<p>No recorded earthquake in database.</p>
