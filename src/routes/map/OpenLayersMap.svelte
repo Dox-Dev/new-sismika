@@ -28,12 +28,9 @@
 	// Take JSON data of points from /src/routes/map/+page.svelte
 	// dirty way: PageData automatically gives the type of the data
 	import type { PageData } from './$types';
-	import type { Pixel } from 'ol/pixel';
 	import type { MapBrowserEvent } from 'ol';
 	import { goto } from '$app/navigation';
-	import type { Coordinate } from 'ol/coordinate';
 	import MagnitudeCard from '$lib/components/ui/MagnitudeCard.svelte';
-	import { late } from 'zod';
 	import LocationRequest from '$lib/components/LocationRequest.svelte';
 	export let data: PageData;
 	export let centerCoord = [122.0641419, 9.16875];
@@ -90,7 +87,7 @@
 					),
 					attributes: {
 						pinType: 'earthquake',
-						time: `${item.time}`
+						title: `${item.title}`
 					}
 				});
 
@@ -289,13 +286,13 @@
 					if (typeof pinType !== 'undefined') {
 						if (pinType == 'earthquake') {
 							previousToast = toastStore.trigger({
-								message: `${pinType} ${gotten_feature.time}`,
+								message: `${gotten_feature.title}`,
 								background: 'variant-filled-primary',
 								autohide: true
 							});
 						} else if (pinType == 'seismic station') {
 							previousToast = toastStore.trigger({
-								message: `${pinType} ${gotten_feature.code} ${gotten_feature.name}`,
+								message: `${gotten_feature.code} - ${gotten_feature.name}`,
 								background: 'variant-filled-secondary',
 								autohide: true
 							});
@@ -308,7 +305,7 @@
 							});
 						} else if (pinType == 'geoJSON') {
 							previousToast = toastStore.trigger({
-								message: `${pinType} ${feat.get('adm1_en')}`,
+								message: `${feat.get('adm1_en')}`,
 								background: 'variant-filled-success',
 								autohide: true
 							});
