@@ -42,6 +42,38 @@
 	let earthquakeLayer = new VectorLayer();
 	let locationLayer = new VectorLayer();
 
+	function calculateDistanceinMeters(pointA, pointB) {
+	const radius = 6371e3; // Earth's radius in meters
+
+	const lat1 = (pointA.coordinates[1] * Math.PI) / 180;
+	const lat2 = (pointB.coordinates[1] * Math.PI) / 180;
+	const deltaLat = ((pointB.coordinates[1] - pointA.coordinates[1]) * Math.PI) / 180;
+	const deltaLon = ((pointB.coordinates[0] - pointA.coordinates[0]) * Math.PI) / 180;
+
+	const a =
+		Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+		Math.cos(lat1) * Math.cos(lat2) * Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
+	const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+	const distance = radius * c; // Distance in meters
+
+	return distance;
+	}
+
+	const maxMagnitude = data.selectedEarthquake.mw;
+	const maxDistance = data.affectedLocations.reduce((max, location, index) => {
+		if (!location.coord) return max;
+		const distance = calculateDistanceinMeters(location.coord, data.selectedEarthquake.coord);
+		data.affectedLocations[index].distance = distance;
+		return distance > max ? distance : max;
+		}, 0);
+
+	function reversedLogScaleDistribution(specificDistance: number) {
+		const sqrtScale = (Math.sqrt(specificDistance) / Math.sqrt(maxDistance)) * (maxMagnitude - 1) + 1;
+		const reversedScale = maxMagnitude - (sqrtScale - 1);
+		return Math.round(reversedScale);
+	}
+
 	onMount(() => {
 		mountedMap = new Map({
 			target: mapElement,
@@ -63,7 +95,7 @@
 					data.selectedEarthquake.coord.coordinates[0],
 					data.selectedEarthquake.coord.coordinates[1]
 				]), // Center of the map [longitude, latitude]
-				zoom: 6 // Initial zoom level
+				zoom: 10 // Initial zoom level
 			})
 		});
 
@@ -95,9 +127,9 @@
 
 			const intensity = Math.round(Number(item.mw));
 			let icon = new Icon({
-				width: 20,
-				height: 20,
-				src: `../seismic-${intensity}.png`
+				width: 30,
+				height: 30,
+				src: `/epicenter.png`
 			});
 
 			// Create a style for the marker
@@ -129,14 +161,14 @@
 					geometry: new Point(fromLonLat([item.coord?.coordinates[0], item.coord?.coordinates[1]])),
 					attributes: {
 						pinType: 'location',
-						name: `${item.longname}`
+						name: `${item.longname}`,
 					}
 				});
 
 				const icon = new Icon({
-					width: 10,
-					height: 10,
-					src: `../seismic-1.png`
+					width: 20,
+					height: 20,
+					src: `../seismic-${reversedLogScaleDistribution(item.distance)}.png`
 				});
 
 				const iconStyle = new Style({
@@ -199,7 +231,7 @@
 					if (typeof obtained_id !== 'undefined') {
 						if (pinType == 'earthquake') await goto(`/earthquake/${obtained_id}`);
 						else if (pinType == 'seismic station') await goto(`/seismic/${obtained_id}`);
-						else if (pinType == 'evacuation center') await goto(`/evaccenter/${obtained_id}`);
+						else if (pinType == 'location') await goto(`/locations/${obtained_id}`);
 					}
 					return;
 				}
