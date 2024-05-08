@@ -68,8 +68,16 @@
 	import { LightSwitch } from '@skeletonlabs/skeleton';
 	import type { LayoutServerData } from './$types';
 	import Loading from '$lib/components/Loading.svelte';
-	import { navigating } from '$app/stores';
+	import { navigating, page } from '$app/stores';
 	import { goto } from '$app/navigation';
+
+	$: showBack = innerRoute($page.url.pathname);
+	
+	function innerRoute(path: string) {
+		if (path.split('/').filter(Boolean).length > 1) return true
+		return false
+	}
+	
 </script>
 
 <Drawer>
@@ -99,8 +107,10 @@
 							</svg>
 						</span>
 					</button>
-					<strong on:click={()=> goto('/map')} class="text-xl uppercase">Sismika</strong>
-				</div>
+					{#if showBack}
+						<i on:click={() => history.back()} class="absolute left-16 fa-solid fa-arrow-left"></i>
+					{/if}
+					<strong on:click={()=> goto('/map')} class="text-xl uppercase ml-5">Sismika</strong>
 			</svelte:fragment>
 
 			<svelte:fragment slot="trail">
