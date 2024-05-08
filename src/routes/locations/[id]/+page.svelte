@@ -3,9 +3,11 @@
 	import { Accordion, AccordionItem } from '@skeletonlabs/skeleton';
 	import LocationCard from '$lib/components/ui/LocationCard.svelte';
 	import VerticalContainer from '$lib/components/ui/containers/VerticalContainer.svelte';
-	import OpenLayersMap from '../../map/OpenLayersMap.svelte';
+
 	import type { PageData } from './$types';
+	import { page } from '$app/stores';
 	import StaticBottomContainer from '$lib/components/ui/containers/StaticBottomContainer.svelte';
+	import { goto } from '$app/navigation';
 
 	export let data: PageData;
 </script>
@@ -14,16 +16,13 @@
 	<article>
 		<LocationCard {...data.location} />
 	</article>
-	<div>
+	<div class="mb-16">
 		<Accordion>
-			<AccordionItem>
+			<AccordionItem on:click={() => {
+				if (data.equake.length > 0) goto(`${$page.url.pathname}/map`)}}>
 				<svelte:fragment slot="summary"><i class="fa-regular fa-map"></i>Map</svelte:fragment>
 				<svelte:fragment slot="content">
-						{#if data.equake.length > 0}
-							<OpenLayersMap {data} centerCoord={data.location.coord?.coordinates} zoom={9} />
-						{:else}
-							<p>No recorded earthquake in database.</p>
-						{/if}
+					<p>No recorded earthquake in database.</p>	
 				</svelte:fragment>
 			</AccordionItem>
 			<AccordionItem open>

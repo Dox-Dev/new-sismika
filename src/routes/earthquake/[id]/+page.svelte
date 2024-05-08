@@ -50,7 +50,7 @@
 <button type="button" class="btn btn-sm variant-filled" on:click={() => goto(`./${_id}/submit`)}
 	>Submit Article/Information</button
 >
-<Accordion>
+<Accordion class="mb-16">
 	{#if typeof paginatedArticles === 'object' && paginatedArticles.length > 0}
 		<AccordionItem open>
 			<svelte:fragment slot="summary">Media and Articles</svelte:fragment>
