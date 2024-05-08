@@ -5,6 +5,7 @@
 	import VerticalContainer from '$lib/components/ui/containers/VerticalContainer.svelte';
 	import OpenLayersMap from '../../map/OpenLayersMap.svelte';
 	import type { PageData } from './$types';
+	import StaticBottomContainer from '$lib/components/ui/containers/StaticBottomContainer.svelte';
 
 	export let data: PageData;
 </script>
@@ -18,7 +19,11 @@
 			<AccordionItem>
 				<svelte:fragment slot="summary"><i class="fa-regular fa-map"></i>Map</svelte:fragment>
 				<svelte:fragment slot="content">
-					<OpenLayersMap {data} centerCoord={data.location.coord?.coordinates} zoom={9} />
+						{#if data.equake.length > 0}
+							<OpenLayersMap {data} centerCoord={data.location.coord?.coordinates} zoom={9} />
+						{:else}
+							<p>No recorded earthquake in database.</p>
+						{/if}
 				</svelte:fragment>
 			</AccordionItem>
 			<AccordionItem open>
@@ -29,10 +34,15 @@
 					<VerticalContainer>
 						{#each data.equake as { title, mw, _id, time }}
 							<EarthquakeCard {title} magnitude={mw} equakeId={_id} dateTime={time} />
+						{:else}
+							<p>No recorded earthquake in database.</p>
 						{/each}
 					</VerticalContainer>
 				</svelte:fragment>
 			</AccordionItem>
 		</Accordion>
-	</div>
+	</div>	
+	<StaticBottomContainer>
+		{data.location.geographicLevel}. {data.location.longname}
+	</StaticBottomContainer>
 </div>

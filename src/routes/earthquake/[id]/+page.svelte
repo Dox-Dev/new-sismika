@@ -12,6 +12,8 @@
 	import EarthquakeTop from '$lib/components/ui/EarthquakeTop.svelte';
 	import { goto } from '$app/navigation';
 	import OpenLayersMapEarthquake from './OpenLayersMap-Earthquake.svelte';
+	import StaticBottomContainer from '$lib/components/ui/containers/StaticBottomContainer.svelte';
+	import MagnitudeCard from '$lib/components/ui/MagnitudeCard.svelte';
 
 	export let data: import('./$types').PageServerData;
 	$: ({ _id, time, coord, depth, mi, mb, ms, li } = data.selectedEarthquake);
@@ -132,6 +134,9 @@
 		</svelte:fragment>
 	</AccordionItem>
 </Accordion>
-<article class="flex">
-	<section></section>
-</article>
+<StaticBottomContainer>
+	<div class="flex flex-row items-center">
+		<MagnitudeCard magnitude={data.selectedEarthquake.mw}/>
+		<p class="text-sm">{data.selectedEarthquake.title}</p>
+	</div>
+</StaticBottomContainer>
