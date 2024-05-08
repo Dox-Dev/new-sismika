@@ -26,7 +26,7 @@
 
 	let paginationSettingsLocation = {
 		page: 0,
-		limit: 5,
+		limit: 3,
 		size: data.locationSize,
 		amounts: [3, 5, 8, 10]
 	};
@@ -41,7 +41,7 @@
 
 <!-- Responsive Container (recommended) -->
 <h1 class="h1">{data.title}</h1>
-<div class="p-10">
+<div class="py-10">
 	<OpenLayersMapEarthquake {data} />
 </div>
 <EarthquakeTop totalAffected={totalAffected.toLocaleString()} info={data.selectedEarthquake} />
@@ -75,15 +75,19 @@
 			<VerticalContainer>
 				{#each paginatedLocations as location}
 					<LocationCard {...location} />
+				{:else}
+					<p>There are no affected locations!</p>
 				{/each}
 			</VerticalContainer>
-			<Paginator
-				bind:settings={paginationSettingsLocation}
-				showFirstLastButtons={false}
-				showPreviousNextButtons
-				showNumerals
-				maxNumerals={1}
-			/>
+			{#if paginatedLocations.length > 0}
+				<Paginator
+					bind:settings={paginationSettingsLocation}
+					showFirstLastButtons={false}
+					showPreviousNextButtons
+					showNumerals
+					maxNumerals={1}
+				/>
+			{/if}
 		</svelte:fragment>
 	</AccordionItem>
 	<AccordionItem>
