@@ -125,7 +125,9 @@
 			</div>
 		</div>
 	{:else}
-		<slot />
+		<div class="px-3">
+			<slot />
+		</div>
 	{/if}
 	<!-- ---- / ---- -->
 	<!--  <svelte:fragment slot="pageFooter">Page Footer</svelte:fragment> -->
