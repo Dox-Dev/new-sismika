@@ -34,6 +34,7 @@
 	import type { Coordinate } from 'ol/coordinate';
 	import MagnitudeCard from '$lib/components/ui/MagnitudeCard.svelte';
 	import { late } from 'zod';
+	import LocationRequest from '$lib/components/LocationRequest.svelte';
 	export let data: PageData;
 	export let centerCoord = [122.0641419, 9.16875];
 	export let zoom = 6;
@@ -357,9 +358,18 @@
 	$: latestEntry = data.equake[data.equake.length - 1]
 </script>
 
-
 <div class="overflow-hidden">
 	<div bind:this={mapElement} class="relative top-0 left-0 h-screen w-screen"></div>
+	<div class="absolute right-4 top-16">
+		<LocationRequest on:getLocation={(event)=>{
+			const view = mountedMap.getView();
+			view.animate({
+				center: fromLonLat([event.detail.long, event.detail.lat]),
+				zoom: 10,
+				duration: 500,
+			})
+		}}/>
+	</div>
 	<div class="absolute bottom-0 select-none">
 		<div class="flex flex-col">
 			<section class="flex flex-row items-center">
@@ -394,5 +404,4 @@
 		</div> 
 		{new Date(latestEntry.time).toDateString()}
 	</div>
-	
 </div>
