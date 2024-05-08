@@ -69,6 +69,7 @@
 	import type { LayoutServerData } from './$types';
 	import Loading from '$lib/components/Loading.svelte';
 	import { navigating } from '$app/stores';
+	import { goto } from '$app/navigation';
 </script>
 
 <Drawer>
@@ -98,7 +99,7 @@
 							</svg>
 						</span>
 					</button>
-					<strong class="text-xl uppercase">Sismika</strong>
+					<strong on:click={()=> goto('/map')} class="text-xl uppercase">Sismika</strong>
 				</div>
 			</svelte:fragment>
 
