@@ -103,7 +103,7 @@
 	<ul>
 		<li>
 			{#if user}
-				<a href="/auth/logout" on:click={drawerClose}>
+				<a href="/map" on:click={() => logout()}>
 					<!-- <span><i class="fa-solid fa-right-from-bracket"></i></span> -->
 					<span class="m10"><img src={user.picture} alt="" /></span>
 					<span>{user.name}</span>
