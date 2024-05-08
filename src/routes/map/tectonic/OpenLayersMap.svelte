@@ -111,15 +111,10 @@
 	$: tile_server.setUrl(themeURL);
 </script>
 
-<button type="button" class="btn btn-sm variant-filled" on:click={() => history.back()}>
-	See Pins and Country Regions
-</button>
+<div bind:this={mapElement} class="relative top-0 left-0 h-screen w-screen" />
 
-<div bind:this={mapElement} class="map" />
-
-<style>
-	.map {
-		height: 1080px; /* Specify a height for the map */
-		width: 100%; /* Full width */
-	}
-</style>
+<div class="absolute top-16 right-0">
+	<button type="button" class="btn btn-sm variant-filled" on:click={() => history.back()}>
+		Return to Pins and Country Regions
+	</button>
+</div>
