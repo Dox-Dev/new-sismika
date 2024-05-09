@@ -58,6 +58,12 @@
 				<span>Seismic Stations</span>
 			</a>
 		</li>
+		<li>
+			<a href="https://docs.google.com/forms/d/e/1FAIpQLSfG4lr-Ry9KDy5KAi1ZfgtajBy_tSUz3avkoHGH-8sTleHytw/viewform?usp=sf_link" target="_blank" rel="noopener noreferrer" on:click={drawerClose}>
+				<i class="fa-solid fa-comment"></i>
+				<span>Beta Test Survey Form</span>
+			</a>
+		</li>
 		<!-- <li>
 			<a href="/evaccenter" on:click={drawerClose}>
 				<i class="fa-solid fa-building-circle-arrow-right" />
@@ -65,6 +71,14 @@
 			</a>
 		</li> -->
 		{#if user}
+			{#if user.permission === 0} 
+				<li>
+					<a href="https://docs.google.com/forms/d/e/1FAIpQLSeypAHpAwbuNvYmcTnuDhc4JUypd9bqd-VbmUUyFVZaNjP4FA/viewform" target="_blank" rel="noopener noreferrer" on:click={drawerClose}>
+						<span><i class="fa-solid fa-paperclip"></i></span>
+						<span>Researcher Role Request</span>
+					</a>
+				</li>
+			{/if}
 			{#if user.permission > 0}
 				<li>
 					<a href="/reports" on:click={drawerClose}>
