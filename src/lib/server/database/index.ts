@@ -466,15 +466,36 @@ export async function upsertUser(data: User) {
 	const db = await connect();
 
 	try {
+		let pipeline: PipelineType = [
+			{
+				$match: {user_id: data.user_id}
+			},
+			{
+				$addFields: {
+					new_data: {
+						$mergeObjects: [
+							{permission: 0},
+							"$$ROOT",
+							data,
+							{permission: "$permission"}
+						]
+					}
+				}
+			},
+			{ $replaceRoot: { newRoot: "$new_data"}},
+			{
+				$merge: {
+					into: Collection.USERS,
+					on: "_id",
+					whenMatched: "replace",
+					whenNotMatched: "insert"
+				}
+			}
+		]
+		
 		const collection = db.collection(Collection.USERS);
-		const { matchedCount, upsertedId } = await collection.replaceOne(
-			{ user_id: data.user_id },
-			data,
-			{ upsert: true }
-		);
-
-		if (matchedCount || upsertedId) return true;
-		return false;
+		const res = await collection.aggregate(pipeline).toArray()
+		return true
 	} catch (err) {
 		throw err;
 	}
@@ -527,6 +548,7 @@ export async function getUserFromSession(sid: string) {
 		const userPointer = await usercol.findOne({ user_id: user_id });
 
 		if (userPointer === null) return false;
+		console.log(userPointer)
 		return UserSchema.parse(userPointer);
 	} catch (err) {
 		throw err;
