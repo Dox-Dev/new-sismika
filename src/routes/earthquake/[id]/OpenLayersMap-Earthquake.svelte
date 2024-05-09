@@ -329,11 +329,36 @@
 		: 'https://{a-c}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
 
 	$: tile_server.setUrl(themeURL);
+
+	function blinkFeature() {
+		let visible = true;
+		setInterval(() => {
+			visible =  !visible;
+			if (!pause) {
+			if (isHidden[0]) visible = false;
+			earthquakeLayer.setVisible(visible)
+			locationLayer.setVisible(!visible)
+			}
+		}, 2000);
+	}
+	blinkFeature();
+
+	let pause = false;
 </script>
 
 <div bind:this={mapElement} class="relative h-96 w-screen mb-10">
 	<div class="absolute bottom-0 select-none z-10">
 		<div class="flex flex-col">
+			<section class="flex flex-row items-center" on:click={() => pause = !pause}>
+				<input type="checkbox" class="checkbox mr-2" checked={pause}>
+				<p class="underline decoration-dotted">
+					{#if !pause}
+					Pause Animation
+					{:else}
+					Continue Animation
+					{/if} 
+				</p>
+			</section>
 			<section class="flex flex-row items-center" on:click={() => showOrHideIcons('earthquake')}>
 				<input type="checkbox" class="checkbox mr-2" checked={isHidden[0]}>
 				<p class="underline decoration-dotted">
