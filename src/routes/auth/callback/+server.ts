@@ -83,7 +83,7 @@ export const GET: RequestHandler = async ({ cookies, url: { searchParams } }) =>
 		name: token.name,
 		email: token.email,
 		picture: token.picture,
-		permission: 2 //GRANTS ADMINISTRATOR FOR ALL
+		permission: 0 //GRANTS ADMINISTRATOR FOR ALL
 	};
 
 	const parsedUser = UserSchema.parse(userDetails);
