@@ -41,11 +41,8 @@
 	);
 </script>
 
-<!-- Responsive Container (recommended) -->
-<h1 class="h1">{data.title}</h1>
-<div class="py-10">
-	<OpenLayersMapEarthquake {data} />
-</div>
+
+<OpenLayersMapEarthquake {data} />
 <EarthquakeTop totalAffected={totalAffected.toLocaleString()} info={data.selectedEarthquake} />
 <button type="button" class="btn btn-sm variant-filled" on:click={() => goto(`./${_id}/submit`)}
 	>Submit Article/Information</button

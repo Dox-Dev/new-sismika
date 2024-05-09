@@ -30,6 +30,7 @@
 	import type { PageData } from './$types';
 	import type { MapBrowserEvent } from 'ol';
 	import { goto } from '$app/navigation';
+	import MagnitudeCard from '$lib/components/ui/MagnitudeCard.svelte';
 	export let data: PageData;
 
 	// Initialize the tilesets, map, and mount.
@@ -71,9 +72,24 @@
 	function reversedLogScaleDistribution(specificDistance: number) {
 		const sqrtScale = (Math.sqrt(specificDistance) / Math.sqrt(maxDistance)) * (maxMagnitude - 1) + 1;
 		const reversedScale = maxMagnitude - (sqrtScale - 1);
-		return Math.round(reversedScale);
+		const rounded = Math.round(reversedScale)
+		intensityRecord[rounded] += 1;
+		return rounded;
 	}
 
+	const intensityRecord: Record<number, number> = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0}
+
+	function getZoomLevelFromDistance(km: number): number {
+
+    // List of distances corresponding to each zoom level.
+    const levels = [40000, 20000, 10000, 5000, 2500, 1250, 625, 312.5, 156, 78, 39, 19.5, 10, 5, 2.5, 1.2, 0.6, 0.3, 0.15, 0.075, 0.0375];
+    
+    // Find the appropriate zoom level where the distance is just smaller than the given km.
+    const zoomLevel = levels.findIndex(level => km >= level);
+
+    // Return the zoom level, if no valid level is found return 21, as it is the closest and most detailed level.
+    return zoomLevel === -1 ? 21 : zoomLevel;
+}
 	onMount(() => {
 		mountedMap = new Map({
 			target: mapElement,
@@ -95,7 +111,7 @@
 					data.selectedEarthquake.coord.coordinates[0],
 					data.selectedEarthquake.coord.coordinates[1]
 				]), // Center of the map [longitude, latitude]
-				zoom: 10 // Initial zoom level
+				zoom: getZoomLevelFromDistance(maxDistance/1000)
 			})
 		});
 
@@ -231,7 +247,7 @@
 					if (typeof obtained_id !== 'undefined') {
 						if (pinType == 'earthquake') await goto(`/earthquake/${obtained_id}`);
 						else if (pinType == 'seismic station') await goto(`/seismic/${obtained_id}`);
-						else if (pinType == 'location') await goto(`/locations/${obtained_id}`);
+						// else if (pinType == 'location') await goto(`/locations/${obtained_id}`);
 					}
 					return;
 				}
@@ -315,34 +331,45 @@
 	$: tile_server.setUrl(themeURL);
 </script>
 
-<div bind:this={mapElement} class="map">
-	<button
-		type="button"
-		class="btn btn-sm variant-filled"
-		on:click={() => showOrHideIcons('earthquake')}
-	>
-		{#if isHidden[0]}
-			Show Earthquakes
-		{:else}
-			Hide Earthquakes
-		{/if}
-	</button>
-	<button
-		type="button"
-		class="btn btn-sm variant-filled"
-		on:click={() => showOrHideIcons('location')}
-	>
-		{#if isHidden[1]}
-			Show Locations
-		{:else}
-			Hide Locations
-		{/if}
-	</button>
+<div bind:this={mapElement} class="relative h-96 w-screen mb-10">
+	<div class="absolute bottom-0 select-none z-10">
+		<div class="flex flex-col">
+			<section class="flex flex-row items-center" on:click={() => showOrHideIcons('earthquake')}>
+				<input type="checkbox" class="checkbox mr-2" checked={isHidden[0]}>
+				<p class="underline decoration-dotted">
+					{#if isHidden[0]}
+					Show Earthquakes
+					{:else}
+					Hide Earthquakes
+					{/if} 
+				</p>
+			</section>
+			<section class="flex flex-row items-center" on:click={() => showOrHideIcons('location')}>
+				<input type="checkbox" class="checkbox mr-2" checked={isHidden[1]}>
+				<p class="underline decoration-dotted">
+					{#if isHidden[1]}
+					Show Locations
+					{:else}
+					Hide Locations
+					{/if} 
+				</p>
+			</section>
+			<button type="button" class="btn btn-sm variant-filled max-w-48">
+				<a href="/map/tectonic"> See Tectonic Plates </a>
+			</button>
+		</div>
+	</div>
+	<div class="absolute bottom-0 right-3 select-none z-10 dark:bg-black/[0.7] bg-white/[0.7]">
+		<MagnitudeCard magnitude={data.selectedEarthquake.mw} text/>
+		<p class="m-2"><i class="fa-solid fa-house-circle-exclamation"></i> {data.locationSize.toLocaleString()} locations</p>
+		<div class="flex flex-row"></div>
+		{#each Object.entries(intensityRecord).map(([k, v]) => ({intensity: k, count: v})).reverse() as entry}
+			{#if entry.count !== 0}
+				<div class="flex flex-row">
+					<img class="object-none mx-2" src={`/seismic-${entry.intensity}.png`} /> <span> - {entry.count}</span>
+				</div>
+			{/if}
+		{/each}
+		<p class="m-2"><i class="fa-solid fa-person"></i> {data.affectedPopulation.toLocaleString()}</p>
+	</div>
 </div>
-
-<style>
-	.map {
-		height: 20vh; /* Specify a height for the map */
-		width: 100%; /* Full width */
-	}
-</style>

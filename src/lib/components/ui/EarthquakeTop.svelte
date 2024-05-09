@@ -13,6 +13,7 @@
 <article class="card flex flex-row">
 	<MagnitudeCard magnitude={mw} />
 	<section class="flex flex-col ml-5">
+		<h3 class="h3">{info.title}</h3>
 		<div>{coord.coordinates[0]}°E, {coord.coordinates[1]}°N</div>
 		<div>Magnitude: {mw} mw</div>
 		<div>Depth: {depth} km</div>

@@ -356,7 +356,7 @@
 </script>
 
 <div class="overflow-hidden">
-	<div bind:this={mapElement} class="relative top-0 left-0 h-screen w-screen"></div>
+	<div bind:this={mapElement} class="relative top-0 left-0 h-dvh w-screen"></div>
 	<div class="absolute right-4 top-16">
 		<LocationRequest on:getLocation={(event)=>{
 			const view = mountedMap.getView();
@@ -369,8 +369,8 @@
 	</div>
 	<div class="absolute bottom-0 select-none">
 		<div class="flex flex-col">
-			<section class="flex flex-row items-center">
-				<input type="checkbox" on:click={() => showOrHideIcons('earthquake')} checked={isHidden[0]}>
+			<section class="flex flex-row items-center" on:click={() => showOrHideIcons('earthquake')}>
+				<input type="checkbox" class="checkbox mr-2" checked={isHidden[0]}>
 				<p class="underline decoration-dotted">
 					{#if isHidden[0]}
 					Show Earthquakes
@@ -379,8 +379,8 @@
 					{/if} 
 				</p>
 			</section>
-			<section class="flex flex-row items-center">
-				<input type="checkbox" on:click={() => showOrHideIcons('seismic center')} checked={isHidden[1]}>
+			<section class="flex flex-row items-center" on:click={() => showOrHideIcons('seismic center')}>
+				<input type="checkbox" class="checkbox mr-2" checked={isHidden[1]}>
 				<p class="underline decoration-dotted">
 					{#if isHidden[1]}
 					Show Seismic Stations

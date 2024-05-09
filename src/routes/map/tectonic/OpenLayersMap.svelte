@@ -111,7 +111,7 @@
 	$: tile_server.setUrl(themeURL);
 </script>
 
-<div bind:this={mapElement} class="relative top-0 left-0 h-screen w-screen" />
+<div bind:this={mapElement} class="relative top-0 left-0 h-dvh w-screen" />
 
 <div class="absolute top-16 right-0">
 	<button type="button" class="btn btn-sm variant-filled" on:click={() => history.back()}>
