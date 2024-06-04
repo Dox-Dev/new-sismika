@@ -1,44 +1,31 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import 'ol/ol.css';
-	import Map from 'ol/Map';
-	import View from 'ol/View';
-	import TileLayer from 'ol/layer/Tile';
-	import OSM from 'ol/source/OSM';
+	import { onMount } from 'svelte'; // Import onMount from Svelte for component lifecycle management
+	import 'ol/ol.css'; // Import OpenLayers CSS for styling
+	import Map from 'ol/Map'; // Import OpenLayers Map
+	import View from 'ol/View'; // Import OpenLayers View
+	import TileLayer from 'ol/layer/Tile'; // Import OpenLayers TileLayer
+	import OSM from 'ol/source/OSM'; // Import OpenLayers OSM source
+	import { fromLonLat } from 'ol/proj'; // Import function for coordinate conversion
+	import { modeCurrent } from '@skeletonlabs/skeleton'; // Import current theme mode from Skeleton UI
+	import Feature from 'ol/Feature'; // Import OpenLayers Feature
+	import Point from 'ol/geom/Point'; // Import OpenLayers Point geometry
+	import VectorSource from 'ol/source/Vector'; // Import OpenLayers VectorSource
+	import { Icon, Style } from 'ol/style'; // Import OpenLayers Icon and Style
+	import VectorLayer from 'ol/layer/Vector'; // Import OpenLayers VectorLayer
+	import GeoJSON from 'ol/format/GeoJSON.js'; // Import OpenLayers GeoJSON format
 
-	// This is used to convert from [longitude, latitude]
-	// to a coordinate system OpenLayers can read.
-	// https://stackoverflow.com/questions/27820784/openlayers-3-center-map
-	import { fromLonLat } from 'ol/proj';
+	export let data; // Prop for the dataset
 
-	// This is used to check the current theme mode of the webpage.
-	import { modeCurrent } from '@skeletonlabs/skeleton';
-
-	// This is used for the markers in the OpenStreetMap.
-	import Feature from 'ol/Feature';
-	import Point from 'ol/geom/Point';
-	import VectorSource from 'ol/source/Vector';
-	import { Icon, Style } from 'ol/style';
-	import VectorLayer from 'ol/layer/Vector';
-	import GeoJSON from 'ol/format/GeoJSON.js';
-
-	// Take JSON data of points from /src/routes/map/+page.svelte
-	export let data;
-
-	// Initialize the tilesets, map, and mount.
-	// Note that the tile_server will have change
-	// dynamically depending on the current theme/mode.
-	const tile_server = new OSM(); // tilemap
-	let mapElement: HTMLElement;
-	let mountedMap: Map;
+	const tile_server = new OSM(); // Initialize OSM tile server
+	let mapElement: HTMLElement; // Map element reference
+	let mountedMap: Map; // Map instance
 
 	onMount(() => {
+		// Initialize the map
 		mountedMap = new Map({
 			target: mapElement,
 			layers: [
 				new TileLayer({
-					// tile_server is where the links to the themes will be placed
-					// https://github.com/CartoDB/basemap-styles
 					source: tile_server
 				}),
 				new VectorLayer({
@@ -57,16 +44,11 @@
 
 		var vectorSource = new VectorSource();
 
-		// Iterate over the data to create and add each marker
-		//console.log('earthquake', data.equake);
+		// Add earthquake markers
 		data.equake.forEach(function (item) {
-			//console.log('earthquake', item.coord.coordinates[0], item.coord.coordinates[1]);
-			// Create a feature for the marker
 			var marker = new Feature({
 				name: item.id,
-				geometry: new Point(
-					fromLonLat([item.coord.coordinates[0], item.coord.coordinates[1]]) // Marker position
-				)
+				geometry: new Point(fromLonLat([item.coord.coordinates[0], item.coord.coordinates[1]]))
 			});
 
 			const intensity = Math.round(Number(item.mw));
@@ -76,26 +58,18 @@
 				src: `./src/lib/assets/seismic-${intensity}.png`
 			});
 
-			// Create a style for the marker
 			var iconStyle = new Style({
 				image: icon
 			});
 
-			// Apply the style to the marker
 			marker.setStyle(iconStyle);
-
-			// Add the marker to the vector source
 			vectorSource.addFeature(marker);
 		});
 
-		//console.log('stations', data.station);
+		// Add seismic station markers
 		data.station.forEach(function (item) {
-			////console.log("station", item.coord.coordinates[0], item.coord.coordinates[1]);
-			// Create a feature for the marker
 			var marker = new Feature({
-				geometry: new Point(
-					fromLonLat([item.coord.coordinates[1], item.coord.coordinates[0]]) // Marker position
-				)
+				geometry: new Point(fromLonLat([item.coord.coordinates[1], item.coord.coordinates[0]]))
 			});
 
 			let icon = new Icon({
@@ -104,28 +78,18 @@
 				src: '/station.png'
 			});
 
-			// Create a style for the marker
 			var iconStyle = new Style({
 				image: icon
 			});
 
-			// Apply the style to the marker
 			marker.setStyle(iconStyle);
-			////console.log(marker);
-
-			// Add the marker to the vector source
 			vectorSource.addFeature(marker);
 		});
 
-		// Iterate over the data to create and add each marker
-		//console.log('evacuation centers', data.evac);
+		// Add evacuation center markers
 		data.evac.forEach(function (item) {
-			//console.log('evacuation', item.coord.coordinates[0], item.coord.coordinates[1]);
-			// Create a feature for the marker
 			var marker = new Feature({
-				geometry: new Point(
-					fromLonLat([item.coord.coordinates[0], item.coord.coordinates[1]]) // Marker position
-				)
+				geometry: new Point(fromLonLat([item.coord.coordinates[0], item.coord.coordinates[1]]))
 			});
 
 			let icon = new Icon({
@@ -134,36 +98,29 @@
 				src: '/evacuation.png'
 			});
 
-			// Create a style for the marker
 			var iconStyle = new Style({
 				image: icon
 			});
 
-			// Apply the style to the marker
 			marker.setStyle(iconStyle);
-
-			// Add the marker to the vector source
 			vectorSource.addFeature(marker);
 		});
 
-		//console.log(vectorSource);
-
-		// Add the vector source to a layer and add it to the map
 		var markerLayer = new VectorLayer({
 			source: vectorSource
 		});
 		mountedMap.addLayer(markerLayer);
 	});
 
-	// Dynamically change the themeURL and tile_server link.
+	// Dynamically change the themeURL and tile_server link based on theme mode
 	let themeURL: string;
 	$: themeURL = $modeCurrent
 		? 'https://{a-c}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
 		: 'https://{a-c}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-
 	$: tile_server.setUrl(themeURL);
 </script>
 
+<!-- Map container -->
 <div bind:this={mapElement} class="map"></div>
 
 <style>

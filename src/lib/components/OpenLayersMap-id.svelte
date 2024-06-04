@@ -1,3 +1,31 @@
+<!-- 
+This SvelteKit component displays an interactive OpenStreetMap using the OpenLayers library.
+It provides functionality to toggle the visibility of different types of icons (earthquakes, seismic centers, evacuation centers) on the map and dynamically changes the map theme based on the current mode.
+
+Functionality:
+- Displays earthquake, seismic station, and evacuation center markers on the map.
+- Allows users to toggle the visibility of these markers.
+- Changes the map theme dynamically based on the current theme mode.
+- Shows detailed information about markers when hovered and navigates to detailed views when clicked.
+
+Props:
+- data (PageData): The dataset containing information about earthquakes, seismic stations, and evacuation centers.
+
+The component structure:
+- Script: Imports necessary libraries, initializes the map and layers, defines functions for toggling icon visibility and handling map interactions.
+- Div: Binds the map element and contains buttons for toggling marker visibility.
+
+Styling and behavior:
+- The map and buttons use Tailwind CSS classes for styling.
+- The user image is styled to maintain aspect ratio and have rounded corners.
+
+Dependencies:
+- OpenLayers: Provides the mapping and geospatial functionality.
+- Skeleton UI: Provides utility functions and components.
+- Tailwind CSS: Provides utility classes for responsive design and styling.
+- SvelteKit: Provides navigation functionality.
+-->
+
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import 'ol/ol.css';
@@ -5,38 +33,25 @@
 	import View from 'ol/View';
 	import TileLayer from 'ol/layer/Tile';
 	import OSM from 'ol/source/OSM';
-
-	// This is used to convert from [longitude, latitude]
-	// to a coordinate system OpenLayers can read.
-	// https://stackoverflow.com/questions/27820784/openlayers-3-center-map
 	import { fromLonLat, toLonLat } from 'ol/proj';
-
-	// This is used to check the current theme mode of the webpage.
 	import { modeCurrent } from '@skeletonlabs/skeleton';
-
-	// This is used for the markers in the OpenStreetMap.
 	import Feature from 'ol/Feature';
 	import Point from 'ol/geom/Point';
 	import VectorSource from 'ol/source/Vector';
 	import { Icon, Style } from 'ol/style';
 	import VectorLayer from 'ol/layer/Vector';
 	import GeoJSON from 'ol/format/GeoJSON.js';
-
 	import { getToastStore } from '@skeletonlabs/skeleton';
-	const toastStore = getToastStore();
-
-	// Take JSON data of points from /src/routes/map/+page.svelte
-	// dirty way: PageData automatically gives the type of the data
 	import type { PageData } from './$types';
 	import type { Pixel } from 'ol/pixel';
 	import type { MapBrowserEvent } from 'ol';
 	import { goto } from '$app/navigation';
 	import type { Coordinate } from 'ol/coordinate';
+
+	const toastStore = getToastStore();
+
 	export let data: PageData;
 
-	// Initialize the tilesets, map, and mount.
-	// Note that the tile_server will have change
-	// dynamically depending on the current theme/mode.
 	const tile_server = new OSM(); // tilemap
 	let mapElement: HTMLElement;
 	let mountedMap: Map;
@@ -46,12 +61,11 @@
 	let evacLayer = new VectorLayer();
 
 	onMount(() => {
+		// Initialize the map
 		mountedMap = new Map({
 			target: mapElement,
 			layers: [
 				new TileLayer({
-					// tile_server is where the links to the themes will be placed
-					// https://github.com/CartoDB/basemap-styles
 					source: tile_server
 				}),
 				new VectorLayer({
@@ -68,7 +82,6 @@
 		});
 
 		const geojsonLayer = new VectorLayer({
-			//title: 'GeoJSON Layer',
 			source: new VectorSource({
 				format: new GeoJSON(),
 				url: './src/lib/assets/philippines-geojson.json' // Replace with your GeoJSON file path
@@ -78,15 +91,12 @@
 
 		var vectorSource = new VectorSource();
 
-		// Iterate over the data to create and add each marker
+		// Add earthquake markers
 		if (typeof data.equake !== 'boolean') {
 			data.equake.forEach(function (item) {
-				// Create a feature for the marker
 				var marker = new Feature({
 					name: item._id,
-					geometry: new Point(
-						fromLonLat([item.coord.coordinates[0], item.coord.coordinates[1]]) // Marker position
-					),
+					geometry: new Point(fromLonLat([item.coord.coordinates[0], item.coord.coordinates[1]])),
 					attributes: {
 						pinType: 'earthquake',
 						time: `${item.time}`
@@ -99,34 +109,25 @@
 					src: '/earthquake.png'
 				});
 
-				// Create a style for the marker
 				var iconStyle = new Style({
 					image: icon
 				});
 
-				// Apply the style to the marker
 				marker.setStyle(iconStyle);
-
-				// Add the marker to the vector source
 				vectorSource.addFeature(marker);
 			});
 		}
-
-		// Add the vector source to a layer and add it to the map
-		//const earthquakeLayer = new VectorLayer({
-		//	source: vectorSource,
-		//});
 		earthquakeLayer.setSource(vectorSource);
 		mountedMap.addLayer(earthquakeLayer);
 
 		vectorSource = new VectorSource();
+
+		// Add seismic station markers
 		if (typeof data.station !== 'boolean') {
 			data.station.forEach(function (item) {
 				var marker = new Feature({
 					name: item._id,
-					geometry: new Point(
-						fromLonLat([item.coord.coordinates[0], item.coord.coordinates[1]]) // Marker position
-					),
+					geometry: new Point(fromLonLat([item.coord.coordinates[0], item.coord.coordinates[1]])),
 					attributes: {
 						pinType: 'seismic station',
 						code: `${item.code}`,
@@ -140,37 +141,25 @@
 					src: '/station.png'
 				});
 
-				// Create a style for the marker
 				var iconStyle = new Style({
 					image: icon
 				});
 
-				// Apply the style to the marker
 				marker.setStyle(iconStyle);
-
-				// Add the marker to the vector source
 				vectorSource.addFeature(marker);
 			});
 		}
-
-		// Add the vector source to a layer and add it to the map
-		//const seismicLayer = new VectorLayer({
-		//	source: vectorSource,
-		//});
 		seismicLayer.setSource(vectorSource);
 		mountedMap.addLayer(seismicLayer);
 
 		vectorSource = new VectorSource();
 
-		// Iterate over the data to create and add each marker
+		// Add evacuation center markers
 		if (typeof data.evac !== 'boolean') {
 			data.evac.forEach(function (item) {
-				// Create a feature for the marker
 				var marker = new Feature({
 					name: item._id,
-					geometry: new Point(
-						fromLonLat([item.coord.coordinates[0], item.coord.coordinates[1]]) // Marker position
-					),
+					geometry: new Point(fromLonLat([item.coord.coordinates[0], item.coord.coordinates[1]])),
 					attributes: {
 						pinType: 'evacuation center',
 						name: `${item.name}`
@@ -183,65 +172,28 @@
 					src: '/evacuation.png'
 				});
 
-				// Create a style for the marker
 				var iconStyle = new Style({
 					image: icon
 				});
 
-				// Apply the style to the marker
 				marker.setStyle(iconStyle);
-
-				// Add the marker to the vector source
 				vectorSource.addFeature(marker);
 			});
 		}
-
-		// Add the vector source to a layer and add it to the map
-		//const evacLayer = new VectorLayer({
-		//	source: vectorSource,
-		//});
 		evacLayer.setSource(vectorSource);
 		mountedMap.addLayer(evacLayer);
 
-		// Add the vector source to a layer and add it to the map
-		//var markerLayer = new VectorLayer({
-		//	source: vectorSource,
-		//});
-		//mountedMap.addLayer(markerLayer);
-
-		//mountedMap.on('pointermove', function (evt) {
-		//  if (evt.dragging) {
-		//    info.style.visibility = 'hidden';
-		//    currentFeature = undefined;
-		//    return;
-		//  }
-		//  const pixel = mountedMap.getEventPixel(evt.originalEvent);
-		//  displayFeatureInfo(pixel, evt.originalEvent.target);
-		//});
-
-		let curr_longitude: number = 0;
-		let curr_latitude: number = 0;
-
+		// Handle map click event
 		async function onMapClick({ dragging, map, coordinate }: MapBrowserEvent<any>) {
-			////console.log(coordinate);
 			const convertedCoordinate = toLonLat(coordinate);
-			////console.log(convertedCoordinate);
-
-			curr_longitude = convertedCoordinate[0];
-			curr_latitude = convertedCoordinate[1];
 
 			if (!dragging) {
 				const pixel = map.getPixelFromCoordinate(coordinate);
 				const [feat, ..._] = map.getFeaturesAtPixel(pixel);
 
-				// feat = 0th elem of array of features
 				if (typeof feat !== 'undefined') {
-					//console.log('is defined');
-					//console.log(feat);
 					const obtained_id = feat.get('name');
-
 					const pinType = feat.get('attributes').pinType;
-					//console.log(pinType);
 					if (typeof obtained_id !== 'undefined') {
 						if (pinType == 'earthquake') await goto(`/earthquake/${obtained_id}`);
 						else if (pinType == 'seismic station') await goto(`/seismic/${obtained_id}`);
@@ -251,28 +203,20 @@
 				}
 			}
 		}
-
 		mountedMap.on('click', onMapClick);
 
 		let previousToast: string;
 
+		// Handle map hover event
 		function onMapHover({ dragging, map, coordinate }: MapBrowserEvent<any>) {
-			//console.log('started onMapHover function');
-			//console.log(curr_longitude, curr_latitude);
-
 			if (!dragging) {
 				const pixel = map.getPixelFromCoordinate(coordinate);
 				const [feat, ..._] = map.getFeaturesAtPixel(pixel);
 				toastStore.close(previousToast);
 				toastStore.clear();
 
-				// feat = 0th elem of array of features
 				if (typeof feat !== 'undefined') {
-					//console.log('is defined');
-					//console.log(feat);
-
 					const gotten_feature = feat.get('attributes');
-
 					const pinType = gotten_feature.pinType;
 					if (typeof pinType !== 'undefined') {
 						if (pinType == 'earthquake') {
@@ -288,7 +232,6 @@
 								autohide: true
 							});
 						} else if (pinType == 'evacuation center') {
-							// evacuation center
 							previousToast = toastStore.trigger({
 								message: `${pinType} ${gotten_feature.name}`,
 								background: 'variant-filled-tertiary',
@@ -304,10 +247,8 @@
 					}
 				}
 			}
-
 			return;
 		}
-
 		mountedMap.on('pointermove', onMapHover);
 	});
 
@@ -317,34 +258,32 @@
 			if (isHidden[0])
 				earthquakeLayer.setVisible(true); // show icon type
 			else earthquakeLayer.setVisible(false); // hide icon
-
 			isHidden[0] = !isHidden[0];
 		} else if (iconType == 'seismic center') {
 			if (isHidden[1])
 				seismicLayer.setVisible(true); // show icon type
 			else seismicLayer.setVisible(false); // hide icon
-
 			isHidden[1] = !isHidden[1];
 		} else if (iconType == 'evacuation center') {
 			if (isHidden[2])
 				evacLayer.setVisible(true); // show icon type
 			else evacLayer.setVisible(false); // hide icon
-
 			isHidden[2] = !isHidden[2];
 		}
 		return;
 	}
 
-	// Dynamically change the themeURL and tile_server link.
+	// Dynamically change the themeURL and tile_server link based on theme mode
 	let themeURL: string;
 	$: themeURL = $modeCurrent
 		? 'https://{a-c}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
 		: 'https://{a-c}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-
 	$: tile_server.setUrl(themeURL);
 </script>
 
+<!-- Map container -->
 <div bind:this={mapElement} class="map">
+	<!-- Buttons to toggle visibility of different markers -->
 	<button
 		type="button"
 		class="btn btn-sm variant-filled"
