@@ -29,26 +29,44 @@ const client = new MongoClient(uri, {
 	}
 });
 interface PipelineType extends Array<Record<string, any>> {}
+
 /**
- * Attempts to connect to the MongoDB client with the following information.
- * @returns connect
+ * Connects to the MongoDB client and returns the database object for the specified database.
+ *
+ * This function attempts to establish a connection to the MongoDB server using the provided client instance.
+ * Upon successful connection, it returns the database object for the 'sismika' database.
+ * If the connection fails, it logs the error and throws a custom `DatabaseConnectionError`.
+ *
+ * @async
+ * @function connect
+ * @returns {Promise<Db>} A promise that resolves to the MongoDB database object for 'sismika'.
+ * @throws {Error} Throws `DatabaseConnectionError` if the connection to MongoDB fails.
  */
 async function connect() {
 	try {
+		// Attempt to establish a connection to the MongoDB server.
 		await client.connect();
-		//console.log(`Connected to ${uri}`);
+		
+		// Uncomment the following line to log a successful connection message for debugging purposes.
+		// console.log(`Connected to ${uri}`);
+		
+		// Return the database object for the 'sismika' database.
 		return client.db('sismika');
 	} catch (err) {
+		// Log the connection error for debugging purposes.
 		console.error('MongoDB connection error:', err);
+		
+		// Throw a custom error to indicate a failure in establishing a database connection.
 		throw DatabaseConnectionError;
 	}
 }
 /**
- * Adds EarthquakeEvent to the MongoDB database.
- * @param data : validated EarthquakeEvent
- * @returns insertedId: the ObjectId of the inserted entry
+ * Adds a validated EarthquakeEvent to the MongoDB database.
+ * @param {EarthquakeEvent} data - An object containing validated earthquake event data.
+ * @returns {Promise<ObjectId>} The ObjectId of the inserted document.
+ * @throws Will throw an error if there is an issue with the database operation.
  */
-export async function addEarthquakeData(data: EarthquakeEvent) {
+export async function addEarthquakeData(data: EarthquakeEvent): Promise<ObjectId> {
 	const db = await connect();
 
 	try {
@@ -63,10 +81,45 @@ export async function addEarthquakeData(data: EarthquakeEvent) {
 	}
 }
 
+
 /**
- * Gets all EarthquakeEvent from the MongoDB database.
- * @returns EarthquakeEventSchema[] an array of validated EarthquakeEvents
- * @returns false - if there is no earthquakeData in the database
+ * Gets all EarthquakeEvents from the MongoDB database with optional pagination and filtering.
+ * @param {number} [page] - The page number for pagination (0-indexed).
+ * @param {number} [limit] - The number of items per page for pagination.
+ * @param {EarthquakeFilters} [filter] - Optional filters for querying earthquake events.
+ * @returns {Promise<{ equakes: EarthquakeEventSchema[], totalCount: number }>} An object containing an array of validated EarthquakeEvents and the total count of events.
+ * @throws Will throw an error if there is an issue with the database operation or data validation.
+ * 
+ * @example
+ * ```typescript
+ * const filters = {
+ *   minDepth: 10,
+ *   maxDepth: 100,
+ *   minIntensity: 4.0,
+ *   maxIntensity: 6.0,
+ *   minTime: '2022-01-01T00:00:00Z',
+ *   maxTime: '2023-01-01T00:00:00Z',
+ *   geographicBound: {
+ *     coordinates: [
+ *       [longitude1, latitude1],
+ *       [longitude2, latitude2],
+ *       [longitude3, latitude3],
+ *       [longitude4, latitude4]
+ *     ]
+ *   },
+ *   orderDepth: true,
+ *   orderIntensity: false,
+ *   orderTime: true
+ * };
+ * 
+ * try {
+ *   const { equakes, totalCount } = await getAllEarthquakeData(0, 10, filters);
+ *   console.log('Earthquakes:', equakes);
+ *   console.log('Total count:', totalCount);
+ * } catch (error) {
+ *   console.error('Error getting earthquake data:', error);
+ * }
+ * ```
  */
 export async function getAllEarthquakeData(
 	page?: number,
@@ -161,10 +214,10 @@ export async function getAllEarthquakeData(
 }
 
 /**
- * Gets a singular entry of an EarthquakeEvent given an ObjectId
- * @param id an ObjectId of the EartquakeEvent to retrieve
- * @returns validated an single entry of an EartquakeEvent
- * @returns false if nothing was found
+ * Gets a specific EarthquakeEvent from the MongoDB database by its ObjectId.
+ * @param {ObjectId} id - The ObjectId of the earthquake event to retrieve.
+ * @returns {Promise<EarthquakeEventSchema | false>} The validated EarthquakeEvent if found, otherwise false.
+ * @throws Will throw an error if there is an issue with the database operation or data validation.
  */
 export async function getEarthquakeData(id: ObjectId) {
 	const db = await connect();
@@ -192,9 +245,10 @@ export async function getEarthquakeData(id: ObjectId) {
 }
 
 /**
- * Removes a singular entry of an EarthquakeEvent given an ObjectId
- * @param id an ObjectId of the EarthquakeEvent to remove
- * @returns deletecCount a count on how many was removed
+ * Deletes a specific EarthquakeEvent from the MongoDB database by its ObjectId.
+ * @param {ObjectId} id - The ObjectId of the earthquake event to delete.
+ * @returns {Promise<number>} The number of documents deleted (0 if none were deleted).
+ * @throws Will throw an error if there is an issue with the database operation.
  */
 export async function deleteEarthquakeData(id: ObjectId) {
 	const db = await connect();
@@ -209,9 +263,11 @@ export async function deleteEarthquakeData(id: ObjectId) {
 }
 
 /**
- * Gets all Stations in the MongoDB database.
- * @returns StationSchema[]: returns an array of validated StationSchemas
- * @returns false - if no StationData is found
+ * Gets all Station data from the MongoDB database with optional pagination.
+ * @param {number} [page] - The page number for pagination (0-indexed).
+ * @param {number} [limit] - The number of items per page for pagination.
+ * @returns {Promise<{ stations: StationSchema[], totalCount: number }>} An object containing an array of validated Stations and the total count of stations.
+ * @throws Will throw an error if there is an issue with the database operation or data validation.
  */
 export async function getAllStationData(page?: number, limit?: number) {
 	const db = await connect();
@@ -247,9 +303,11 @@ export async function getAllStationData(page?: number, limit?: number) {
 }
 
 /**
- * Adds a station to the MongoDB database.
- * @param data a validated StationSchema to add to the database
- * @returns insertedId a ObjectId of the inserted entry
+ * Adds a validated Station data entry to the MongoDB database.
+ * @param {StationSchema} data - An object containing validated station data.
+ * @returns {Promise<ObjectId>} The ObjectId of the inserted document.
+ * @throws Will throw an error if there is an issue with the database operation or data validation.
+ * 
  */
 export async function addStationData(data: StationSchema) {
 	const db = await connect();
@@ -267,9 +325,10 @@ export async function addStationData(data: StationSchema) {
 }
 
 /**
- * Deletes a Station entry given a ObjectId
- * @param id a MongoDB ObjectId
- * @returns deletedCount a value indicating how many was removed
+ * Deletes a specific Station data entry from the MongoDB database by its ObjectId.
+ * @param {ObjectId} id - The ObjectId of the station data entry to delete.
+ * @returns {Promise<number>} The number of documents deleted (0 if none were deleted).
+ * @throws Will throw an error if there is an issue with the database operation.
  */
 export async function deleteStationData(id: ObjectId) {
 	const db = await connect();
@@ -286,10 +345,26 @@ export async function deleteStationData(id: ObjectId) {
 }
 
 /**
- * Retrieve a StationData given an ObjectId
- * @param id a MongoDB ObjectId of the station to be found
- * @returns validated a validated StationData
- * @returns false - if no ObjectId of the StationData was found
+ * Gets a specific Station data entry from the MongoDB database by its ObjectId.
+ * @param {ObjectId} id - The ObjectId of the station data entry to retrieve.
+ * @returns {Promise<StationSchema | false>} The validated Station data entry if found, otherwise false.
+ * @throws Will throw an error if there is an issue with the database operation or data validation.
+ * 
+ * @example
+ * ```typescript
+ * const id = new ObjectId("60c72b2f9b1d8b3b4c4e5d7a");
+ * 
+ * try {
+ *   const station = await getStationData(id);
+ *   if (station) {
+ *     console.log('Station:', station);
+ *   } else {
+ *     console.log('No Station found with the given ID.');
+ *   }
+ * } catch (error) {
+ *   console.error('Error retrieving station data:', error);
+ * }
+ * ```
  */
 export async function getStationData(id: ObjectId) {
 	const db = await connect();
@@ -318,9 +393,22 @@ export async function getStationData(id: ObjectId) {
 }
 
 /**
- * Gets all entries in the MongoDB database for all Evacuation center entries
- * @returns EvacCenter[]: an array of EvacCenters
- * @false - if MongoDB does not have any EvacCenters
+ * Gets all Evacuation Center data from the MongoDB database with optional pagination.
+ * @param {number} [page] - The page number for pagination (0-indexed).
+ * @param {number} [limit] - The number of items per page for pagination.
+ * @returns {Promise<{ evacs: EvacCenterSchema[], totalCount: number }>} An object containing an array of validated Evacuation Centers and the total count of centers.
+ * @throws Will throw an error if there is an issue with the database operation or data validation.
+ * 
+ * @example
+ * ```typescript
+ * try {
+ *   const { evacs, totalCount } = await getAllEvacData(0, 10);
+ *   console.log('Evacuation Centers:', evacs);
+ *   console.log('Total count:', totalCount);
+ * } catch (error) {
+ *   console.error('Error getting evacuation center data:', error);
+ * }
+ * ```
  */
 export async function getAllEvacData(page?: number, limit?: number) {
 	const db = await connect();
@@ -355,9 +443,27 @@ export async function getAllEvacData(page?: number, limit?: number) {
 }
 
 /**
- * Adds an EvacCenter entry to the MongoDB database
- * @param data an validated EvacCenter object
- * @returns insertedId - the ObjectID of the recently inserted EvacCenter
+ * Adds a validated Evacuation Center data entry to the MongoDB database.
+ * @param {EvacCenter} data - An object containing validated evacuation center data.
+ * @returns {Promise<ObjectId>} The ObjectId of the inserted document.
+ * @throws Will throw an error if there is an issue with the database operation or data validation.
+ * 
+ * @example
+ * ```typescript
+ * const evacCenter = {
+ *   name: "Evac Center 1",
+ *   location: "Location 1",
+ *   capacity: 500,
+ *   // other evacuation center properties
+ * };
+ * 
+ * try {
+ *   const insertedId = await addEvacData(evacCenter);
+ *   console.log('Inserted ID:', insertedId);
+ * } catch (error) {
+ *   console.error('Error inserting evacuation center data:', error);
+ * }
+ * ```
  */
 export async function addEvacData(data: EvacCenter) {
 	const db = await connect();
@@ -375,9 +481,22 @@ export async function addEvacData(data: EvacCenter) {
 }
 
 /**
- * Deletes an EvacCenter entry given an ObjectId
- * @param id a validated ObjectId of the entry to deleted
- * @returns deletedCount - the amount of entries deleted
+ * Deletes a specific Evacuation Center data entry from the MongoDB database by its ObjectId.
+ * @param {ObjectId} id - The ObjectId of the evacuation center data entry to delete.
+ * @returns {Promise<number>} The number of documents deleted (0 if none were deleted).
+ * @throws Will throw an error if there is an issue with the database operation.
+ * 
+ * @example
+ * ```typescript
+ * const id = new ObjectId("60c72b2f9b1d8b3b4c4e5d7a");
+ * 
+ * try {
+ *   const deletedCount = await deleteEvacData(id);
+ *   console.log('Number of documents deleted:', deletedCount);
+ * } catch (error) {
+ *   console.error('Error deleting evacuation center data:', error);
+ * }
+ * ```
  */
 export async function deleteEvacData(id: ObjectId) {
 	const db = await connect();
@@ -394,10 +513,26 @@ export async function deleteEvacData(id: ObjectId) {
 }
 
 /**
- * Searches for an Evacuation center with the given ObjectId
- * @param id the ObjectId of the Evacuation center to find
- * @returns validated - the EvacCenter object of the found entry
- * @returns false - if the ObjectId cannot be found
+ * Gets a specific Evacuation Center data entry from the MongoDB database by its ObjectId.
+ * @param {ObjectId} id - The ObjectId of the evacuation center data entry to retrieve.
+ * @returns {Promise<EvacCenterSchema | false>} The validated Evacuation Center data entry if found, otherwise false.
+ * @throws Will throw an error if there is an issue with the database operation or data validation.
+ * 
+ * @example
+ * ```typescript
+ * const id = new ObjectId("60c72b2f9b1d8b3b4c4e5d7a");
+ * 
+ * try {
+ *   const evacCenter = await getEvacData(id);
+ *   if (evacCenter) {
+ *     console.log('Evacuation Center:', evacCenter);
+ *   } else {
+ *     console.log('No Evacuation Center found with the given ID.');
+ *   }
+ * } catch (error) {
+ *   console.error('Error retrieving evacuation center data:', error);
+ * }
+ * ```
  */
 export async function getEvacData(id: ObjectId) {
 	const db = await connect();
@@ -423,6 +558,21 @@ export async function getEvacData(id: ObjectId) {
 	}
 }
 
+/**
+ * Creates a new pending session entry in the MongoDB database.
+ * @returns {Promise<PendingSchema>} The validated pending session entry.
+ * @throws Will throw an error if there is an issue with the database operation or data validation.
+ * 
+ * @example
+ * ```typescript
+ * try {
+ *   const pendingSession = await createPending();
+ *   console.log('Pending session created:', pendingSession);
+ * } catch (error) {
+ *   console.error('Error creating pending session:', error);
+ * }
+ * ```
+ */
 export async function createPending() {
 	const db = await connect();
 
@@ -446,6 +596,28 @@ export async function createPending() {
 	}
 }
 
+/**
+ * Deletes a pending session entry from the MongoDB database by its session ID.
+ * @param {string} sid - The session ID of the pending session to delete.
+ * @returns {Promise<PendingSchema | false>} The validated pending session entry if found and deleted, otherwise false.
+ * @throws Will throw an error if there is an issue with the database operation or data validation.
+ * 
+ * @example
+ * ```typescript
+ * const sessionId = "some-session-id";
+ * 
+ * try {
+ *   const deletedSession = await deletePending(sessionId);
+ *   if (deletedSession) {
+ *     console.log('Deleted pending session:', deletedSession);
+ *   } else {
+ *     console.log('No pending session found with the given session ID.');
+ *   }
+ * } catch (error) {
+ *   console.error('Error deleting pending session:', error);
+ * }
+ * ```
+ */
 export async function deletePending(sid: string) {
 	const db = await connect();
 
@@ -462,6 +634,29 @@ export async function deletePending(sid: string) {
 	}
 }
 
+/**
+ * Upserts a user data entry in the MongoDB database. If the user exists, the data is updated; otherwise, a new entry is created.
+ * @param {User} data - An object containing the user data to upsert.
+ * @returns {Promise<boolean>} Returns true if the operation is successful.
+ * @throws Will throw an error if there is an issue with the database operation or data validation.
+ * 
+ * @example
+ * ```typescript
+ * const userData = {
+ *   user_id: "12345",
+ *   name: "John Doe",
+ *   email: "john.doe@example.com",
+ *   // other user properties
+ * };
+ * 
+ * try {
+ *   const result = await upsertUser(userData);
+ *   console.log('Upsert successful:', result);
+ * } catch (error) {
+ *   console.error('Error upserting user data:', error);
+ * }
+ * ```
+ */
 export async function upsertUser(data: User) {
 	const db = await connect();
 
@@ -501,6 +696,29 @@ export async function upsertUser(data: User) {
 	}
 }
 
+/**
+ * Upgrades or inserts a session entry in the MongoDB database. If a session with the given user ID exists, it is replaced; otherwise, a new session is created.
+ * @param {Session} data - An object containing the session data to upsert.
+ * @returns {Promise<boolean>} Returns true if the session is successfully upserted or upgraded, otherwise false.
+ * @throws Will throw an error if there is an issue with the database operation or data validation.
+ * 
+ * @example
+ * ```typescript
+ * const sessionData = {
+ *   user_id: "12345",
+ *   session_token: "token123",
+ *   expiration: new Date(Date.now() + 3600 * 1000), // 1 hour from now
+ *   // other session properties
+ * };
+ * 
+ * try {
+ *   const result = await upgradeSession(sessionData);
+ *   console.log('Session upgrade successful:', result);
+ * } catch (error) {
+ *   console.error('Error upgrading session:', error);
+ * }
+ * ```
+ */
 export async function upgradeSession(data: Session) {
 	const db = await connect();
 
@@ -519,6 +737,24 @@ export async function upgradeSession(data: Session) {
 	}
 }
 
+/**
+ * Deletes a session entry from the MongoDB database by its session ID.
+ * @param {string} sid - The session ID of the session to delete.
+ * @returns {Promise<boolean>} Returns true if the session was successfully deleted, otherwise false.
+ * @throws Will throw an error if there is an issue with the database operation.
+ * 
+ * @example
+ * ```typescript
+ * const sessionId = "session-id-12345";
+ * 
+ * try {
+ *   const result = await deleteSession(sessionId);
+ *   console.log('Session deletion successful:', result);
+ * } catch (error) {
+ *   console.error('Error deleting session:', error);
+ * }
+ * ```
+ */
 export async function deleteSession(sid: string) {
 	const db = await connect();
 
@@ -533,6 +769,28 @@ export async function deleteSession(sid: string) {
 	}
 }
 
+/**
+ * Retrieves a user based on the provided session ID. First, it fetches the session to get the user ID, then retrieves the corresponding user data.
+ * @param {string} sid - The session ID used to find the associated user.
+ * @returns {Promise<User | false>} Returns the user data if found and valid, otherwise returns false.
+ * @throws Will throw an error if there is an issue with the database operation or data validation.
+ * 
+ * @example
+ * ```typescript
+ * const sessionId = "session-id-12345";
+ * 
+ * try {
+ *   const user = await getUserFromSession(sessionId);
+ *   if (user) {
+ *     console.log('User retrieved:', user);
+ *   } else {
+ *     console.log('Session or user not found.');
+ *   }
+ * } catch (error) {
+ *   console.error('Error retrieving user from session:', error);
+ * }
+ * ```
+ */
 export async function getUserFromSession(sid: string) {
 	const db = await connect();
 
@@ -555,6 +813,29 @@ export async function getUserFromSession(sid: string) {
 	}
 }
 
+/**
+ * Retrieves media entries related to a specific earthquake from the MongoDB database, with optional pagination.
+ * @param {ObjectId} equakeId - The ID of the earthquake to retrieve media for.
+ * @param {number} [page] - The page number for pagination (optional).
+ * @param {number} [limit] - The number of items per page for pagination (optional).
+ * @returns {Promise<{ articles: Media[], totalCount: number }>} An object containing an array of media articles and the total count of media entries.
+ * @throws Will throw an error if there is an issue with the database operation or data validation.
+ * 
+ * @example
+ * ```typescript
+ * const earthquakeId = new ObjectId("60c72b2f5f1b2c001c8d4e44");
+ * const page = 1;
+ * const limit = 10;
+ * 
+ * try {
+ *   const result = await getMediaForEarthquake(earthquakeId, page, limit);
+ *   console.log('Media articles:', result.articles);
+ *   console.log('Total count:', result.totalCount);
+ * } catch (error) {
+ *   console.error('Error retrieving media for earthquake:', error);
+ * }
+ * ```
+ */
 export async function getMediaForEarthquake(equakeId: ObjectId, page?: number, limit?: number) {
 	const db = await connect();
 
@@ -588,6 +869,24 @@ export async function getMediaForEarthquake(equakeId: ObjectId, page?: number, l
 	}
 }
 
+/**
+ * Deletes a media entry from the MongoDB database by its media ID.
+ * @param {ObjectId} mediaId - The ID of the media entry to delete.
+ * @returns {Promise<boolean>} Returns true if the media entry was successfully deleted, otherwise false.
+ * @throws Will throw an error if there is an issue with the database operation.
+ * 
+ * @example
+ * ```typescript
+ * const mediaId = new ObjectId("60c72b2f5f1b2c001c8d4e44");
+ * 
+ * try {
+ *   const result = await deleteMedia(mediaId);
+ *   console.log('Media deletion successful:', result);
+ * } catch (error) {
+ *   console.error('Error deleting media:', error);
+ * }
+ * ```
+ */
 export async function deleteMedia(mediaId: ObjectId) {
 	const db = await connect();
 
@@ -602,6 +901,30 @@ export async function deleteMedia(mediaId: ObjectId) {
 	}
 }
 
+/**
+ * Inserts a new media entry into the MongoDB database.
+ * @param {Media} media - The media object to be inserted.
+ * @returns {Promise<ObjectId>} The ObjectId of the inserted media entry.
+ * @throws Will throw an error if there is an issue with the database operation.
+ * 
+ * @example
+ * ```typescript
+ * const media = {
+ *   title: "Earthquake Coverage",
+ *   description: "Detailed report on the recent earthquake.",
+ *   url: "http://example.com/earthquake-coverage",
+ *   equakeId: new ObjectId("60c72b2f5f1b2c001c8d4e44"),
+ *   // other media fields...
+ * };
+ * 
+ * try {
+ *   const insertedId = await postMedia(media);
+ *   console.log('Media inserted with ID:', insertedId);
+ * } catch (error) {
+ *   console.error('Error posting media:', error);
+ * }
+ * ```
+ */
 export async function postMedia(media: Media) {
 	const db = await connect();
 
@@ -615,6 +938,7 @@ export async function postMedia(media: Media) {
 		throw err;
 	}
 }
+
 
 export async function collateNearbyLocations(equakeId: ObjectId, limit?: number, page?: number) {
 	const db = await connect();
@@ -674,6 +998,30 @@ export async function collateNearbyLocations(equakeId: ObjectId, limit?: number,
 	}
 }
 
+/**
+ * Collates nearby locations for a given earthquake based on its coordinates and the furthest intensity radius.
+ * @param {ObjectId} equakeId - The ID of the earthquake to find nearby locations for.
+ * @param {number} [limit] - The number of items per page for pagination (optional).
+ * @param {number} [page] - The page number for pagination (optional).
+ * @returns {Promise<{ locations: LocationData[], totalCount: number, totalPopulation: number }>} An object containing an array of nearby locations, the total count of locations, and the total population of the matched locations.
+ * @throws Will throw an error if there is an issue with the database operation or data validation.
+ * 
+ * @example
+ * ```typescript
+ * const earthquakeId = new ObjectId("60c72b2f5f1b2c001c8d4e44");
+ * const page = 1;
+ * const limit = 10;
+ * 
+ * try {
+ *   const result = await collateNearbyLocations(earthquakeId, limit, page);
+ *   console.log('Nearby locations:', result.locations);
+ *   console.log('Total count of locations:', result.totalCount);
+ *   console.log('Total population of matched locations:', result.totalPopulation);
+ * } catch (error) {
+ *   console.error('Error collating nearby locations:', error);
+ * }
+ * ```
+ */
 export async function collateNearbyEarthquakes(
 	code: string,
 	distanceMeters: number,
@@ -717,6 +1065,24 @@ export async function collateNearbyEarthquakes(
 	}
 }
 
+/**
+ * Retrieves the furthest intensity radius for a given earthquake based on its magnitude, depth, and other properties.
+ * @param {ObjectId} equakeId - The ID of the earthquake to calculate the intensity radius for.
+ * @returns {Promise<number>} The calculated furthest intensity radius in meters.
+ * @throws Will throw an error if there is an issue with the database operation or data validation.
+ * 
+ * @example
+ * ```typescript
+ * const earthquakeId = new ObjectId("60c72b2f5f1b2c001c8d4e44");
+ * 
+ * try {
+ *   const radius = await retrieveFurthestIntensityRadius(earthquakeId);
+ *   console.log('Furthest intensity radius:', radius);
+ * } catch (error) {
+ *   console.error('Error retrieving intensity radius:', error);
+ * }
+ * ```
+ */
 export async function retrieveFurthestIntensityRadius(equakeId: ObjectId) {
 	const db = await connect();
 
@@ -756,6 +1122,27 @@ export async function retrieveFurthestIntensityRadius(equakeId: ObjectId) {
 	}
 }
 
+/**
+ * Retrieves provincial locations from the MongoDB database with optional pagination.
+ * @param {number} [page] - The page number for pagination (optional).
+ * @param {number} [limit] - The number of items per page for pagination (optional).
+ * @returns {Promise<{ location: LocationData[], totalCount: number }>} An object containing an array of provincial locations and the total count of locations.
+ * @throws Will throw an error if there is an issue with the database operation or data validation.
+ * 
+ * @example
+ * ```typescript
+ * const page = 1;
+ * const limit = 10;
+ * 
+ * try {
+ *   const result = await getProvincialLocations(page, limit);
+ *   console.log('Provincial locations:', result.location);
+ *   console.log('Total count of locations:', result.totalCount);
+ * } catch (error) {
+ *   console.error('Error retrieving provincial locations:', error);
+ * }
+ * ```
+ */
 export async function getProvincialLocations(page?: number, limit?: number) {
 	const db = await connect();
 
@@ -794,6 +1181,28 @@ export async function getProvincialLocations(page?: number, limit?: number) {
 	}
 }
 
+/**
+ * Retrieves a location from the MongoDB database based on the provided PSGC code.
+ * @param {string} psgc - The PSGC code of the location to retrieve.
+ * @returns {Promise<LocationData | false>} The validated location data if found, otherwise false.
+ * @throws Will throw an error if there is an issue with the database operation or data validation.
+ * 
+ * @example
+ * ```typescript
+ * const psgcCode = "1234567890";
+ * 
+ * try {
+ *   const location = await getLocationFromPSGC(psgcCode);
+ *   if (location) {
+ *     console.log('Location retrieved:', location);
+ *   } else {
+ *     console.log('No location found with the given PSGC code.');
+ *   }
+ * } catch (error) {
+ *   console.error('Error retrieving location from PSGC:', error);
+ * }
+ * ```
+ */
 export async function getLocationFromPSGC(psgc: string) {
 	const db = await connect();
 
@@ -813,6 +1222,23 @@ export async function getLocationFromPSGC(psgc: string) {
 	}
 }
 
+/**
+ * Retrieves users from the MongoDB database, categorizing them by their permission levels.
+ * @returns {Promise<{ user: User[], researcher: User[], admin: User[] }>} An object containing arrays of users categorized by their permission levels.
+ * @throws Will throw an error if there is an issue with the database operation or data validation.
+ * 
+ * @example
+ * ```typescript
+ * try {
+ *   const users = await getUsers();
+ *   console.log('Regular users:', users.user);
+ *   console.log('Researchers:', users.researcher);
+ *   console.log('Admins:', users.admin);
+ * } catch (error) {
+ *   console.error('Error retrieving users:', error);
+ * }
+ * ```
+ */
 export async function getUsers() {
 	const db = await connect();
 
@@ -841,6 +1267,24 @@ export async function getUsers() {
 	}
 }
 
+/**
+ * Deletes a user from the MongoDB database by their user ID.
+ * @param {string} user - The user ID of the user to delete.
+ * @returns {Promise<boolean>} Returns true if the user was successfully deleted, otherwise false.
+ * @throws Will throw an error if there is an issue with the database operation.
+ * 
+ * @example
+ * ```typescript
+ * const userId = "12345";
+ * 
+ * try {
+ *   const result = await deleteUser(userId);
+ *   console.log('User deletion successful:', result);
+ * } catch (error) {
+ *   console.error('Error deleting user:', error);
+ * }
+ * ```
+ */
 export async function deleteUser(user: string) {
 	const db = await connect();
 
@@ -849,6 +1293,27 @@ export async function deleteUser(user: string) {
 	if (deletedCount) return true;
 	return false;
 }
+
+/**
+ * Updates the permissions of a user in the MongoDB database.
+ * @param {string} user - The user ID of the user whose permissions are to be updated.
+ * @param {number} perm - The new permission level to be set.
+ * @returns {Promise<boolean>} Returns true if the permissions were successfully updated, otherwise false.
+ * @throws Will throw an error if there is an issue with the database operation.
+ * 
+ * @example
+ * ```typescript
+ * const userId = "12345";
+ * const newPermissionLevel = 1;
+ * 
+ * try {
+ *   const result = await updatePermissions(userId, newPermissionLevel);
+ *   console.log('Permission update successful:', result);
+ * } catch (error) {
+ *   console.error('Error updating permissions:', error);
+ * }
+ * ```
+ */
 export async function updatePermissions(user: string, perm: number) {
 	const db = await connect();
 
@@ -866,6 +1331,28 @@ export async function updatePermissions(user: string, perm: number) {
 	}
 }
 
+/**
+ * Resolves a descriptive title for an earthquake based on the provided coordinates.
+ * The title includes the distance and cardinal direction from a nearby location.
+ * @param {Coordinates} locCoord - The coordinates of the earthquake.
+ * @returns {Promise<string>} A string describing the distance and direction from the nearest location.
+ * @throws Will throw an error if there is an issue with the database operation or data validation.
+ * 
+ * @example
+ * ```typescript
+ * const earthquakeCoord = {
+ *   type: "Point",
+ *   coordinates: [123.456, -23.456]
+ * };
+ * 
+ * try {
+ *   const title = await resolveEarthquakeTitle(earthquakeCoord);
+ *   console.log('Earthquake title:', title);
+ * } catch (error) {
+ *   console.error('Error resolving earthquake title:', error);
+ * }
+ * ```
+ */
 export async function resolveEarthquakeTitle(locCoord: Coordinates) {
 	const db = await connect();
 
