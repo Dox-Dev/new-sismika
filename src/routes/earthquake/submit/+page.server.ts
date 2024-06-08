@@ -7,6 +7,15 @@ import { parseOrZero } from '$lib/model/src/util';
 import { EarthquakeEventSchema } from '$lib/model/src/event';
 
 export const actions = {
+    /**
+     * Default action handler for submitting earthquake data.
+     *
+     * @param {Object} params - The parameters object.
+     * @param {Object} params.cookies - The cookies object provided by SvelteKit.
+     * @param {Object} params.request - The request object provided by SvelteKit.
+     * @returns {Promise<Response>} Redirects to the newly created earthquake page on success or returns a failure response on error.
+     * @throws Will throw an error if there is an issue with the form data, authentication, permissions, or database operations.
+     */
 	async default({ cookies, request }) {
 		const form = await request.formData();
 

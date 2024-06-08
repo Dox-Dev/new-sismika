@@ -9,6 +9,17 @@ import { error } from '@sveltejs/kit';
 import { StatusCodes } from 'http-status-codes';
 import { ObjectId } from 'mongodb';
 
+/**
+ * Loads earthquake data, collates nearby locations, and fetches media articles for the earthquake.
+ *
+ * @param {Object} params - The parameters object.
+ * @param {Object} params.params - The URL parameters provided by SvelteKit.
+ * @param {string} params.params.id - The earthquake ID as a string.
+ * @param {Object} params.url - The URL object provided by SvelteKit.
+ * @param {URLSearchParams} params.url.searchParams - The URL search parameters.
+ * @returns {Promise<Object>} An object containing earthquake data, affected locations, population, media articles, and pagination details.
+ * @throws Will throw an error if the earthquake data is not found.
+ */
 export async function load({ params: { id }, url: { searchParams } }) {
 	const { page: mediaPage, limit: mediaLimit } = paginationHandler(
 		searchParams,

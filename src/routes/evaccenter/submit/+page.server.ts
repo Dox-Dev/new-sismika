@@ -6,6 +6,15 @@ import { Permission } from '$lib/model/src/user';
 import { EvacCenterSchema } from '$lib/model/src/evac';
 
 export const actions = {
+    /**
+     * Default action handler for submitting evacuation center data.
+     *
+     * @param {Object} params - The parameters object.
+     * @param {Object} params.cookies - The cookies object provided by SvelteKit.
+     * @param {Object} params.request - The request object provided by SvelteKit.
+     * @returns {Promise<Response>} Redirects to the newly created evacuation center page on success or returns a failure response on error.
+     * @throws Will throw an error if there is an issue with the form data, authentication, permissions, or database operations.
+     */
 	async default({ cookies, request }) {
 		const form = await request.formData();
 

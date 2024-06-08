@@ -6,6 +6,14 @@ import env from '$lib/model/src/env/oauth';
 import { fetchDiscoveryDocument } from '$lib/server/model/openid';
 import { StatusCodes } from 'http-status-codes';
 
+/**
+ * Handles the GET request to initiate the OAuth2 login process.
+ *
+ * @param {Object} params - The parameters object.
+ * @param {Object} params.cookies - The cookies object provided by SvelteKit.
+ * @returns {Promise<void>} Redirects to the Google OAuth2 authorization endpoint.
+ * @throws Will throw a redirect to the Google OAuth2 authorization endpoint with the necessary parameters.
+ */
 export const GET: RequestHandler = async ({ cookies }) => {
 	const { session_id, nonce, expiration } = await createPending();
 	cookies.set('sid', session_id, {

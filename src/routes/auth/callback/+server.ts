@@ -8,6 +8,17 @@ import { HeaderSchema, fetchCerts, fetchDiscoveryDocument } from '$lib/server/mo
 import assert, { ok, strictEqual } from 'assert';
 import { UserSchema } from '$lib/model/src/user';
 
+/**
+ * Handles the GET request for OAuth2 authentication.
+ *
+ * @param {Object} params - The parameters object.
+ * @param {Object} params.cookies - The cookies object provided by SvelteKit.
+ * @param {Object} params.url - The URL object provided by SvelteKit.
+ * @param {URLSearchParams} params.url.searchParams - The URL search parameters.
+ * @returns {Promise<void>} Redirects to the appropriate page based on the authentication result.
+ * @throws Will throw an error or redirect if there are issues with the session ID, state, authorization code, 
+ *         or if the pending session does not exist.
+ */
 export const GET: RequestHandler = async ({ cookies, url: { searchParams } }) => {
 	const sid = cookies.get('sid');
 	if (!sid) throw redirect(StatusCodes.MOVED_TEMPORARILY, '/auth/login');

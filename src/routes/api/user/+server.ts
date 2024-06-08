@@ -3,6 +3,17 @@ import { deleteUser, getUserFromSession, updatePermissions } from '$lib/server/d
 import { error, redirect, type RequestHandler } from '@sveltejs/kit';
 import { StatusCodes } from 'http-status-codes';
 
+/**
+ * Handles the PATCH request to update user permissions.
+ *
+ * @param {Object} params - The parameters object.
+ * @param {Object} params.cookies - The cookies object provided by SvelteKit.
+ * @param {Object} params.url - The URL object provided by SvelteKit.
+ * @param {URLSearchParams} params.url.searchParams - The URL search parameters.
+ * @returns {Promise<void>} Redirects to the admin page on success.
+ * @throws Will throw an error if the session ID is missing or invalid, if the user does not have admin permissions,
+ *         if the target user ID or permissions are invalid, or if the user cannot be found.
+ */
 export const PATCH: RequestHandler = async ({ cookies, url: { searchParams } }) => {
 	const sid = cookies.get('sid');
 	if (!sid) throw error(StatusCodes.UNAUTHORIZED);

@@ -10,6 +10,14 @@ import { error, fail, redirect } from '@sveltejs/kit';
 import { StatusCodes } from 'http-status-codes';
 import { ObjectId } from 'mongodb';
 
+/**
+ * Loads earthquake data and collates nearby locations based on the provided earthquake ID.
+ *
+ * @param {Object} params - The parameters object.
+ * @param {string} params.id - The earthquake ID as a string.
+ * @returns {Promise<Object>} An object containing the selected earthquake data and affected locations.
+ * @throws Will throw an error if the earthquake data is not found.
+ */
 export async function load({ params: { id } }) {
 	const objId = ObjectId.createFromHexString(id);
 	const res = await getEarthquakeData(objId);
@@ -19,7 +27,20 @@ export async function load({ params: { id } }) {
 
 	return { selectedEarthquake: res, affected: effectId };
 }
+
+
 export const actions = {
+	/**
+     * Handles the default action for submitting media related to an earthquake.
+     *
+     * @param {Object} params - The parameters object.
+     * @param {Object} params.cookies - The cookies object provided by SvelteKit.
+     * @param {Object} params.request - The request object provided by SvelteKit.
+     * @param {Object} params.params - The parameters object.
+     * @param {string} params.params.id - The earthquake ID as a string.
+     * @returns {Promise<Response>} Redirects to the earthquake page on success or returns a failure response on error.
+     * @throws Will throw an error if there is an issue with the form data, authentication, permissions, or database operations.
+     */
 	async default({ cookies, request, params: { id } }) {
 		const form = await request.formData();
 
